@@ -3,7 +3,6 @@ package net.fameless.forcebattle.listener;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.command.BackpackCommand;
 import net.fameless.forcebattle.manager.*;
-import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
 import net.fameless.forcebattle.util.ItemProvider;
 import org.bukkit.Bukkit;
