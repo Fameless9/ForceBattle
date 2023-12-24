@@ -30,10 +30,6 @@ public class TeamCommand implements CommandExecutor {
         if (args.length >= 1) {
             switch (args[0]) {
                 case "join": {
-                    if (TeamManager.getTeam(player) != null) {
-                        player.sendMessage(ChatColor.RED + "You are already in a team.");
-                        return false;
-                    }
                     if (args.length == 2) {
                         int teamId;
                         try {
@@ -51,13 +47,12 @@ public class TeamCommand implements CommandExecutor {
                             player.sendMessage(ChatColor.RED + "Team is private.");
                             return false;
                         }
-                        if (TeamManager.getTeam(player) != null && TeamManager.getTeam(player).equals(newTeam)) {
+                        if (TeamManager.getTeam(player) != null && TeamManager.getTeam(player).getId() == (newTeam.getId())) {
                             player.sendMessage(ChatColor.RED + "You are already part of that team.");
                             return false;
                         }
                         if (TeamManager.getTeam(player) != null) {
-                            Team oldTeam = TeamManager.getTeam(player);
-                            oldTeam.removePlayer(player);
+                            TeamManager.getTeam(player).removePlayer(player);
                         }
                         newTeam.addPlayer(player);
                         NametagManager.updateNametag(player);

@@ -68,6 +68,8 @@ public class Team {
                     for (Player player1 : players) {
                         player1.sendMessage(ChatColor.GOLD + newLeader.getName() + " is now the leader of your team.");
                     }
+                } else {
+                    TeamManager.removeTeam(this);
                 }
             }
         }

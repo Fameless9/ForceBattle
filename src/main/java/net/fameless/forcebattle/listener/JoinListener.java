@@ -3,6 +3,8 @@ package net.fameless.forcebattle.listener;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.command.BackpackCommand;
 import net.fameless.forcebattle.manager.*;
+import net.fameless.forcebattle.team.Team;
+import net.fameless.forcebattle.team.TeamManager;
 import net.fameless.forcebattle.util.ItemProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,6 +26,9 @@ public class JoinListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         NametagManager.removeTag(event.getPlayer());
+        if (TeamManager.getTeam(event.getPlayer()) != null) {
+            TeamManager.getTeam(event.getPlayer()).removePlayer(event.getPlayer());
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
