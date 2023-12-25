@@ -1,10 +1,9 @@
 package net.fameless.forcebattle.timer;
 
 import net.fameless.forcebattle.ForceBattle;
-import net.fameless.forcebattle.manager.BossbarManager;
-import net.fameless.forcebattle.manager.ItemManager;
-import net.fameless.forcebattle.manager.LeaderboardManager;
-import net.fameless.forcebattle.manager.NametagManager;
+import net.fameless.forcebattle.manager.*;
+import net.fameless.forcebattle.team.Team;
+import net.fameless.forcebattle.team.TeamManager;
 import net.fameless.forcebattle.util.FormatTime;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -66,6 +65,13 @@ public class Timer implements CommandExecutor {
                     setRunning(false);
                     setTime(startTime);
                     LeaderboardManager.displayLeaderboard();
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        PointsManager.setPoints(player, 0);
+                        ItemManager.updateObjective(player);
+                    }
+                    for (Team team : TeamManager.getTeams()) {
+                        team.setPoints(0);
+                    }
                     return;
                 }
 

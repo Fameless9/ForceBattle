@@ -50,7 +50,7 @@ public class NametagManager implements Listener {
         if (type != null) {
             if (type.equals(Challenge.FORCE_ITEM)) {
                 Material item = (Material) challenge;
-                suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Item" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD).append(BossbarManager.formatItemName(item.name().replace("_", " ")));
+                suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Item" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + BossbarManager.formatItemName(item.name().replace("_", " ")));
             } else if (type.equals(Challenge.FORCE_MOB)) {
                 EntityType mob = (EntityType) challenge;
                 suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Mob" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + BossbarManager.formatItemName(mob.name().replace("_", " ")));

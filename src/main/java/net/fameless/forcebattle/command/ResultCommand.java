@@ -160,9 +160,8 @@ public class ResultCommand implements CommandExecutor, Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-
-        if (event.getInventory() == null || event.getCurrentItem() == null) return;
         if (!event.getView().getTitle().contains("Results")) return;
+        if (event.getCurrentItem() == null) return;
 
         Player target = Bukkit.getPlayer(event.getInventory().getItem(8).getItemMeta().getLocalizedName());
         int page = Integer.parseInt(event.getInventory().getItem(0).getItemMeta().getLocalizedName());

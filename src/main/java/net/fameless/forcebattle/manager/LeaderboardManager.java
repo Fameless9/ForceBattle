@@ -2,6 +2,7 @@ package net.fameless.forcebattle.manager;
 
 import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -31,7 +32,7 @@ public class LeaderboardManager {
                     teamPlayer.sendMessage(ChatColor.GOLD + "Your team placed " + position + " with " + team.getPoints() + " points.");
                 }
 
-                message.append(ChatColor.GRAY + String.valueOf(position)).append(". ").append(ChatColor.AQUA + "Team " + team.getId()).append(": ").append(ChatColor.GREEN + String.valueOf(points)).append(" points\n");
+                message.append(ChatColor.GRAY + String.valueOf(position)).append(". ").append(ChatColor.AQUA + "Team " + team.getId()).append(": ").append(ChatColor.GREEN + String.valueOf(team.getPoints())).append(" points\n");
                 ++position;
                 excluded.add(team);
             } else {
@@ -43,5 +44,6 @@ public class LeaderboardManager {
                 ++position;
             }
         }
+        Bukkit.broadcastMessage(message.toString());
     }
 }
