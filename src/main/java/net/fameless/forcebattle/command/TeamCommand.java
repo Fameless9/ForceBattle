@@ -242,7 +242,7 @@ public class TeamCommand implements CommandExecutor {
                         }
                         if (Bukkit.getPlayer(args[2]) != null) {
                             if (TeamManager.getTeam(teamId) == null) {
-                                player.sendMessage(ChatColor.RED + "Team couldn't be found.");
+                                player.sendMessage(ChatColor.RED + "Team does not exist.");
                                 return false;
                             }
                             Team team = TeamManager.getTeam(teamId);
@@ -257,11 +257,11 @@ public class TeamCommand implements CommandExecutor {
                                 player.sendMessage(ChatColor.RED + "Player is not part of the team.");
                             }
                         } else {
-                            player.sendMessage(ChatColor.RED + "Player couldn't been found.");
+                            player.sendMessage(ChatColor.RED + "Player couldn't be found.");
                             return false;
                         }
                     } else {
-                        player.sendMessage(ChatColor.RED + "Usage of /team kick: /team kick <player> | OP: /team kick <team> <player>");
+                        player.sendMessage(ChatColor.RED + "Usage of kick: /team kick <player> | OP: /team kick <team> <player>");
                     }
                     break;
                 }
