@@ -35,6 +35,7 @@ public class SkipObjectiveCommand implements CommandExecutor {
             Player target = Bukkit.getPlayer(name);
             ItemManager.updateObjective(target);
             target.sendMessage(ChatColor.GREEN + "Your objective was skipped by an operator.");
+            sender.sendMessage(ChatColor.GREEN + "Skipped objective of " + target.getName());
         }
 
         return false;

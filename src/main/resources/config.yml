@@ -3,7 +3,7 @@ time: 5400
 jokers: 3
 swappers: 1
 
-### --- Add items/objects that should be excluded. Restart the server afterwards --- ###
+### --- Add items/objectives that should be excluded. Restart the server afterwards --- ###
 exclude:
   items:
     - WATER
@@ -118,5 +118,3 @@ exclude:
   exclude_banner_patterns: true # obtainable in survival
   exclude_banners: true # obtainable in survival
   exclude_armor_templates: true # obtainable in survival
-
-
