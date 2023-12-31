@@ -38,7 +38,7 @@ public class ItemFile {
             saveJsonFile(initialData);
         }
 
-        // Items
+// Items
         List<String> toExclude = configuration.getStringList("exclude.items");
 
         JsonObject itemObject = new JsonObject();
@@ -118,7 +118,7 @@ public class ItemFile {
 
         finalObject.add("items", itemObject);
 
-        // Mobs
+// Mobs
         List<String> mobSection = configuration.getStringList("exclude.mobs");
 
         JsonObject mobObject = new JsonObject();
@@ -134,7 +134,7 @@ public class ItemFile {
 
         finalObject.add("mobs", mobObject);
 
-        // Biomes
+// Biomes
         List<String> biomeSection = configuration.getStringList("exclude.biomes");
 
         JsonObject biomeObject = new JsonObject();
@@ -150,7 +150,7 @@ public class ItemFile {
 
         finalObject.add("biomes", biomeObject);
 
-        // Advancements
+// Advancements
         List<String> advancementSection = configuration.getStringList("exclude.advancements");
 
         JsonObject advancementObject = new JsonObject();
@@ -166,7 +166,7 @@ public class ItemFile {
 
         finalObject.add("advancements", advancementObject);
 
-        // Heights
+// Heights
         List<String> heightSection = configuration.getStringList("exclude.heights");
 
         JsonObject heightObject = new JsonObject();

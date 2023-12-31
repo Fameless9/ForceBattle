@@ -4,6 +4,7 @@ import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.manager.*;
 import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
+import net.fameless.forcebattle.util.Advancement;
 import net.fameless.forcebattle.util.FormatTime;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -109,6 +110,13 @@ public class Timer implements CommandExecutor {
             setRunning(true);
             for (Player players : Bukkit.getOnlinePlayers()) {
                 players.sendTitle(ChatColor.RED + "Timer started.", "", 20, 40, 20);
+                if (ItemManager.getChallenge(players) instanceof Advancement) {
+                    Advancement advancement = (Advancement) ItemManager.getChallenge(players);
+                    player.sendMessage(ChatColor.GRAY + "-----------------------");
+                    player.sendMessage(ChatColor.GOLD + "Advancement Description:");
+                    player.sendMessage(ChatColor.GOLD + advancement.getDescription());
+                    player.sendMessage(ChatColor.GRAY + "-----------------------");
+                }
                 NametagManager.updateNametag(players);
                 BossbarManager.updateBossbar(players);
             }

@@ -63,11 +63,11 @@ public final class ForceBattle extends JavaPlugin {
         getCommand("team").setTabCompleter(new TeamCmdTabCompleter());
         getCommand("skip").setTabCompleter(new SkipCommandTabCompleter());
         getCommand("exclude").setTabCompleter(new ExcludeCommandTabCompleter());
+        getCommand("backpack").setTabCompleter(new BackpackCommandTabCompleter());
         getCommand("points").setTabCompleter(new PointsCommandTabCompleter());
         getCommand("timer").setTabCompleter(new TimerCommandTabCompleter());
         getCommand("reset").setTabCompleter(new ResetCommandTabCompleter());
         getCommand("joker").setTabCompleter(new JokerCommandTabCompleter());
-        getCommand("backpack").setTabCompleter(new BackpackCommandTabCompleter());
 
         Bukkit.getPluginManager().registerEvents(new GameListener(), this);
         Bukkit.getPluginManager().registerEvents(new JoinListener(), this);

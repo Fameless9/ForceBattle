@@ -211,10 +211,12 @@ public class ItemManager {
                     }
                     advancementMap.put(player, newAdvancement);
                     ChainManager.advancementProgressMap.put(player, ChainManager.advancementProgressMap.get(player) + 1);
-                    player.sendMessage(ChatColor.GRAY + "-----------------------");
-                    player.sendMessage(ChatColor.GOLD + "Advancement Description:");
-                    player.sendMessage(ChatColor.GOLD + newAdvancement.getDescription());
-                    player.sendMessage(ChatColor.GRAY + "-----------------------");
+                    if (Timer.isRunning()) {
+                        player.sendMessage(ChatColor.GRAY + "-----------------------");
+                        player.sendMessage(ChatColor.GOLD + "Advancement Description:");
+                        player.sendMessage(ChatColor.GOLD + newAdvancement.getDescription());
+                        player.sendMessage(ChatColor.GRAY + "-----------------------");
+                    }
                     return;
                 }
                 List<String> availableAdvancements = toList(ItemFile.getAdvancementObject());
@@ -226,10 +228,12 @@ public class ItemManager {
 
                 Advancement newAdvancement = Advancement.valueOf(availableAdvancements.get(random.nextInt(availableAdvancements.size())));
                 advancementMap.put(player, newAdvancement);
-                player.sendMessage(ChatColor.GRAY + "-----------------------");
-                player.sendMessage(ChatColor.GOLD + "Advancement Description:");
-                player.sendMessage(ChatColor.GOLD + newAdvancement.getDescription());
-                player.sendMessage(ChatColor.GRAY + "-----------------------");
+                if (Timer.isRunning()) {
+                    player.sendMessage(ChatColor.GRAY + "-----------------------");
+                    player.sendMessage(ChatColor.GOLD + "Advancement Description:");
+                    player.sendMessage(ChatColor.GOLD + newAdvancement.getDescription());
+                    player.sendMessage(ChatColor.GRAY + "-----------------------");
+                }
                 break;
             }
             case FORCE_HEIGHT: {
