@@ -1,6 +1,8 @@
 package net.fameless.forcebattle.GUI;
 
+import net.fameless.forcebattle.manager.BossbarManager;
 import net.fameless.forcebattle.manager.ItemManager;
+import net.fameless.forcebattle.manager.NametagManager;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.ItemProvider;
 import org.bukkit.Bukkit;
@@ -157,16 +159,19 @@ public class ResetUI implements Listener, CommandExecutor {
             case 4: {
                 if (target != null) {
                     ItemManager.resetProgress(target);
-                    target.sendMessage(ChatColor.GOLD + "Your progress has been reset.");
+                    NametagManager.updateNametag(target);
+                    BossbarManager.updateBossbar(target);
+                    target.sendMessage(ChatColor.GOLD + "Your points have been reset.");
                     break;
                 }
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     ItemManager.resetProgress(player);
+                    NametagManager.updateNametag(player);
+                    BossbarManager.updateBossbar(player);
                 }
 
-
-                Bukkit.broadcastMessage(ChatColor.GOLD + "Progress has been reset.");
+                Bukkit.broadcastMessage(ChatColor.GOLD + "Points have been reset.");
                 break;
             }
         }

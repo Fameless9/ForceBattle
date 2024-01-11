@@ -167,6 +167,11 @@ public class GameListener implements Listener {
             stack.setAmount(stack.getAmount() - 1);
             inventory.setItem(slot, stack);
 
+            if (ItemManager.getChallenge(event.getPlayer()) instanceof Material) {
+                Bukkit.getWorld(event.getPlayer().getWorld().getName()).dropItemNaturally(event.getPlayer().getLocation(),
+                        new ItemStack((Material) ItemManager.getChallenge(event.getPlayer())));
+            }
+
             ItemManager.updateObjective(event.getPlayer());
             PointsManager.addPoint(event.getPlayer());
             NametagManager.updateNametag(event.getPlayer());
