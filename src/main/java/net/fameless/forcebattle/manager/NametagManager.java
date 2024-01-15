@@ -59,7 +59,7 @@ public class NametagManager implements Listener {
                 suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Biome" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + BossbarManager.formatItemName(biome.name().replace("_", " ")));
             } else if (type.equals(Challenge.FORCE_ADVANCEMENT)) {
                 Advancement advancement = (Advancement) challenge;
-                suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Biome" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + BossbarManager.formatItemName(advancement.name().replace("_", " ")));
+                suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Advancement" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + BossbarManager.formatItemName(advancement.name().replace("_", " ")));
             } else if (type.equals(Challenge.FORCE_HEIGHT)) {
                 int height = (int) challenge;
                 suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Height" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + height);
