@@ -4,6 +4,9 @@ import net.fameless.forcebattle.GUI.JokerUI;
 import net.fameless.forcebattle.GUI.MenuUI;
 import net.fameless.forcebattle.GUI.PointsUI;
 import net.fameless.forcebattle.GUI.ResetUI;
+import net.fameless.forcebattle.Placeholder.ObjectivePlaceholder;
+import net.fameless.forcebattle.Placeholder.ObjectiveTypePlaceholder;
+import net.fameless.forcebattle.Placeholder.PointsPlaceholder;
 import net.fameless.forcebattle.command.*;
 import net.fameless.forcebattle.command.tabcompleter.*;
 import net.fameless.forcebattle.listener.GameListener;
@@ -12,10 +15,13 @@ import net.fameless.forcebattle.manager.ChainManager;
 import net.fameless.forcebattle.manager.ItemFile;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.timer.TimerUI;
+import net.fameless.forcebattle.util.UpdateChecker;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.time.Duration;
 
 public final class ForceBattlePlugin extends JavaPlugin {
 
@@ -77,6 +83,14 @@ public final class ForceBattlePlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(resetUI, this);
         Bukkit.getPluginManager().registerEvents(jokerUI, this);
         Bukkit.getPluginManager().registerEvents(resultCommand, this);
+
+        new ObjectivePlaceholder().register();
+        new PointsPlaceholder().register();
+        new ObjectiveTypePlaceholder().register();
+
+        new Metrics(this, 20754);
+        UpdateChecker checker = new UpdateChecker(112328, Duration.ofHours(2L));
+        checker.checkForUpdates();
     }
 
     public static ForceBattlePlugin getInstance() { return instance; }

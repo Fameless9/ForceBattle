@@ -2,6 +2,7 @@ package net.fameless.forcebattle.command;
 
 import net.fameless.forcebattle.manager.BossbarManager;
 import net.fameless.forcebattle.manager.ItemManager;
+import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.Advancement;
 import net.fameless.forcebattle.util.FormatTime;
 import net.fameless.forcebattle.util.ItemProvider;
@@ -37,6 +38,10 @@ public class ResultCommand implements CommandExecutor, Listener {
             return false;
         }
         if (sender instanceof Player) {
+            if (Timer.isRunning()) {
+                sender.sendMessage(ChatColor.AQUA + "Only available when timer is not running.");
+                return false;
+            }
             Player player = (Player) sender;
             Player target = Bukkit.getPlayer(args[0]);
             new GUI(player, target, 1);

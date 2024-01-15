@@ -22,6 +22,8 @@ public class JoinListener implements Listener {
     List<Player> receivedSkip = new ArrayList<>();
     List<Player> receivedSwap = new ArrayList<>();
 
+    public static boolean isUpdated = true;
+
     @EventHandler(ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         NametagManager.removeTag(event.getPlayer());
@@ -71,6 +73,10 @@ public class JoinListener implements Listener {
             int skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("swappers");
             event.getPlayer().getInventory().addItem(ItemProvider.getSwapitem(skipAmount));
             receivedSwap.add(event.getPlayer());
+        }
+
+        if (event.getPlayer().isOp() && !isUpdated) {
+            event.getPlayer().sendMessage(ChatColor.GREEN + "There is an update available for ForceBattle. You can download it from the spigot website.");
         }
 
         BossbarManager.createBossbar(event.getPlayer());

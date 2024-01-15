@@ -36,10 +36,6 @@ public class BossbarManager {
         getBossbar(player);
     }
 
-    public static void removeBossbar(Player player) {
-        BossbarManager.bossBarHashMap.get(player.getUniqueId()).removePlayer(player);
-    }
-
     private static void getBossbar(Player player) {
         BossBar bossBar;
         Object challenge = ItemManager.getChallenge(player);
