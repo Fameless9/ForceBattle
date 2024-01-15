@@ -1,11 +1,12 @@
-name: ForceBattle
+name: ForceBattlePlugin
 version: 1.0.0
-main: net.fameless.forcebattle.ForceBattle
+main: net.fameless.forcebattle.ForceBattlePlugin
 api-version: '1.20'
 
 commands:
   team:
   menu:
+    aliases: [settings]
   points:
   timer:
   reset:

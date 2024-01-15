@@ -1,7 +1,7 @@
 package net.fameless.forcebattle.manager;
 
 import com.google.gson.JsonObject;
-import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.Advancement;
 import net.fameless.forcebattle.util.Challenge;
@@ -293,20 +293,20 @@ public class ItemManager {
 
     public static void giveJokers(Player player) {
         int skipAmount;
-        if (ForceBattle.getInstance().getConfig().get("jokers") == null) {
+        if (ForceBattlePlugin.getInstance().getConfig().get("jokers") == null) {
             skipAmount = 3;
         } else {
-            skipAmount = ForceBattle.getInstance().getConfig().getInt("jokers");
+            skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("jokers");
         }
         if (skipAmount > 64) {
             skipAmount = 64;
         }
 
         int swapAmount;
-        if (ForceBattle.getInstance().getConfig().get("swappers") == null) {
+        if (ForceBattlePlugin.getInstance().getConfig().get("swappers") == null) {
             swapAmount = 1;
         } else {
-            swapAmount = ForceBattle.getInstance().getConfig().getInt("swappers");
+            swapAmount = ForceBattlePlugin.getInstance().getConfig().getInt("swappers");
         }
         if (swapAmount > 64) {
             swapAmount = 64;
@@ -322,10 +322,10 @@ public class ItemManager {
         if (amount != null) {
             skipAmount = amount;
         } else {
-            if (ForceBattle.getInstance().getConfig().get("jokers") == null) {
+            if (ForceBattlePlugin.getInstance().getConfig().get("jokers") == null) {
                 skipAmount = 3;
             } else {
-                skipAmount = ForceBattle.getInstance().getConfig().getInt("jokers");
+                skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("jokers");
             }
         }
 
@@ -349,10 +349,10 @@ public class ItemManager {
         if (amount != null) {
             swapAmount = amount;
         } else {
-            if (ForceBattle.getInstance().getConfig().get("swappers") == null) {
+            if (ForceBattlePlugin.getInstance().getConfig().get("swappers") == null) {
                 swapAmount = 1;
             } else {
-                swapAmount = ForceBattle.getInstance().getConfig().getInt("swappers");
+                swapAmount = ForceBattlePlugin.getInstance().getConfig().getInt("swappers");
             }
         }
         if (swapAmount > 64) {

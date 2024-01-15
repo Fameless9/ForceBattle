@@ -1,6 +1,6 @@
 package net.fameless.forcebattle.listener;
 
-import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.command.ExcludeCommand;
 import net.fameless.forcebattle.manager.BossbarManager;
 import net.fameless.forcebattle.manager.ItemManager;
@@ -86,7 +86,7 @@ public class GameListener implements Listener {
                     }
                 }
             }
-        }.runTaskTimer(ForceBattle.getInstance(), 0, 2);
+        }.runTaskTimer(ForceBattlePlugin.getInstance(), 0, 2);
     }
 
     private static boolean hasAdvancement(Player player, String name) {

@@ -30,52 +30,55 @@ public class ResetUI implements Listener, CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-
-            if (!player.hasPermission("forcebattle.timer")) {
-                player.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.timer'");
-                return false;
-            }
-
-            Player target = null;
-            if (args.length == 1) {
-                if (Bukkit.getPlayerExact(args[0]) != null) {
-                    target = Bukkit.getPlayer(args[0]);
-                    ResetUI.commandMap.put(player.getUniqueId(), target.getUniqueId());
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Player couldn't be found.");
-                }
-            }
-
-            Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Resets");
-            if (target == null) {
-                inventory.setItem(0, ItemProvider.buildItem(new ItemStack(Material.CHAIN_COMMAND_BLOCK), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Quick Reset Everyone", "", ChatColor.BLUE + "Quick reset function.", "", ChatColor.BLUE + "Resets:", ChatColor.BLUE + "- Timer", ChatColor.BLUE + "- Challenge progress", ChatColor.BLUE + "- Postion", ChatColor.BLUE + "- Inventories", ChatColor.BLUE + "- Health/Food Level", ChatColor.BLUE + "- Jokers"));
-            } else {
-                inventory.setItem(0, ItemProvider.buildItem(new ItemStack(Material.CHAIN_COMMAND_BLOCK), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Quick Reset " + target.getName(), "", ChatColor.BLUE + "Quick reset " + target.getName() + ".", "", ChatColor.BLUE + "Resets:", ChatColor.BLUE + "- Challenge progress", ChatColor.BLUE + "- Position", ChatColor.BLUE + "- Inventory", ChatColor.BLUE + "- Health/Food Level", ChatColor.BLUE + "- Jokers"));
-            }
-            inventory.setItem(1, ItemProvider.buildItem(new ItemStack(Material.CLOCK), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Reset Timer", "", ChatColor.BLUE + "Click to globally reset the timer"));
-
-            if (target == null) {
-                inventory.setItem(2, ItemProvider.buildItem(new ItemStack(Material.CHEST), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Clear Inventories", "", ChatColor.BLUE + "Clears inventory of every player"));
-            } else {
-                inventory.setItem(2, ItemProvider.buildItem(new ItemStack(Material.CHEST), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Clear Inventory of " + target.getName(), "", ChatColor.BLUE + "Clears inventory of " + target.getName()));
-            }
-
-            if (target == null) {
-                inventory.setItem(3, ItemProvider.buildItem(new ItemStack(Material.STRUCTURE_VOID), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Refill Jokers", "", ChatColor.BLUE + "Refill Jokers and Swappers for every player"));
-            } else {
-                inventory.setItem(3, ItemProvider.buildItem(new ItemStack(Material.STRUCTURE_VOID), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Refill Jokers for " + target.getName(), "", ChatColor.BLUE + "Refill Jokers and Swappers for " + target.getName()));
-            }
-
-            if (target == null) {
-                inventory.setItem(4, ItemProvider.buildItem(new ItemStack(Material.GOLD_NUGGET), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Reset points", "", ChatColor.BLUE + "Resets challenge progress of every player"));
-            } else {
-                inventory.setItem(4, ItemProvider.buildItem(new ItemStack(Material.GOLD_NUGGET), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Reset points of " + target.getName(), "", ChatColor.BLUE + "Resets challenge progress of " + target.getName()));
-            }
-
-            player.openInventory(inventory);
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED + "Only players may use this command.");
+            return false;
         }
+        if (!sender.hasPermission("forcebattle.reset")) {
+            sender.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.reset'");
+            return false;
+        }
+
+        Player player = (Player) sender;
+        Player target = null;
+
+        if (args.length == 1) {
+            if (Bukkit.getPlayerExact(args[0]) != null) {
+                target = Bukkit.getPlayer(args[0]);
+                ResetUI.commandMap.put(player.getUniqueId(), target.getUniqueId());
+            } else {
+                sender.sendMessage(ChatColor.RED + "Player couldn't be found.");
+            }
+        }
+
+        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Resets");
+        if (target == null) {
+            inventory.setItem(0, ItemProvider.buildItem(new ItemStack(Material.CHAIN_COMMAND_BLOCK), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Quick Reset Everyone", "", ChatColor.BLUE + "Quick reset function.", "", ChatColor.BLUE + "Resets:", ChatColor.BLUE + "- Timer", ChatColor.BLUE + "- Challenge progress", ChatColor.BLUE + "- Postion", ChatColor.BLUE + "- Inventories", ChatColor.BLUE + "- Health/Food Level", ChatColor.BLUE + "- Jokers"));
+        } else {
+            inventory.setItem(0, ItemProvider.buildItem(new ItemStack(Material.CHAIN_COMMAND_BLOCK), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Quick Reset " + target.getName(), "", ChatColor.BLUE + "Quick reset " + target.getName() + ".", "", ChatColor.BLUE + "Resets:", ChatColor.BLUE + "- Challenge progress", ChatColor.BLUE + "- Position", ChatColor.BLUE + "- Inventory", ChatColor.BLUE + "- Health/Food Level", ChatColor.BLUE + "- Jokers"));
+        }
+        inventory.setItem(1, ItemProvider.buildItem(new ItemStack(Material.CLOCK), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Reset Timer", "", ChatColor.BLUE + "Click to globally reset the timer"));
+
+        if (target == null) {
+            inventory.setItem(2, ItemProvider.buildItem(new ItemStack(Material.CHEST), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Clear Inventories", "", ChatColor.BLUE + "Clears inventory of every player"));
+        } else {
+            inventory.setItem(2, ItemProvider.buildItem(new ItemStack(Material.CHEST), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Clear Inventory of " + target.getName(), "", ChatColor.BLUE + "Clears inventory of " + target.getName()));
+        }
+
+        if (target == null) {
+            inventory.setItem(3, ItemProvider.buildItem(new ItemStack(Material.STRUCTURE_VOID), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Refill Jokers", "", ChatColor.BLUE + "Refill Jokers and Swappers for every player"));
+        } else {
+            inventory.setItem(3, ItemProvider.buildItem(new ItemStack(Material.STRUCTURE_VOID), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Refill Jokers for " + target.getName(), "", ChatColor.BLUE + "Refill Jokers and Swappers for " + target.getName()));
+        }
+
+        if (target == null) {
+            inventory.setItem(4, ItemProvider.buildItem(new ItemStack(Material.GOLD_NUGGET), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Reset points", "", ChatColor.BLUE + "Resets challenge progress of every player"));
+        } else {
+            inventory.setItem(4, ItemProvider.buildItem(new ItemStack(Material.GOLD_NUGGET), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Reset points of " + target.getName(), "", ChatColor.BLUE + "Resets challenge progress of " + target.getName()));
+        }
+
+        player.openInventory(inventory);
+
         return false;
     }
 

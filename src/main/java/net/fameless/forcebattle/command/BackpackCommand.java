@@ -1,5 +1,6 @@
 package net.fameless.forcebattle.command;
 
+import net.fameless.forcebattle.GUI.MenuUI;
 import net.fameless.forcebattle.team.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,6 +20,10 @@ public class BackpackCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "Only players can use backpacks.");
+            return false;
+        }
+        if (!MenuUI.isBackpackEnabled()) {
+            sender.sendMessage(ChatColor.RED + "Backpacks are disabled.");
             return false;
         }
         Player player = (Player) sender;

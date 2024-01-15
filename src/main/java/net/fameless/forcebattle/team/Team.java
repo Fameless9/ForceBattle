@@ -24,7 +24,7 @@ public class Team {
         this.players = new ArrayList<>(players);
         this.leader = leader;
         this.points = 0;
-        this.backpack = Bukkit.createInventory(null, 27, ChatColor.GOLD + "Team backpack | " + id);
+        this.backpack = Bukkit.createInventory(null, 27, ChatColor.GOLD + "Team Backpack | " + id);
     }
 
     public Player getLeader() {

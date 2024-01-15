@@ -3,7 +3,7 @@ package net.fameless.forcebattle.manager;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.util.Advancement;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,18 +16,18 @@ import java.util.List;
 
 public class ItemFile {
 
-    private static final FileConfiguration configuration = ForceBattle.getInstance().getConfig();
-    private static final File jsonFile = new File(ForceBattle.getInstance().getDataFolder() + "/data.json");
+    private static final FileConfiguration configuration = ForceBattlePlugin.getInstance().getConfig();
+    private static final File jsonFile = new File(ForceBattlePlugin.getInstance().getDataFolder() + "/data.json");
 
-    private static final boolean excludeSpawnEggs = ForceBattle.getInstance().getConfig().getBoolean("exclude.exclude_spawn_eggs");
-    private static final boolean excludeMusicDiscs = ForceBattle.getInstance().getConfig().getBoolean("exclude.exclude_music_discs");
-    private static final boolean excludeBannerPatterns = ForceBattle.getInstance().getConfig().getBoolean("exclude.exclude_banner_patterns");
-    private static final boolean excludeBanners = ForceBattle.getInstance().getConfig().getBoolean("exclude.exclude_banners");
-    private static final boolean excludeArmorTemplates = ForceBattle.getInstance().getConfig().getBoolean("exclude.exclude_armor_templates");
+    private static final boolean excludeSpawnEggs = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_spawn_eggs");
+    private static final boolean excludeMusicDiscs = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_music_discs");
+    private static final boolean excludeBannerPatterns = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_banner_patterns");
+    private static final boolean excludeBanners = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_banners");
+    private static final boolean excludeArmorTemplates = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_armor_templates");
 
     public static void initFiles() throws IOException {
 
-        ForceBattle.getInstance().getDataFolder().mkdir();
+        ForceBattlePlugin.getInstance().getDataFolder().mkdir();
 
         JsonObject finalObject = new JsonObject();
 
@@ -192,7 +192,7 @@ public class ItemFile {
             return parser.parse(new FileReader(jsonFile)).getAsJsonObject();
         } catch (FileNotFoundException e) {
             Bukkit.getLogger().severe("Failed to create file. Shutting down.");
-            Bukkit.getPluginManager().disablePlugin(ForceBattle.getInstance());
+            Bukkit.getPluginManager().disablePlugin(ForceBattlePlugin.getInstance());
         }
         return new JsonObject();
     }
@@ -237,7 +237,7 @@ public class ItemFile {
             new GsonBuilder().setPrettyPrinting().create().toJson(finalObject, writer);
         } catch (IOException e) {
             Bukkit.getLogger().severe("Failed to create file. Shutting down.");
-            Bukkit.getPluginManager().disablePlugin(ForceBattle.getInstance());
+            Bukkit.getPluginManager().disablePlugin(ForceBattlePlugin.getInstance());
         }
     }
 }

@@ -1,6 +1,6 @@
 package net.fameless.forcebattle.listener;
 
-import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.command.BackpackCommand;
 import net.fameless.forcebattle.manager.*;
 import net.fameless.forcebattle.team.TeamManager;
@@ -63,12 +63,12 @@ public class JoinListener implements Listener {
         ChainManager.addPlayer(event.getPlayer());
 
         if (!receivedSkip.contains(event.getPlayer())) {
-            int skipAmount = ForceBattle.getInstance().getConfig().getInt("jokers");
+            int skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("jokers");
             event.getPlayer().getInventory().addItem(ItemProvider.getSkipItem(skipAmount));
             receivedSkip.add(event.getPlayer());
         }
         if (!receivedSwap.contains(event.getPlayer())) {
-            int skipAmount = ForceBattle.getInstance().getConfig().getInt("swappers");
+            int skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("swappers");
             event.getPlayer().getInventory().addItem(ItemProvider.getSwapitem(skipAmount));
             receivedSwap.add(event.getPlayer());
         }

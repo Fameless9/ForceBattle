@@ -22,6 +22,11 @@ import static net.fameless.forcebattle.util.ItemProvider.buildItem;
 public class MenuUI implements CommandExecutor, Listener {
 
     public static boolean isKeepInventory;
+    private static boolean backpackEnabled;
+
+    public static boolean isBackpackEnabled() {
+        return backpackEnabled;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -36,7 +41,6 @@ public class MenuUI implements CommandExecutor, Listener {
         if (!event.getView().getTitle().endsWith("Select Challenges")) return;
         if (!event.getWhoClicked().hasPermission("forcebattle.menu")) {
             event.getWhoClicked().sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.menu'.");
-            event.getWhoClicked().closeInventory();
             return;
         }
         event.setCancelled(true);
@@ -158,6 +162,16 @@ public class MenuUI implements CommandExecutor, Listener {
                 }
                 break;
             }
+            case 6: {
+                backpackEnabled = !backpackEnabled;
+                Bukkit.broadcastMessage(ChatColor.GOLD + "Backpack usage has been set to " + isBackpackEnabled());
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (player.getOpenInventory().getTitle().contains("Backpack")) {
+                        player.closeInventory();
+                    }
+                }
+                break;
+            }
             case 7: {
                 isKeepInventory = !isKeepInventory;
                 for (World world : Bukkit.getServer().getWorlds()) {
@@ -199,27 +213,30 @@ public class MenuUI implements CommandExecutor, Listener {
 
         Inventory inventory = Bukkit.createInventory(null, 9,ChatColor.GOLD + "Select Challenges");
         inventory.setItem(0, buildItem(new ItemStack(Material.ITEM_FRAME), null, 0, null, ChatColor.GOLD + "Force Item",
-                ChatColor.GRAY + "Click to toggle Force Item", "", ChatColor.BLUE + "Currently set to: " +
-                        (isForceItemEnabled ? ChatColor.GREEN + "true." : ChatColor.RED + "false.")));
+                ChatColor.GRAY + "Click to toggle Force Item.", "", ChatColor.BLUE + "Currently set to: " +
+                        (isForceItemEnabled ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(1, buildItem(new ItemStack(Material.SPIDER_SPAWN_EGG), null, 0, null, ChatColor.GOLD + "Force Mob",
-                ChatColor.GRAY + "Click to toggle Force Mob", "", ChatColor.BLUE + "Currently set to: " +
-                        (isForceMobEnabled ? ChatColor.GREEN + "true." : ChatColor.RED + "false.")));
+                ChatColor.GRAY + "Click to toggle Force Mob.", "", ChatColor.BLUE + "Currently set to: " +
+                        (isForceMobEnabled ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(2, buildItem(new ItemStack(Material.GRASS), null, 0, null, ChatColor.GOLD + "Force Biome",
-                ChatColor.GRAY + "Click to toggle Force Biome", "", ChatColor.BLUE + "Currently set to: " +
-                        (isForceBiomeEnabled ? ChatColor.GREEN + "true." : ChatColor.RED + "false.")));
+                ChatColor.GRAY + "Click to toggle Force Biome.", "", ChatColor.BLUE + "Currently set to: " +
+                        (isForceBiomeEnabled ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(3, buildItem(new ItemStack(Material.BLAZE_ROD), null, 0, null, ChatColor.GOLD + "Force Advancement",
-                ChatColor.GRAY + "Click to toggle Force Advancement", "", ChatColor.BLUE + "Currently set to: " +
-                        (isForceAdvancementEnabled ? ChatColor.GREEN + "true." : ChatColor.RED + "false.")));
+                ChatColor.GRAY + "Click to toggle Force Advancement.", "", ChatColor.BLUE + "Currently set to: " +
+                        (isForceAdvancementEnabled ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(4, buildItem(new ItemStack(Material.SCAFFOLDING), null, 0, null, ChatColor.GOLD + "Force Height",
-                ChatColor.GRAY + "Click to toggle Force Height", "", ChatColor.BLUE + "Currently set to: " +
-                        (isForceHeightEnabled ? ChatColor.GREEN + "true." : ChatColor.RED + "false.")));
+                ChatColor.GRAY + "Click to toggle Force Height.", "", ChatColor.BLUE + "Currently set to: " +
+                        (isForceHeightEnabled ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(8, buildItem(new ItemStack(Material.CHAIN), null, 0, null, ChatColor.GOLD + "Chain Mode",
                 ChatColor.GRAY + "Click to toggle Chain Mode.", "", ChatColor.BLUE + "Currently set to: " + (ChainManager.isChainModeEnabled() ?
-                        ChatColor.GREEN + "true." : ChatColor.RED + "false.")));
+                        ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(7, buildItem(new ItemStack(Material.STRUCTURE_VOID), Collections.emptyList(), 0, Collections.emptyList(),
                 ChatColor.GOLD + "Keep Inventory", "", ChatColor.GRAY + "Click to toggle Keep Inventory in all worlds.", "",
                 ChatColor.BLUE + "Currently set to: " +
-                        (isKeepInventory ? ChatColor.GREEN + "true." : ChatColor.RED + "false.")));
+                        (isKeepInventory ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
+        inventory.setItem(6, buildItem(new ItemStack(Material.CHEST), null, 0, null, ChatColor.GOLD  + "Backpack",
+                "", ChatColor.GRAY + "Click to toggle team/personal backpacks.", "", ChatColor.BLUE + "Currently set to: " + (isBackpackEnabled() ?
+                        ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         return inventory;
     }
 }

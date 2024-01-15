@@ -23,6 +23,10 @@ public class PointsUI implements CommandExecutor, Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+        if (!sender.hasPermission("forcebattle.points")) {
+            sender.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.points'");
+            return false;
+        }
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "You are not a player.");
             return false;

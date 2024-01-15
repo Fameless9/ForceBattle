@@ -45,7 +45,7 @@ public enum Advancement {
     REMOTE_GATEWAY(NamespacedKey.minecraft("end/enter_end_gateway"), "Remote Getaway", "Escape the island"),
     THE_END_AGAIN(NamespacedKey.minecraft("end/respawn_dragon"), "The End... Again...", "Respawn the Ender Dragon"),
     YOU_NEED_A_MINT(NamespacedKey.minecraft("end/dragon_breath"), "You Need a Mint", "Collect Dragon's Breath in a Glass Bottle"),
-    THE_CITY_AT_THE_END_OF_THE_GAME(NamespacedKey.minecraft("end/find_end_city"), "The City at the End of the GameListener", "Go on in, what could happen?"),
+    THE_CITY_AT_THE_END_OF_THE_GAME(NamespacedKey.minecraft("end/find_end_city"), "The City at the End of the Game", "Go on in, what could happen?"),
     SKY_IS_THE_LIMIT(NamespacedKey.minecraft("end/elytra"), "Sky's the Limit", "Find Elytra"),
     GREAT_VIEW_FROM_UP_HERE(NamespacedKey.minecraft("end/levitate"), "Great View From Up Here", "Levitate up 50 blocks from the attacks of a Shulker"),
     VOLUNTARY_EXILE(NamespacedKey.minecraft("adventure/voluntary_exile"), "Voluntary Exile", "Kill a raid captain."),

@@ -17,9 +17,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 
-public final class ForceBattle extends JavaPlugin {
+public final class ForceBattlePlugin extends JavaPlugin {
 
-    private static ForceBattle instance;
+    private static ForceBattlePlugin instance;
 
     @Override
     public void onLoad() {
@@ -79,5 +79,5 @@ public final class ForceBattle extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(resultCommand, this);
     }
 
-    public static ForceBattle getInstance() { return instance; }
+    public static ForceBattlePlugin getInstance() { return instance; }
 }

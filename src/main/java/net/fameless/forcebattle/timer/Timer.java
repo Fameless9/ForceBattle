@@ -1,6 +1,6 @@
 package net.fameless.forcebattle.timer;
 
-import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.manager.*;
 import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
@@ -31,8 +31,8 @@ public class Timer implements CommandExecutor {
 
     public static void setStartTime(int newStartTime) {
         startTime = newStartTime;
-        ForceBattle.getInstance().getConfig().set("challenge_duration", startTime);
-        ForceBattle.getInstance().saveConfig();
+        ForceBattlePlugin.getInstance().getConfig().set("challenge_duration", startTime);
+        ForceBattlePlugin.getInstance().saveConfig();
     }
 
     public static int getTime() {
@@ -52,8 +52,8 @@ public class Timer implements CommandExecutor {
     }
 
     public static void run() {
-        if (ForceBattle.getInstance().getConfig().get("time") != null) {
-            setStartTime(ForceBattle.getInstance().getConfig().getInt("time"));
+        if (ForceBattlePlugin.getInstance().getConfig().get("time") != null) {
+            setStartTime(ForceBattlePlugin.getInstance().getConfig().getInt("time"));
             setTime(getStartTime());
         } else {
             setStartTime(5400);
@@ -80,7 +80,7 @@ public class Timer implements CommandExecutor {
                     setTime(getTime() - 1);
                 }
             }
-        }.runTaskTimer(ForceBattle.getInstance(), 0L, 20L);
+        }.runTaskTimer(ForceBattlePlugin.getInstance(), 0L, 20L);
     }
 
     public static void sendActionbar() {
