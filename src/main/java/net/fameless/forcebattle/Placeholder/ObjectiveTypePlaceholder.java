@@ -10,7 +10,7 @@ public class ObjectiveTypePlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "objective_type";
+        return "type";
     }
 
     @Override

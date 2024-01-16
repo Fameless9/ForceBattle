@@ -231,11 +231,11 @@ public class MenuUI implements CommandExecutor, Listener {
                 ChatColor.GRAY + "Click to toggle Chain Mode.", "", ChatColor.BLUE + "Currently set to: " + (ChainManager.isChainModeEnabled() ?
                         ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(7, buildItem(new ItemStack(Material.STRUCTURE_VOID), Collections.emptyList(), 0, Collections.emptyList(),
-                ChatColor.GOLD + "Keep Inventory", "", ChatColor.GRAY + "Click to toggle Keep Inventory in all worlds.", "",
+                ChatColor.GOLD + "Keep Inventory", ChatColor.GRAY + "Click to toggle Keep Inventory in all worlds.", "",
                 ChatColor.BLUE + "Currently set to: " +
                         (isKeepInventory ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(6, buildItem(new ItemStack(Material.CHEST), null, 0, null, ChatColor.GOLD  + "Backpack",
-                "", ChatColor.GRAY + "Click to toggle team/personal backpacks.", "", ChatColor.BLUE + "Currently set to: " + (isBackpackEnabled() ?
+                ChatColor.GRAY + "Click to toggle team/personal backpacks.", "", ChatColor.BLUE + "Currently set to: " + (isBackpackEnabled() ?
                         ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         return inventory;
     }
