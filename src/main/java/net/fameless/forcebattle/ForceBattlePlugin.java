@@ -84,9 +84,11 @@ public final class ForceBattlePlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(jokerUI, this);
         Bukkit.getPluginManager().registerEvents(resultCommand, this);
 
-        new ObjectivePlaceholder().register();
-        new PointsPlaceholder().register();
-        new ObjectiveTypePlaceholder().register();
+        if (getServer().getPluginManager().isPluginEnabled("placeholderapi")) {
+            new ObjectivePlaceholder().register();
+            new PointsPlaceholder().register();
+            new ObjectiveTypePlaceholder().register();
+        }
 
         new Metrics(this, 20754);
         UpdateChecker checker = new UpdateChecker(112328, Duration.ofHours(2L));
