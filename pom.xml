@@ -28,10 +28,6 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>net.fameless</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>net.wesjd.anvilgui</pattern>
-                            <shadedPattern>net.fameless</shadedPattern>
-                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>
@@ -87,10 +83,6 @@
 
     <repositories>
         <repository>
-            <id>codemc-snapshots</id>
-            <url>https://repo.codemc.io/repository/maven-snapshots/</url>
-        </repository>
-        <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
@@ -122,11 +114,6 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>3.0.2</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.wesjd</groupId>
-            <artifactId>anvilgui</artifactId>
-            <version>1.9.2-20231207.174810-2</version>
         </dependency>
     </dependencies>
 </project>
