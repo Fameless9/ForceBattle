@@ -16,10 +16,12 @@ import net.fameless.forcebattle.manager.ItemFile;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.timer.TimerUI;
 import net.fameless.forcebattle.util.UpdateChecker;
+import org.apache.commons.io.FileUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 
@@ -29,8 +31,14 @@ public final class ForceBattlePlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        super.onLoad();
         instance = this;
+        if (getConfig().getBoolean("is_reset")) {
+            deleteWorld("world");
+            deleteWorld("world_nether");
+            deleteWorld("world_the_end");
+            getConfig().set("is_reset", false);
+            saveConfig();
+        }
     }
 
     @Override
@@ -59,6 +67,7 @@ public final class ForceBattlePlugin extends JavaPlugin {
         getCommand("skip").setExecutor(new SkipObjectiveCommand());
         getCommand("exclude").setExecutor(new ExcludeCommand());
         getCommand("backpack").setExecutor(new BackpackCommand());
+        getCommand("resetworld").setExecutor(new ResetWorldCommand());
         getCommand("menu").setExecutor(menuGUI);
         getCommand("points").setExecutor(pointsGUI);
         getCommand("timer").setExecutor(timer);
@@ -96,4 +105,20 @@ public final class ForceBattlePlugin extends JavaPlugin {
     }
 
     public static ForceBattlePlugin getInstance() { return instance; }
+
+    private void deleteWorld(String worldName) {
+        try {
+            File worldFile = new File(Bukkit.getWorldContainer(), worldName);
+            FileUtils.deleteDirectory(worldFile);
+
+            worldFile.mkdirs();
+            new File(worldFile, "data").mkdirs();
+            new File(worldFile, "datapacks").mkdirs();
+            new File(worldFile, "playerdata").mkdirs();
+            new File(worldFile, "poi").mkdirs();
+            new File(worldFile, "region").mkdirs();
+        } catch (IOException e) {
+            Bukkit.getLogger().severe("Failed to delete world: " + worldName);
+        }
+    }
 }

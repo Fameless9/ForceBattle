@@ -166,6 +166,7 @@ public class GameListener implements Listener {
             ItemStack stack = inventory.getItem(slot);
             stack.setAmount(stack.getAmount() - 1);
             inventory.setItem(slot, stack);
+            event.getPlayer().setCooldown(stack.getType(), 20);
 
             if (ItemManager.getChallenge(event.getPlayer()) instanceof Material) {
                 Bukkit.getWorld(event.getPlayer().getWorld().getName()).dropItemNaturally(event.getPlayer().getLocation(),
@@ -230,6 +231,8 @@ public class GameListener implements Listener {
 
             ItemManager.setChallenge(event.getPlayer(), targetChallenge, targetObjective);
             ItemManager.setChallenge(target, playerChallenge, playerObjective);
+
+            event.getPlayer().setCooldown(stack.getType(), 20);
 
             target.sendMessage(ChatColor.GOLD + event.getPlayer().getName() + " swapped their objective with yours.");
             event.getPlayer().sendMessage(ChatColor.GOLD + "Your objective was swapped with " + target.getName() + "'s.");

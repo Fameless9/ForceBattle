@@ -3,6 +3,9 @@ time: 5400
 jokers: 3
 swappers: 1
 
+### This will delete every world and only the 3 default worlds will be created
+is_reset: false
+
 ### --- Add items/objectives that should be excluded. Restart the server afterwards --- ###
 exclude:
   items:

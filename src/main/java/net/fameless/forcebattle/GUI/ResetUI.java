@@ -34,8 +34,8 @@ public class ResetUI implements Listener, CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Only players may use this command.");
             return false;
         }
-        if (!sender.hasPermission("forcebattle.reset")) {
-            sender.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.reset'");
+        if (!sender.hasPermission("forcebattle.reset.player")) {
+            sender.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.reset.player'");
             return false;
         }
 
