@@ -1,5 +1,5 @@
 name: ForceBattlePlugin
-version: 1.0.0
+version: 1.0.1
 main: net.fameless.forcebattle.ForceBattlePlugin
 api-version: '1.20'
 load: STARTUP
