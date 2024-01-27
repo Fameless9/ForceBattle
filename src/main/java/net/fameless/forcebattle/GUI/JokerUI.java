@@ -13,9 +13,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-public class JokerUI implements Listener, CommandExecutor {
+public class JokerUI implements Listener, CommandExecutor, InventoryHolder {
+
+    private Inventory inventory;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -42,52 +45,70 @@ public class JokerUI implements Listener, CommandExecutor {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().startsWith("Edit amount for")) return;
+        if (!(event.getInventory().getHolder() instanceof JokerUI)) return;
         if (event.getSlot() != 4) return;
+        event.setCancelled(true);
 
-        Player target = Bukkit.getPlayer(event.getView().getTitle().split("Edit amount for ")[0]);
+        Player target = Bukkit.getPlayer(event.getView().getTitle().split("Edit amount for ")[1]);
         if (target == null) {
             event.getWhoClicked().sendMessage(ChatColor.RED + "Player couldn't be found.");
             event.getWhoClicked().closeInventory();
             return;
         }
 
-        int skipAmount = 0;
-        int swapAmount = 0;
-        Inventory playerInv = target.getInventory();
-
-        for (ItemStack is : playerInv.getContents()) {
-            if (is.equals(ItemProvider.getSkipItem(1))) {
-                skipAmount++;
-                continue;
-            }
-            if (is.equals(ItemProvider.getSwapitem(1))) {
-                swapAmount++;
-            }
-        }
-
         switch (event.getClick()) {
             case LEFT: {
-                ItemManager.giveSkipItem(target, skipAmount + 1);
+                ItemManager.giveSkipItem(target, 1);
                 event.getWhoClicked().sendMessage(ChatColor.GREEN + "Gave one skip to " + target.getName() + ".");
                 break;
             }
             case SHIFT_LEFT: {
-                ItemManager.giveSkipItem(target, skipAmount - 1);
+                Inventory inventory1 = target.getInventory();
+                int skipSlot = -1;
+                for (int i = 0; i < 36; i++) {
+                    if (inventory1.getItem(i) == null) continue;
+                    if (inventory1.getItem(i).isSimilar(ItemProvider.getSkipItem(1))) {
+                        skipSlot = i;
+                        break;
+                    }
+                }
+                if (skipSlot < 0) return;
+                int newAmount = inventory1.getItem(skipSlot).getAmount() - 1;
+                if (newAmount < 0) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "No skips left.");
+                    return;
+                }
+                inventory1.setItem(skipSlot, ItemProvider.getSkipItem(newAmount));
                 event.getWhoClicked().sendMessage(ChatColor.GREEN + "Took one skip from " + target.getName() + ".");
                 break;
             }
             case RIGHT: {
-                ItemManager.giveSwapItem(target, swapAmount + 1);
+                ItemManager.giveSwapItem(target, 1);
                 event.getWhoClicked().sendMessage(ChatColor.GREEN + "Gave one swap to " + target.getName() + ".");
                 break;
             }
             case SHIFT_RIGHT: {
-                ItemManager.giveSwapItem(target, swapAmount - 1);
+                Inventory inventory1 = target.getInventory();
+                int swapSlot = -1;
+                for (int i = 0; i < 36; i++) {
+                    if (inventory1.getItem(i) == null) continue;
+                    if (inventory1.getItem(i).isSimilar(ItemProvider.getSwapitem(1))) {
+                        swapSlot = i;
+                        break;
+                    }
+                }
+                if (swapSlot < 0) return;
+                int newAmount = inventory1.getItem(swapSlot).getAmount() - 1;
+                if (newAmount < 0) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "No swaps left.");
+                    return;
+                }
+                inventory1.setItem(swapSlot, ItemProvider.getSwapitem(newAmount));
                 event.getWhoClicked().sendMessage(ChatColor.GREEN + "Took one swap from " + target.getName()  + ".");
                 break;
             }
         }
+        event.getWhoClicked().openInventory(getJokerInventory(target));
     }
 
     public Inventory getJokerInventory(Player player) {
@@ -97,21 +118,27 @@ public class JokerUI implements Listener, CommandExecutor {
         Inventory playerInv = player.getInventory();
 
         for (ItemStack is : playerInv.getContents()) {
-            if (is.equals(ItemProvider.getSkipItem(1))) {
-                skipAmount++;
+            if (is == null) continue;
+            if (is.isSimilar(ItemProvider.getSkipItem(1))) {
+                skipAmount += is.getAmount();
                 continue;
             }
-            if (is.equals(ItemProvider.getSwapitem(1))) {
-                swapAmount++;
+            if (is.isSimilar(ItemProvider.getSwapitem(1))) {
+                swapAmount += is.getAmount();
             }
         }
 
-        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.GOLD + "Edit amount for " + player.getName());
+        inventory = Bukkit.createInventory(this, 9, ChatColor.GOLD + "Edit amount for " + player.getName());
         inventory.setItem(4, ItemProvider.buildItem(new ItemStack(Material.BARRIER), null, 0, null,
                 ChatColor.GOLD + "Adjust amounts", "", ChatColor.BLUE + "Current skips: " + skipAmount,
                 ChatColor.BLUE + "Current Swaps: " + swapAmount, "", ChatColor.GRAY + "Leftclick: Skips +1",
                 ChatColor.GRAY + "Shift + Leftclick: Skips -1", "", ChatColor.GRAY + "Rightclick: Swaps +1", ChatColor.GRAY + "Shift + Rightclick: Swaps -1"));
 
+        return inventory;
+    }
+
+    @Override
+    public Inventory getInventory() {
         return inventory;
     }
 }

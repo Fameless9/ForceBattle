@@ -19,8 +19,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +51,8 @@ public class ResultCommand implements CommandExecutor, Listener {
         return false;
     }
 
-    static class GUI {
+    static class GUI implements InventoryHolder {
+        private Inventory inventory;
         public GUI(Player player, Player target, int page) {
 
             if (target == null) {
@@ -58,7 +61,7 @@ public class ResultCommand implements CommandExecutor, Listener {
                 return;
             }
 
-            Inventory gui = Bukkit.createInventory(null, 54, "Results " + target.getName() + " | Page " + page);
+            inventory = Bukkit.createInventory(this, 54, "Results " + target.getName() + " | Page " + page);
 
             List<Object> allItems = ItemManager.finishedObjectives.get(player);
 
@@ -92,13 +95,19 @@ public class ResultCommand implements CommandExecutor, Listener {
 
             rightMeta.setLocalizedName(target.getName());
             right.setItemMeta(rightMeta);
-            gui.setItem(0, left);
-            gui.setItem(8, right);
+            inventory.setItem(0, left);
+            inventory.setItem(8, right);
 
             for (ItemStack itemStack : PageUtil.getPageItems(allItems, ItemManager.objectiveTimeMap.get(player), page, 52)) {
-                gui.addItem(itemStack);
+                inventory.addItem(itemStack);
             }
-            player.openInventory(gui);
+            player.openInventory(inventory);
+        }
+
+        @NotNull
+        @Override
+        public Inventory getInventory() {
+            return inventory;
         }
     }
 
@@ -165,7 +174,7 @@ public class ResultCommand implements CommandExecutor, Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().contains("Results")) return;
+        if (!(event.getInventory().getHolder() instanceof GUI)) return;
         if (event.getCurrentItem() == null) return;
 
         Player target = Bukkit.getPlayer(event.getInventory().getItem(8).getItemMeta().getLocalizedName());

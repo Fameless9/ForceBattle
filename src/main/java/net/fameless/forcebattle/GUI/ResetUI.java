@@ -18,15 +18,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class ResetUI implements Listener, CommandExecutor {
+public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
 
     private static final HashMap<UUID, UUID> commandMap = new HashMap<>();
+    private Inventory inventory;
 
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
@@ -51,7 +54,7 @@ public class ResetUI implements Listener, CommandExecutor {
             }
         }
 
-        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Resets");
+        inventory = Bukkit.createInventory(this, 9, ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Resets");
         if (target == null) {
             inventory.setItem(0, ItemProvider.buildItem(new ItemStack(Material.CHAIN_COMMAND_BLOCK), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Quick Reset Everyone", "", ChatColor.BLUE + "Quick reset function.", "", ChatColor.BLUE + "Resets:", ChatColor.BLUE + "- Timer", ChatColor.BLUE + "- Challenge progress", ChatColor.BLUE + "- Postion", ChatColor.BLUE + "- Inventories", ChatColor.BLUE + "- Health/Food Level", ChatColor.BLUE + "- Jokers"));
         } else {
@@ -84,9 +87,7 @@ public class ResetUI implements Listener, CommandExecutor {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().endsWith("Resets")) {
-            return;
-        }
+        if (!(event.getInventory().getHolder() instanceof ResetUI)) return;
         event.setCancelled(true);
         Player target = null;
         if (ResetUI.commandMap.containsKey(event.getWhoClicked().getUniqueId())) {
@@ -182,9 +183,13 @@ public class ResetUI implements Listener, CommandExecutor {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (!event.getView().getTitle().endsWith("Resets")) {
-            return;
-        }
+        if (!(event.getInventory().getHolder() instanceof ResetUI)) return;
         ResetUI.commandMap.remove(event.getPlayer().getUniqueId());
+    }
+
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        return inventory;
     }
 }

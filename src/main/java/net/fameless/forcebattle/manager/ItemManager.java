@@ -13,7 +13,6 @@ import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -334,14 +333,7 @@ public class ItemManager {
         }
 
         Inventory inventory = player.getInventory();
-        for (ItemStack itemStack : inventory.getContents()) {
-            if (itemStack.getType().equals(ItemProvider.getSkipItem(1).getType())) {
-                itemStack.setAmount(skipAmount);
-                return;
-            }
-        }
-
-        inventory.setItem(8, ItemProvider.getSkipItem(skipAmount));
+        inventory.addItem(ItemProvider.getSkipItem(skipAmount));
     }
 
     public static void giveSwapItem(Player player, Integer amount) {
@@ -360,13 +352,6 @@ public class ItemManager {
         }
 
         Inventory inventory = player.getInventory();
-        for (ItemStack itemStack : inventory.getContents()) {
-            if (itemStack.getType().equals(ItemProvider.getSwapitem(1).getType())) {
-                itemStack.setAmount(swapAmount);
-                return;
-            }
-        }
-
-        player.getInventory().setItem(7, ItemProvider.getSwapitem(swapAmount));
+        inventory.addItem(ItemProvider.getSwapitem(swapAmount));
     }
 }

@@ -15,11 +15,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import static net.fameless.forcebattle.util.ItemProvider.buildItem;
 
-public class PointsUI implements CommandExecutor, Listener {
+public class PointsUI implements CommandExecutor, Listener, InventoryHolder {
+
+    private Inventory inventory;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -46,7 +50,7 @@ public class PointsUI implements CommandExecutor, Listener {
     }
 
     private Inventory pointsGUI(String targetName) {
-        Inventory inventory = Bukkit.createInventory(null, 9, "Adjust points of " + targetName);
+        inventory = Bukkit.createInventory(this, 9, "Adjust points of " + targetName);
 
         inventory.setItem(4, buildItem(new ItemStack(Material.GOLD_NUGGET), null, 0, null, "Adjust points",
                 ChatColor.GOLD + "Current points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(Bukkit.getPlayer(targetName)), "",
@@ -56,7 +60,7 @@ public class PointsUI implements CommandExecutor, Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().startsWith("Adjust points of ")) return;
+        if (!(event.getInventory().getHolder() instanceof PointsUI)) return;
         if (event.getSlot() != 4) return;
         if (Bukkit.getPlayerExact(event.getView().getTitle().replace("Adjust points of ", "")) == null) return;
         event.setCancelled(true);
@@ -77,5 +81,11 @@ public class PointsUI implements CommandExecutor, Listener {
             target.sendMessage(ChatColor.GOLD + "Your points have been adjusted.");
             event.getWhoClicked().openInventory(pointsGUI(target.getName()));
         }
+    }
+
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        return inventory;
     }
 }

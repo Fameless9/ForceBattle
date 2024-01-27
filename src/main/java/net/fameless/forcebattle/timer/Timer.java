@@ -20,6 +20,7 @@ public class Timer implements CommandExecutor {
     private static int startTime;
     private static int time;
     private static boolean running;
+    private final TimerUI timerUI = new TimerUI();
 
     public Timer() {
         run();
@@ -160,7 +161,7 @@ public class Timer implements CommandExecutor {
                     }
                 }
             } else {
-                player.openInventory(TimerUI.getTimerUI());
+                player.openInventory(timerUI.getTimerUI());
             }
         }
         return false;

@@ -13,16 +13,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 
 import static net.fameless.forcebattle.util.ItemProvider.buildItem;
 
-public class MenuUI implements CommandExecutor, Listener {
+public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
 
     public static boolean isKeepInventory;
     private static boolean backpackEnabled;
+
+    private Inventory inventory;
 
     public static boolean isBackpackEnabled() {
         return backpackEnabled;
@@ -38,7 +42,7 @@ public class MenuUI implements CommandExecutor, Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().endsWith("Select Challenges")) return;
+        if (!(event.getInventory().getHolder() instanceof MenuUI)) return;
         if (!event.getWhoClicked().hasPermission("forcebattle.menu")) {
             event.getWhoClicked().sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.menu'.");
             return;
@@ -211,7 +215,7 @@ public class MenuUI implements CommandExecutor, Listener {
         boolean isForceAdvancementEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_ADVANCEMENT);
         boolean isForceHeightEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_HEIGHT);
 
-        Inventory inventory = Bukkit.createInventory(null, 9,ChatColor.GOLD + "Select Challenges");
+        inventory = Bukkit.createInventory(this, 9,ChatColor.GOLD + "Select Challenges");
         inventory.setItem(0, buildItem(new ItemStack(Material.ITEM_FRAME), null, 0, null, ChatColor.GOLD + "Force Item",
                 ChatColor.GRAY + "Click to toggle Force Item.", "", ChatColor.BLUE + "Currently set to: " +
                         (isForceItemEnabled ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
@@ -237,6 +241,11 @@ public class MenuUI implements CommandExecutor, Listener {
         inventory.setItem(6, buildItem(new ItemStack(Material.CHEST), null, 0, null, ChatColor.GOLD  + "Backpack",
                 ChatColor.GRAY + "Click to toggle team/personal backpacks.", "", ChatColor.BLUE + "Currently set to: " + (isBackpackEnabled() ?
                         ChatColor.GREEN + "true" : ChatColor.RED + "false")));
+        return inventory;
+    }
+
+    @Override
+    public @NotNull Inventory getInventory() {
         return inventory;
     }
 }

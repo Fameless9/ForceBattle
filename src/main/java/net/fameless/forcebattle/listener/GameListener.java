@@ -148,7 +148,7 @@ public class GameListener implements Listener {
         if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) return;
         if (ExcludeCommand.excludedPlayers.contains(event.getPlayer())) return;
-        if (event.getItem() != null && event.getItem().getItemMeta().equals(ItemProvider.getSkipItem(1).getItemMeta())) {
+        if (event.getItem() != null && event.getItem().isSimilar(ItemProvider.getSkipItem(1))) {
             event.setCancelled(true);
 
             if (!Timer.isRunning()) {
@@ -185,7 +185,7 @@ public class GameListener implements Listener {
         if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) return;
         if (ExcludeCommand.excludedPlayers.contains(event.getPlayer())) return;
-        if (event.getItem() != null && event.getItem().getItemMeta().equals(ItemProvider.getSwapitem(1).getItemMeta())) {
+        if (event.getItem() != null && event.getItem().isSimilar(ItemProvider.getSwapitem(1))) {
             event.setCancelled(true);
 
             if (!Timer.isRunning()) {

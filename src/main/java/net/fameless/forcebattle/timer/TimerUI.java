@@ -9,25 +9,26 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 
-public class TimerUI implements Listener {
-    public static Inventory getTimerUI() {
-        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Timer");
+public class TimerUI implements Listener, InventoryHolder {
+
+    private Inventory inventory;
+
+    public Inventory getTimerUI() {
+        inventory = Bukkit.createInventory(this, 9, ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Timer");
         inventory.setItem(4, ItemProvider.buildItem(new ItemStack(Material.CLOCK), Collections.emptyList(), 0, Collections.emptyList(), ChatColor.GOLD + "Timer", "", ChatColor.GOLD + "Rightclick to add 1 Minute", ChatColor.GOLD + "Shift + Rightclick to add 1 Hour", "", ChatColor.GOLD + "Leftclick to subtract 1 Minute", ChatColor.GOLD + "Shift + Leftclick to subtract 1 Hour", "", ChatColor.GOLD + "Mouse Wheel to toggle the timer"));
         return inventory;
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().endsWith("Timer")) {
-            return;
-        }
-        if (event.getSlot() != 4) {
-            return;
-        }
+        if (!(event.getInventory().getHolder() instanceof TimerUI)) return;
+        if (event.getSlot() != 4) return;
         event.setCancelled(true);
         switch (event.getClick()) {
             case RIGHT: {
@@ -73,5 +74,11 @@ public class TimerUI implements Listener {
                 break;
             }
         }
+    }
+
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        return inventory;
     }
 }
