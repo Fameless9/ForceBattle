@@ -34,6 +34,10 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+        if (!sender.hasPermission("forcebattle.menu")) {
+            sender.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.menu'");
+            return false;
+        }
         if (sender instanceof Player) {
             ((Player) sender).openInventory(menuGUI());
         }
@@ -43,11 +47,11 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof MenuUI)) return;
+        event.setCancelled(true);
         if (!event.getWhoClicked().hasPermission("forcebattle.menu")) {
-            event.getWhoClicked().sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.menu'.");
+            event.getWhoClicked().sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.menu'");
             return;
         }
-        event.setCancelled(true);
         int slot = event.getSlot();
 
         boolean isForceItemEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_ITEM);
