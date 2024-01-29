@@ -44,75 +44,21 @@ public class ItemFile {
         JsonObject itemObject = new JsonObject();
 
         for (Material material : Material.values()) {
-            if (excludeSpawnEggs) {
-                if (material.name().endsWith("SPAWN_EGG")) {
-                    toExclude.add(material.name());
-                    continue;
-                }
-            }
-            if (excludeMusicDiscs) {
-                if (material.name().contains("DISC")) {
-                    toExclude.add(material.name());
-                    continue;
-                }
-            }
-            if (excludeBannerPatterns) {
-                if (material.name().endsWith("BANNER_PATTERN")) {
-                    toExclude.add(material.name());
-                    continue;
-                }
-            }
-            if (excludeBanners) {
-                if (material.name().endsWith("BANNER")) {
-                    toExclude.add(material.name());
-                    continue;
-                }
-            }
-            if (excludeArmorTemplates) {
-                if (material.name().endsWith("TEMPLATE")) {
-                    toExclude.add(material.name());
-                    continue;
-                }
-            }
-            if (material.name().endsWith("CANDLE_CAKE")) {
-                toExclude.add(material.name());
-                continue;
-            }
-            if (material.name().startsWith("POTTED")) {
-                toExclude.add(material.name());
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("TORCH")) {
-                toExclude.add(material.name());
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("SIGN")) {
-                toExclude.add(material.name());
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("HEAD")) {
-                toExclude.add(material.name());
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("CORAL")) {
-                toExclude.add(material.name());
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("BANNER")) {
-                toExclude.add(material.name());
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("SKULL")) {
-                toExclude.add(material.name());
-                continue;
-            }
-            if (material.name().endsWith("STEM")) {
-                toExclude.add(material.name());
-            }
-        }
-
-        for (Material material : Material.values()) {
             if (toExclude.contains(material.name())) continue;
+            if (excludeSpawnEggs && material.name().endsWith("SPAWN_EGG")) continue;
+            if (excludeMusicDiscs && material.name().contains("DISC")) continue;
+            if (excludeBannerPatterns && material.name().endsWith("BANNER_PATTERN")) continue;
+            if (excludeBanners && material.name().endsWith("BANNER")) continue;
+            if (excludeArmorTemplates && material.name().endsWith("TEMPLATE")) continue;
+            if (material.name().endsWith("CANDLE_CAKE")) continue;
+            if (material.name().startsWith("POTTED")) continue;
+            if (material.name().contains("WALL") && material.name().contains("TORCH")) continue;
+            if (material.name().contains("WALL") && material.name().contains("SIGN")) continue;
+            if (material.name().contains("WALL") && material.name().contains("HEAD")) continue;
+            if (material.name().contains("WALL") && material.name().contains("CORAL")) continue;
+            if (material.name().contains("WALL") && material.name().contains("BANNER")) continue;
+            if (material.name().contains("WALL") && material.name().contains("SKULL")) continue;
+            if (material.name().endsWith("STEM")) continue;
             itemObject.addProperty(material.name(), false);
         }
 

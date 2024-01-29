@@ -6,21 +6,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LeaderboardManager {
 
     public static void displayLeaderboard() {
         List<Team> excluded = new ArrayList<>();
-        List<Map.Entry<Player, Integer>> sortedEntries = new ArrayList<>(PointsManager.pointsMap.entrySet());
+        List<Map.Entry<UUID, Integer>> sortedEntries = new ArrayList<>(PointsManager.pointsMap.entrySet());
         sortedEntries.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
         StringBuilder message = new StringBuilder(ChatColor.GOLD.toString() + ChatColor.BOLD + "LEADERBOARD:\n");
         int position = 1;
-        for (Map.Entry<Player, Integer> entry : sortedEntries) {
-            Player player = entry.getKey();
+        for (Map.Entry<UUID, Integer> entry : sortedEntries) {
+            Player player = Bukkit.getPlayer(entry.getKey());
             int points = entry.getValue();
 
             if (player != null && TeamManager.getTeam(player) != null) {

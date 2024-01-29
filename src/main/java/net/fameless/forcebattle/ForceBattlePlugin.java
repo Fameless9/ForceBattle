@@ -16,6 +16,10 @@ import net.fameless.forcebattle.manager.ItemFile;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.timer.TimerUI;
 import net.fameless.forcebattle.util.UpdateChecker;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.translation.GlobalTranslator;
+import net.kyori.adventure.translation.TranslationRegistry;
+import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.apache.commons.io.FileUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -24,6 +28,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public final class ForceBattlePlugin extends JavaPlugin {
 
@@ -32,6 +38,7 @@ public final class ForceBattlePlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
+        saveDefaultConfig();
         if (getConfig().getBoolean("is_reset")) {
             deleteWorld("world");
             deleteWorld("world_nether");
@@ -43,9 +50,6 @@ public final class ForceBattlePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
-        saveDefaultConfig();
-
         try {
             ItemFile.initFiles();
         } catch (IOException e) {

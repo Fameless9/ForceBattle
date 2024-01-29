@@ -14,21 +14,18 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class ItemManager {
 
-    private static final HashMap<Player, Challenge> playerTypeMap = new HashMap<>();
-    private static final HashMap<Player, Material> itemMap = new HashMap<>();
-    private static final HashMap<Player, EntityType> mobMap = new HashMap<>();
-    private static final HashMap<Player, Biome> biomeMap = new HashMap<>();
-    private static final HashMap<Player, Advancement> advancementMap = new HashMap<>();
-    private static final HashMap<Player, Integer> heightMap = new HashMap<>();
-    public static final HashMap<Player, List<Object>> finishedObjectives = new HashMap<>();
-    public static final HashMap<Player, List<Integer>> objectiveTimeMap = new HashMap<>();
+    private static final HashMap<UUID, Challenge> playerTypeMap = new HashMap<>();
+    private static final HashMap<UUID, Material> itemMap = new HashMap<>();
+    private static final HashMap<UUID, EntityType> mobMap = new HashMap<>();
+    private static final HashMap<UUID, Biome> biomeMap = new HashMap<>();
+    private static final HashMap<UUID, Advancement> advancementMap = new HashMap<>();
+    private static final HashMap<UUID, Integer> heightMap = new HashMap<>();
+    public static final HashMap<UUID, List<Object>> finishedObjectives = new HashMap<>();
+    public static final HashMap<UUID, List<Integer>> objectiveTimeMap = new HashMap<>();
     public static final List<Challenge> activeChallenges = new ArrayList<>();
     private static final Random random = new Random();
 
@@ -41,12 +38,12 @@ public class ItemManager {
     }
 
     public static void setChallengeType(Player player, Challenge challengeType) {
-        playerTypeMap.put(player, challengeType);
+        playerTypeMap.put(player.getUniqueId(), challengeType);
     }
 
     public static Challenge getChallengeType(Player player) {
-        if (playerTypeMap.containsKey(player)) {
-            return playerTypeMap.get(player);
+        if (playerTypeMap.containsKey(player.getUniqueId())) {
+            return playerTypeMap.get(player.getUniqueId());
         }
         return null;
     }
@@ -56,31 +53,31 @@ public class ItemManager {
         switch (challenge) {
             case FORCE_ITEM: {
                 if (objective instanceof Material) {
-                    itemMap.put(player, (Material) objective);
+                    itemMap.put(player.getUniqueId(), (Material) objective);
                 }
                 break;
             }
             case FORCE_MOB: {
                 if (objective instanceof EntityType) {
-                    mobMap.put(player, (EntityType) objective);
+                    mobMap.put(player.getUniqueId(), (EntityType) objective);
                 }
                 break;
             }
             case FORCE_BIOME: {
                 if (objective instanceof Biome) {
-                    biomeMap.put(player, (Biome) objective);
+                    biomeMap.put(player.getUniqueId(), (Biome) objective);
                 }
                 break;
             }
             case FORCE_ADVANCEMENT: {
                 if (objective instanceof Advancement) {
-                    advancementMap.put(player, (Advancement) objective);
+                    advancementMap.put(player.getUniqueId(), (Advancement) objective);
                 }
                 break;
             }
             case FORCE_HEIGHT: {
                 if (objective instanceof Integer) {
-                    heightMap.put(player, (int) objective);
+                    heightMap.put(player.getUniqueId(), (int) objective);
                 }
                 break;
             }
@@ -95,19 +92,19 @@ public class ItemManager {
 
         switch (playerChallenge) {
             case FORCE_ITEM: {
-                return itemMap.get(player);
+                return itemMap.get(player.getUniqueId());
             }
             case FORCE_MOB: {
-                return mobMap.get(player);
+                return mobMap.get(player.getUniqueId());
             }
             case FORCE_BIOME: {
-                return biomeMap.get(player);
+                return biomeMap.get(player.getUniqueId());
             }
             case FORCE_ADVANCEMENT: {
-                return advancementMap.get(player);
+                return advancementMap.get(player.getUniqueId());
             }
             case FORCE_HEIGHT: {
-                return heightMap.get(player);
+                return heightMap.get(player.getUniqueId());
             }
         }
         return null;
@@ -115,11 +112,11 @@ public class ItemManager {
 
     private static void newObjective(Player player, Challenge challenge) {
         if (challenge == null) {
-            itemMap.put(player, null);
-            mobMap.put(player, null);
-            biomeMap.put(player, null);
-            advancementMap.put(player, null);
-            heightMap.put(player, null);
+            itemMap.put(player.getUniqueId(), null);
+            mobMap.put(player.getUniqueId(), null);
+            biomeMap.put(player.getUniqueId(), null);
+            advancementMap.put(player.getUniqueId(), null);
+            heightMap.put(player.getUniqueId(), null);
             return;
         }
         switch (challenge) {
@@ -133,7 +130,7 @@ public class ItemManager {
                         ChainManager.itemProgressMap.put(player, 0);
                         newMaterial = ChainManager.itemChainList.get(ChainManager.itemProgressMap.get(player));
                     }
-                    itemMap.put(player, newMaterial);
+                    itemMap.put(player.getUniqueId(), newMaterial);
                     ChainManager.itemProgressMap.put(player, ChainManager.itemProgressMap.get(player) + 1);
                     return;
                 }
@@ -145,7 +142,7 @@ public class ItemManager {
                 }
 
                 Material newMaterial = Material.valueOf(list.get(random.nextInt(list.size())));
-                itemMap.put(player, newMaterial);
+                itemMap.put(player.getUniqueId(), newMaterial);
                 break;
             }
             case FORCE_MOB: {
@@ -158,7 +155,7 @@ public class ItemManager {
                         ChainManager.mobProgressMap.put(player, 0);
                         newMob = ChainManager.mobChainList.get(ChainManager.mobProgressMap.get(player));
                     }
-                    mobMap.put(player, newMob);
+                    mobMap.put(player.getUniqueId(), newMob);
                     ChainManager.mobProgressMap.put(player, ChainManager.mobProgressMap.get(player) + 1);
                     return;
                 }
@@ -170,7 +167,7 @@ public class ItemManager {
                 }
 
                 EntityType newMob = EntityType.valueOf(availableMobs.get(random.nextInt(availableMobs.size())));
-                mobMap.put(player, newMob);
+                mobMap.put(player.getUniqueId(), newMob);
                 break;
             }
             case FORCE_BIOME: {
@@ -183,7 +180,7 @@ public class ItemManager {
                         ChainManager.biomeProgressMap.put(player, 0);
                         newBiome = ChainManager.biomeChainList.get(ChainManager.biomeProgressMap.get(player));
                     }
-                    biomeMap.put(player, newBiome);
+                    biomeMap.put(player.getUniqueId(), newBiome);
                     ChainManager.biomeProgressMap.put(player, ChainManager.biomeProgressMap.get(player) + 1);
                     return;
                 }
@@ -195,7 +192,7 @@ public class ItemManager {
                 }
 
                 Biome newBiome = Biome.valueOf(availableBiomes.get(random.nextInt(availableBiomes.size())));
-                biomeMap.put(player, newBiome);
+                biomeMap.put(player.getUniqueId(), newBiome);
                 break;
             }
             case FORCE_ADVANCEMENT: {
@@ -208,7 +205,7 @@ public class ItemManager {
                         ChainManager.advancementProgressMap.put(player, 0);
                         newAdvancement = ChainManager.advancementChainList.get(ChainManager.advancementProgressMap.get(player));
                     }
-                    advancementMap.put(player, newAdvancement);
+                    advancementMap.put(player.getUniqueId(), newAdvancement);
                     ChainManager.advancementProgressMap.put(player, ChainManager.advancementProgressMap.get(player) + 1);
                     if (Timer.isRunning()) {
                         player.sendMessage(ChatColor.GRAY + "-----------------------");
@@ -226,7 +223,7 @@ public class ItemManager {
                 }
 
                 Advancement newAdvancement = Advancement.valueOf(availableAdvancements.get(random.nextInt(availableAdvancements.size())));
-                advancementMap.put(player, newAdvancement);
+                advancementMap.put(player.getUniqueId(), newAdvancement);
                 if (Timer.isRunning()) {
                     player.sendMessage(ChatColor.GRAY + "-----------------------");
                     player.sendMessage(ChatColor.GOLD + "Advancement Description:");
@@ -245,7 +242,7 @@ public class ItemManager {
                         ChainManager.heightProgressMap.put(player, 0);
                         newHeight = ChainManager.heightChainList.get(ChainManager.heightProgressMap.get(player));
                     }
-                    heightMap.put(player, newHeight);
+                    heightMap.put(player.getUniqueId(), newHeight);
                     ChainManager.heightProgressMap.put(player, ChainManager.heightProgressMap.get(player) + 1);
                     return;
                 }
@@ -257,7 +254,7 @@ public class ItemManager {
                 }
 
                 int newHeight = Integer.parseInt(availableHeights.get(random.nextInt(availableHeights.size())));
-                heightMap.put(player, newHeight);
+                heightMap.put(player.getUniqueId(), newHeight);
                 break;
             }
         }
@@ -277,8 +274,8 @@ public class ItemManager {
     public static void updateObjective(Player player) {
         Challenge challenge = newChallengeType();
         if (Timer.isRunning()) {
-            finishedObjectives.get(player).add(getChallenge(player));
-            objectiveTimeMap.get(player).add(Timer.getTime());
+            finishedObjectives.get(player.getUniqueId()).add(getChallenge(player));
+            objectiveTimeMap.get(player.getUniqueId()).add(Timer.getTime());
         }
         setChallengeType(player, challenge);
         newObjective(player, challenge);

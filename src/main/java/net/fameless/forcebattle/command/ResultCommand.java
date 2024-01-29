@@ -63,7 +63,7 @@ public class ResultCommand implements CommandExecutor, Listener {
 
             inventory = Bukkit.createInventory(this, 54, "Results " + target.getName() + " | Page " + page);
 
-            List<Object> allItems = ItemManager.finishedObjectives.get(player);
+            List<Object> allItems = ItemManager.finishedObjectives.get(player.getUniqueId());
 
             ItemStack left;
             ItemMeta leftMeta;
@@ -98,7 +98,7 @@ public class ResultCommand implements CommandExecutor, Listener {
             inventory.setItem(0, left);
             inventory.setItem(8, right);
 
-            for (ItemStack itemStack : PageUtil.getPageItems(allItems, ItemManager.objectiveTimeMap.get(player), page, 52)) {
+            for (ItemStack itemStack : PageUtil.getPageItems(allItems, ItemManager.objectiveTimeMap.get(player.getUniqueId()), page, 52)) {
                 inventory.addItem(itemStack);
             }
             player.openInventory(inventory);

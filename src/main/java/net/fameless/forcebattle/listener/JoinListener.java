@@ -4,7 +4,6 @@ import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.command.BackpackCommand;
 import net.fameless.forcebattle.manager.*;
 import net.fameless.forcebattle.team.TeamManager;
-import net.fameless.forcebattle.util.ItemProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,12 +14,19 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class JoinListener implements Listener {
 
-    List<Player> receivedSkip = new ArrayList<>();
-    List<Player> receivedSwap = new ArrayList<>();
+    private final List<UUID> receivedSkip;
+    private final List<UUID> receivedSwap;
+
+    public JoinListener() {
+        this.receivedSkip = new ArrayList<>();
+        this.receivedSwap = new ArrayList<>();
+    }
 
     public static boolean isUpdated = true;
 
@@ -45,42 +51,43 @@ public class JoinListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        event.getPlayer().setResourcePack("https://drive.usercontent.google.com/download?id=1K5On0YGYJlknv9p2Wgdz9qGyrChWn8fl&export=download&authuser=1&confirm=t&uuid=b67aa88a-90e7-42ad-ab70-deaa2eea4f9e&at=APZUnTVJb5KuZWw3nzyYMd434CfL:1693104909215");
-        if (!PointsManager.pointsMap.containsKey(event.getPlayer())) {
-            PointsManager.pointsMap.put(event.getPlayer(), 0);
+        Player player = event.getPlayer();
+        player.setResourcePack("https://drive.usercontent.google.com/download?id=1K5On0YGYJlknv9p2Wgdz9qGyrChWn8fl&export=download&authuser=1&confirm=t&uuid=b67aa88a-90e7-42ad-ab70-deaa2eea4f9e&at=APZUnTVJb5KuZWw3nzyYMd434CfL:1693104909215");
+        if (!PointsManager.pointsMap.containsKey(player.getUniqueId())) {
+            PointsManager.pointsMap.put(player.getUniqueId(), 0);
         }
-        if (!ItemManager.finishedObjectives.containsKey(event.getPlayer())) {
-            ItemManager.finishedObjectives.put(event.getPlayer(), new ArrayList<>());
+        if (!ItemManager.finishedObjectives.containsKey(player.getUniqueId())) {
+            ItemManager.finishedObjectives.put(player.getUniqueId(), new ArrayList<>());
         }
-        if (!ItemManager.objectiveTimeMap.containsKey(event.getPlayer())) {
-            ItemManager.objectiveTimeMap.put(event.getPlayer(), new ArrayList<>());
+        if (!ItemManager.objectiveTimeMap.containsKey(player.getUniqueId())) {
+            ItemManager.objectiveTimeMap.put(player.getUniqueId(), new ArrayList<>());
         }
-        if (ItemManager.getChallenge(event.getPlayer()) == null) {
-            ItemManager.updateObjective(event.getPlayer());
+        if (ItemManager.getChallenge(player) == null) {
+            ItemManager.updateObjective(player);
         }
-        if (!BackpackCommand.backpackMap.containsKey(event.getPlayer())) {
-            BackpackCommand.backpackMap.put(event.getPlayer(), Bukkit.createInventory(null, 27, ChatColor.GOLD + "Backpack"));
+        if (!BackpackCommand.backpackMap.containsKey(player)) {
+            BackpackCommand.backpackMap.put(player, Bukkit.createInventory(null, 27, ChatColor.GOLD + "Backpack"));
         }
 
-        ChainManager.addPlayer(event.getPlayer());
+        ChainManager.addPlayer(player);
 
-        if (!receivedSkip.contains(event.getPlayer())) {
+        if (!receivedSkip.contains(player.getUniqueId())) {
             int skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("jokers");
-            event.getPlayer().getInventory().addItem(ItemProvider.getSkipItem(skipAmount));
-            receivedSkip.add(event.getPlayer());
+            ItemManager.giveSkipItem(player, skipAmount);
+            receivedSkip.add(player.getUniqueId());
         }
-        if (!receivedSwap.contains(event.getPlayer())) {
-            int skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("swappers");
-            event.getPlayer().getInventory().addItem(ItemProvider.getSwapitem(skipAmount));
-            receivedSwap.add(event.getPlayer());
-        }
-
-        if (event.getPlayer().isOp() && !isUpdated) {
-            event.getPlayer().sendMessage(ChatColor.GREEN + "There is an update available for ForceBattle. You can download it from the spigot website.");
+        if (!receivedSwap.contains(player.getUniqueId())) {
+            int swapAmount = ForceBattlePlugin.getInstance().getConfig().getInt("swappers");
+            ItemManager.giveSwapItem(player, swapAmount);
+            receivedSwap.add(player.getUniqueId());
         }
 
-        BossbarManager.createBossbar(event.getPlayer());
-        NametagManager.setupNametag(event.getPlayer());
-        NametagManager.newTag(event.getPlayer());
+        if (player.isOp() && !isUpdated) {
+            player.sendMessage(ChatColor.GREEN + "There is an update available for ForceBattle. You can download it from the spigot website.");
+        }
+
+        BossbarManager.createBossbar(player);
+        NametagManager.setupNametag(player);
+        NametagManager.newTag(player);
     }
 }

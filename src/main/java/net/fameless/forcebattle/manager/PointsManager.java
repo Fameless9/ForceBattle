@@ -7,17 +7,18 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class PointsManager {
 
-    public static final HashMap<Player, Integer> pointsMap = new HashMap<>();
+    public static final HashMap<UUID, Integer> pointsMap = new HashMap<>();
 
     public static int getPoints(Player player) {
         if (TeamManager.getTeam(player) != null) {
             return TeamManager.getTeam(player).getPoints();
         }
-        Integer points = pointsMap.get(player);
-        return points != null ? points.intValue() : 0;
+        Integer points = pointsMap.get(player.getUniqueId());
+        return points != null ? points : 0;
     }
     public static void addPoint(Player player) {
         if (TeamManager.getTeam(player) != null) {
@@ -31,8 +32,8 @@ public class PointsManager {
             }
             return;
         }
-        int points = pointsMap.get(player);
-        pointsMap.put(player, points + 1);
+        int points = pointsMap.get(player.getUniqueId());
+        pointsMap.put(player.getUniqueId(), points + 1);
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1, 20);
         NametagManager.updateNametag(player);
         BossbarManager.updateBossbar(player);
@@ -44,6 +45,6 @@ public class PointsManager {
             team.setPoints(points);
             return;
         }
-        pointsMap.put(player, points);
+        pointsMap.put(player.getUniqueId(), points);
     }
 }
