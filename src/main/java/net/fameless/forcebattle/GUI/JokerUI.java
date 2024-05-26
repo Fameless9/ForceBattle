@@ -1,6 +1,6 @@
 package net.fameless.forcebattle.GUI;
 
-import net.fameless.forcebattle.manager.ItemManager;
+import net.fameless.forcebattle.manager.ObjectiveManager;
 import net.fameless.forcebattle.util.ItemProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,13 +15,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class JokerUI implements Listener, CommandExecutor, InventoryHolder {
 
     private Inventory inventory;
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (!sender.hasPermission("forcebattle.jokers")) {
             sender.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.jokers'.");
             return false;
@@ -58,7 +59,7 @@ public class JokerUI implements Listener, CommandExecutor, InventoryHolder {
 
         switch (event.getClick()) {
             case LEFT: {
-                ItemManager.giveSkipItem(target, 1);
+                ObjectiveManager.giveSkipItem(target, 1);
                 event.getWhoClicked().sendMessage(ChatColor.GREEN + "Gave one skip to " + target.getName() + ".");
                 break;
             }
@@ -66,14 +67,17 @@ public class JokerUI implements Listener, CommandExecutor, InventoryHolder {
                 Inventory inventory1 = target.getInventory();
                 int skipSlot = -1;
                 for (int i = 0; i < 36; i++) {
-                    if (inventory1.getItem(i) == null) continue;
-                    if (inventory1.getItem(i).isSimilar(ItemProvider.getSkipItem(1))) {
+                    ItemStack stack = inventory1.getItem(i);
+                    if (stack == null) continue;
+                    if (stack.isSimilar(ItemProvider.getSkipItem(1))) {
                         skipSlot = i;
                         break;
                     }
                 }
                 if (skipSlot < 0) return;
-                int newAmount = inventory1.getItem(skipSlot).getAmount() - 1;
+                ItemStack stack = inventory1.getItem(skipSlot);
+                if (stack == null) return;
+                int newAmount = stack.getAmount() - 1;
                 if (newAmount < 0) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "No skips left.");
                     return;
@@ -83,7 +87,7 @@ public class JokerUI implements Listener, CommandExecutor, InventoryHolder {
                 break;
             }
             case RIGHT: {
-                ItemManager.giveSwapItem(target, 1);
+                ObjectiveManager.giveSwapItem(target, 1);
                 event.getWhoClicked().sendMessage(ChatColor.GREEN + "Gave one swap to " + target.getName() + ".");
                 break;
             }
@@ -91,20 +95,23 @@ public class JokerUI implements Listener, CommandExecutor, InventoryHolder {
                 Inventory inventory1 = target.getInventory();
                 int swapSlot = -1;
                 for (int i = 0; i < 36; i++) {
-                    if (inventory1.getItem(i) == null) continue;
-                    if (inventory1.getItem(i).isSimilar(ItemProvider.getSwapitem(1))) {
+                    ItemStack stack = inventory1.getItem(i);
+                    if (stack == null) continue;
+                    if (stack.isSimilar(ItemProvider.getSwapitem(1))) {
                         swapSlot = i;
                         break;
                     }
                 }
                 if (swapSlot < 0) return;
-                int newAmount = inventory1.getItem(swapSlot).getAmount() - 1;
+                ItemStack stack = inventory1.getItem(swapSlot);
+                if (stack == null) return;
+                int newAmount = stack.getAmount() - 1;
                 if (newAmount < 0) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "No swaps left.");
                     return;
                 }
                 inventory1.setItem(swapSlot, ItemProvider.getSwapitem(newAmount));
-                event.getWhoClicked().sendMessage(ChatColor.GREEN + "Took one swap from " + target.getName()  + ".");
+                event.getWhoClicked().sendMessage(ChatColor.GREEN + "Took one swap from " + target.getName() + ".");
                 break;
             }
         }
@@ -131,14 +138,14 @@ public class JokerUI implements Listener, CommandExecutor, InventoryHolder {
         inventory = Bukkit.createInventory(this, 9, ChatColor.GOLD + "Edit amount for " + player.getName());
         inventory.setItem(4, ItemProvider.buildItem(new ItemStack(Material.BARRIER), null, 0, null,
                 ChatColor.GOLD + "Adjust amounts", "", ChatColor.BLUE + "Current skips: " + skipAmount,
-                ChatColor.BLUE + "Current Swaps: " + swapAmount, "", ChatColor.GRAY + "Leftclick: Skips +1",
-                ChatColor.GRAY + "Shift + Leftclick: Skips -1", "", ChatColor.GRAY + "Rightclick: Swaps +1", ChatColor.GRAY + "Shift + Rightclick: Swaps -1"));
+                ChatColor.BLUE + "Current Swaps: " + swapAmount, "", ChatColor.GRAY + "Left-click: Skips +1",
+                ChatColor.GRAY + "Shift + Left-click: Skips -1", "", ChatColor.GRAY + "Right-click: Swaps +1", ChatColor.GRAY + "Shift + Right-click: Swaps -1"));
 
         return inventory;
     }
 
     @Override
-    public Inventory getInventory() {
+    public @NotNull Inventory getInventory() {
         return inventory;
     }
 }

@@ -18,9 +18,8 @@ public class TeamManager {
     }
 
     public static void removeTeam(int teamId) {
-        if (TeamManager.getTeam(teamId) != null) {
-            Team team = TeamManager.getTeam(teamId);
-
+        Team team = TeamManager.getTeam(teamId);
+        if (team != null) {
             for (Player player : team.getPlayers()) {
                 player.sendMessage(ChatColor.GOLD + "Your team has been deleted.");
             }
@@ -60,5 +59,7 @@ public class TeamManager {
         return null;
     }
 
-    public static List<Team> getTeams() { return teams; }
+    public static List<Team> getTeams() {
+        return teams;
+    }
 }

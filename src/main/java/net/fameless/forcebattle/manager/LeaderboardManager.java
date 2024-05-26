@@ -6,38 +6,42 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class LeaderboardManager {
 
     public static void displayLeaderboard() {
         List<Team> excluded = new ArrayList<>();
         List<Map.Entry<UUID, Integer>> sortedEntries = new ArrayList<>(PointsManager.pointsMap.entrySet());
-        sortedEntries.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        sortedEntries.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
         StringBuilder message = new StringBuilder(ChatColor.GOLD.toString() + ChatColor.BOLD + "LEADERBOARD:\n");
         int position = 1;
         for (Map.Entry<UUID, Integer> entry : sortedEntries) {
             Player player = Bukkit.getPlayer(entry.getKey());
             int points = entry.getValue();
+            if (player == null) continue;
 
-            if (player != null && TeamManager.getTeam(player) != null) {
+            if (TeamManager.getTeam(player) != null) {
                 Team team = TeamManager.getTeam(player);
-                if (excluded.contains(team)) {
+                if (team == null || excluded.contains(team)) {
                     continue;
                 }
+
                 for (Player teamPlayer : team.getPlayers()) {
                     teamPlayer.sendMessage(ChatColor.GOLD + "Your team placed " + position + " with " + team.getPoints() + " points.");
                 }
 
-                message.append(ChatColor.GRAY + String.valueOf(position)).append(". ").append(ChatColor.AQUA + "Team " + team.getId()).append(": ").append(ChatColor.GREEN + String.valueOf(team.getPoints())).append(" points\n");
+                message.append(ChatColor.GRAY).append(position).append(". ").append(ChatColor.AQUA).append("Team ")
+                        .append(team.getId()).append(": ").append(ChatColor.GREEN).append(team.getPoints()).append(" points\n");
                 ++position;
                 excluded.add(team);
             } else {
-                if (player != null) {
-                    player.sendMessage(ChatColor.GOLD + "You placed: " + position + " with " + points + " points.");
-                }
-                String playerName = (player != null) ? player.getName() : "Unknown";
-                message.append(ChatColor.GRAY + String.valueOf(position)).append(". ").append(ChatColor.AQUA + playerName).append(": ").append(ChatColor.GREEN + String.valueOf(points)).append(" points\n");
+                player.sendMessage(ChatColor.GOLD + "You placed: " + position + " with " + points + " points.");
+                message.append(ChatColor.GRAY).append(position).append(". ").append(ChatColor.AQUA).append(player.getName()).append(": ")
+                        .append(ChatColor.GREEN).append(points).append(" points\n");
                 ++position;
             }
         }

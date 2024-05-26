@@ -38,8 +38,8 @@ public class BossbarManager {
 
     private static void getBossbar(Player player) {
         BossBar bossBar;
-        Object challenge = ItemManager.getChallenge(player);
-        Challenge type = ItemManager.getChallengeType(player);
+        Object challenge = ObjectiveManager.getChallenge(player);
+        Challenge type = ObjectiveManager.getChallengeType(player);
 
         if (ExcludeCommand.excludedPlayers.contains(player)) {
             bossBar = Bukkit.createBossBar(ChatColor.GRAY.toString() + ChatColor.ITALIC + "You are excluded", BarColor.WHITE, BarStyle.SOLID);
@@ -60,22 +60,16 @@ public class BossbarManager {
             bossBar.addPlayer(player);
             bossBarHashMap.put(player.getUniqueId(), bossBar);
             return;
-        }
-
-        else if (challenge instanceof Material) {
-            Material playerMaterial = (Material) challenge;
+        } else if (challenge instanceof Material playerMaterial) {
             String itemName = formatItemName(playerMaterial.name().replace("_", " "));
             bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Item" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + itemName + ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
-        } else if (challenge instanceof EntityType) {
-            EntityType mob = (EntityType) challenge;
+        } else if (challenge instanceof EntityType mob) {
             String mobName = formatItemName(mob.name().replace("_", " "));
             bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Mob" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + mobName + ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
-        } else if (challenge instanceof Biome) {
-            Biome biome = (Biome) ItemManager.getChallenge(player);
+        } else if (challenge instanceof Biome biome) {
             String biomeName = formatItemName(biome.name().replace("_", " "));
             bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Biome" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + biomeName + ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
-        } else if (challenge instanceof Advancement) {
-            Advancement advancement = (Advancement) challenge;
+        } else if (challenge instanceof Advancement advancement) {
             String biomeName = formatItemName(advancement.name().replace("_", " "));
             bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Advancement" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + biomeName + ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
         } else if (challenge instanceof Integer) {

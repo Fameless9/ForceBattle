@@ -12,14 +12,10 @@ import net.fameless.forcebattle.command.tabcompleter.*;
 import net.fameless.forcebattle.listener.GameListener;
 import net.fameless.forcebattle.listener.JoinListener;
 import net.fameless.forcebattle.manager.ChainManager;
-import net.fameless.forcebattle.manager.ItemFile;
+import net.fameless.forcebattle.manager.ObjectiveLists;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.timer.TimerUI;
 import net.fameless.forcebattle.util.UpdateChecker;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
-import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.apache.commons.io.FileUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -28,12 +24,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 public final class ForceBattlePlugin extends JavaPlugin {
 
     private static ForceBattlePlugin instance;
+
+    public static ForceBattlePlugin getInstance() {
+        return instance;
+    }
 
     @Override
     public void onLoad() {
@@ -51,7 +49,7 @@ public final class ForceBattlePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
-            ItemFile.initFiles();
+            ObjectiveLists.initLists();
         } catch (IOException e) {
             Bukkit.getLogger().severe("Failed to create files. Shutting down.");
             Bukkit.getPluginManager().disablePlugin(this);
@@ -107,8 +105,6 @@ public final class ForceBattlePlugin extends JavaPlugin {
         UpdateChecker checker = new UpdateChecker(112328, Duration.ofHours(2L));
         checker.checkForUpdates();
     }
-
-    public static ForceBattlePlugin getInstance() { return instance; }
 
     private void deleteWorld(String worldName) {
         try {

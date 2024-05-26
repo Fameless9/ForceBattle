@@ -26,12 +26,12 @@ public class PointsUI implements CommandExecutor, Listener, InventoryHolder {
     private Inventory inventory;
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (!sender.hasPermission("forcebattle.points")) {
             sender.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.points'");
             return false;
         }
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player senderPlayer)) {
             sender.sendMessage(ChatColor.RED + "You are not a player.");
             return false;
         }
@@ -39,12 +39,12 @@ public class PointsUI implements CommandExecutor, Listener, InventoryHolder {
             sender.sendMessage(ChatColor.RED + "Specify a player. /points <player>.");
             return false;
         }
-        if (Bukkit.getPlayer(args[0]) == null) {
-            sender.sendMessage(ChatColor.RED + "Player not found.");
+        Player player = Bukkit.getPlayer(args[0]);
+        if (player == null) {
+            sender.sendMessage(ChatColor.RED + "Player couldn't be found.");
             return false;
         }
-        Player player = Bukkit.getPlayer(args[0]);
-        ((Player) sender).openInventory(pointsGUI(player.getName()));
+        senderPlayer.openInventory(pointsGUI(player.getName()));
 
         return false;
     }
@@ -54,7 +54,7 @@ public class PointsUI implements CommandExecutor, Listener, InventoryHolder {
 
         inventory.setItem(4, buildItem(new ItemStack(Material.GOLD_NUGGET), null, 0, null, "Adjust points",
                 ChatColor.GOLD + "Current points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(Bukkit.getPlayer(targetName)), "",
-                        ChatColor.GRAY + "Left click: +1", ChatColor.GRAY + "Right click: -1"));
+                ChatColor.GRAY + "Left click: +1", ChatColor.GRAY + "Right click: -1"));
         return inventory;
     }
 
@@ -64,8 +64,9 @@ public class PointsUI implements CommandExecutor, Listener, InventoryHolder {
         if (event.getSlot() != 4) return;
         if (Bukkit.getPlayerExact(event.getView().getTitle().replace("Adjust points of ", "")) == null) return;
         event.setCancelled(true);
+        Player target = Bukkit.getPlayer(event.getView().getTitle().replace("Adjust points of ", ""));
+        if (target == null) return;
         if (event.getClick().equals(ClickType.RIGHT)) {
-            Player target = Bukkit.getPlayer(event.getView().getTitle().replace("Adjust points of ", ""));
             PointsManager.setPoints(target, PointsManager.getPoints(target) - 1);
             NametagManager.updateNametag(target);
             BossbarManager.updateBossbar(target);
@@ -74,7 +75,6 @@ public class PointsUI implements CommandExecutor, Listener, InventoryHolder {
             return;
         }
         if (event.getClick().equals(ClickType.LEFT)) {
-            Player target = Bukkit.getPlayer(event.getView().getTitle().replace("Adjust points of ", ""));
             PointsManager.setPoints(target, PointsManager.getPoints(target) + 1);
             NametagManager.updateNametag(target);
             BossbarManager.updateBossbar(target);

@@ -1,8 +1,10 @@
 package net.fameless.forcebattle.GUI;
 
 import net.fameless.forcebattle.manager.BossbarManager;
-import net.fameless.forcebattle.manager.ItemManager;
 import net.fameless.forcebattle.manager.NametagManager;
+import net.fameless.forcebattle.manager.ObjectiveManager;
+import net.fameless.forcebattle.team.Team;
+import net.fameless.forcebattle.team.TeamManager;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.ItemProvider;
 import org.bukkit.Bukkit;
@@ -31,9 +33,9 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
     private static final HashMap<UUID, UUID> commandMap = new HashMap<>();
     private Inventory inventory;
 
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(ChatColor.RED + "Only players may use this command.");
             return false;
         }
@@ -42,12 +44,10 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
             return false;
         }
 
-        Player player = (Player) sender;
         Player target = null;
-
         if (args.length == 1) {
-            if (Bukkit.getPlayerExact(args[0]) != null) {
-                target = Bukkit.getPlayer(args[0]);
+            target = Bukkit.getPlayer(args[0]);
+            if (target != null) {
                 ResetUI.commandMap.put(player.getUniqueId(), target.getUniqueId());
             } else {
                 sender.sendMessage(ChatColor.RED + "Player couldn't be found.");
@@ -102,8 +102,8 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
             case 0: {
                 if (target != null) {
                     target.getInventory().clear();
-                    ItemManager.giveJokers(target);
-                    ItemManager.resetProgress(target);
+                    ObjectiveManager.giveJokers(target);
+                    ObjectiveManager.resetProgress(target);
                     target.teleport(target.getWorld().getSpawnLocation());
                     target.setHealth(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                     target.setFoodLevel(20);
@@ -116,8 +116,8 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.getInventory().clear();
-                    ItemManager.giveJokers(player);
-                    ItemManager.resetProgress(player);
+                    ObjectiveManager.giveJokers(player);
+                    ObjectiveManager.resetProgress(player);
                     player.teleport(player.getWorld().getSpawnLocation());
                     player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                     player.setFoodLevel(20);
@@ -148,13 +148,13 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
             }
             case 3: {
                 if (target != null) {
-                    ItemManager.giveJokers(target);
+                    ObjectiveManager.giveJokers(target);
                     target.sendMessage(ChatColor.GOLD + "Your jokers have been refilled.");
                     break;
                 }
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    ItemManager.giveJokers(player);
+                    ObjectiveManager.giveJokers(player);
                 }
 
                 Bukkit.broadcastMessage(ChatColor.GOLD + "Jokers have been refilled.");
@@ -162,7 +162,7 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
             }
             case 4: {
                 if (target != null) {
-                    ItemManager.resetProgress(target);
+                    ObjectiveManager.resetProgress(target);
                     NametagManager.updateNametag(target);
                     BossbarManager.updateBossbar(target);
                     target.sendMessage(ChatColor.GOLD + "Your points have been reset.");
@@ -170,7 +170,7 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
                 }
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    ItemManager.resetProgress(player);
+                    ObjectiveManager.resetProgress(player);
                     NametagManager.updateNametag(player);
                     BossbarManager.updateBossbar(player);
                 }
@@ -178,6 +178,10 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "Points have been reset.");
                 break;
             }
+        }
+
+        for (Team team : TeamManager.getTeams()) {
+            team.updatePoints();
         }
     }
 

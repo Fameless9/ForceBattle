@@ -14,37 +14,32 @@ public class PointsManager {
     public static final HashMap<UUID, Integer> pointsMap = new HashMap<>();
 
     public static int getPoints(Player player) {
-        if (TeamManager.getTeam(player) != null) {
-            return TeamManager.getTeam(player).getPoints();
-        }
-        Integer points = pointsMap.get(player.getUniqueId());
-        return points != null ? points : 0;
+        return pointsMap.getOrDefault(player.getUniqueId(), 0);
     }
+
     public static void addPoint(Player player) {
-        if (TeamManager.getTeam(player) != null) {
-            Team team = TeamManager.getTeam(player);
-            int points = team.getPoints();
-            team.setPoints(points + 1);
-            for (Player teamPlayer : team.getPlayers()) {
-                teamPlayer.playSound(teamPlayer, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1, 20);
-                NametagManager.updateNametag(teamPlayer);
-                BossbarManager.updateBossbar(teamPlayer);
-            }
-            return;
-        }
-        int points = pointsMap.get(player.getUniqueId());
+        int points = pointsMap.getOrDefault(player.getUniqueId(), 0);
         pointsMap.put(player.getUniqueId(), points + 1);
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1, 20);
         NametagManager.updateNametag(player);
         BossbarManager.updateBossbar(player);
+
+        Team team = TeamManager.getTeam(player);
+        if (team != null) {
+            team.updatePoints();
+            for (Player teamPlayer : team.getPlayers()) {
+                NametagManager.updateNametag(teamPlayer);
+                BossbarManager.updateBossbar(teamPlayer);
+            }
+        }
     }
 
     public static void setPoints(Player player, int points) {
-        if (TeamManager.getTeam(player) != null) {
-            Team team = TeamManager.getTeam(player);
-            team.setPoints(points);
-            return;
-        }
         pointsMap.put(player.getUniqueId(), points);
+
+        Team team = TeamManager.getTeam(player);
+        if (team != null) {
+            team.updatePoints();
+        }
     }
 }

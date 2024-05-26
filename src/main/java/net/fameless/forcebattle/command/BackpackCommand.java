@@ -1,6 +1,7 @@
 package net.fameless.forcebattle.command;
 
 import net.fameless.forcebattle.GUI.MenuUI;
+import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,14 +12,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class BackpackCommand implements CommandExecutor {
 
-    public static HashMap<Player, Inventory> backpackMap = new HashMap<>();
+    public static HashMap<UUID, Inventory> backpackMap = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(ChatColor.RED + "Only players can use backpacks.");
             return false;
         }
@@ -26,24 +28,24 @@ public class BackpackCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Backpacks are disabled.");
             return false;
         }
-        Player player = (Player) sender;
 
         if (args.length > 0 && args[0].equals("team")) {
-            if (TeamManager.getTeam(player) == null) {
+            Team team = TeamManager.getTeam(player);
+            if (team == null) {
                 player.sendMessage(ChatColor.RED + "You are not in a team.");
                 return false;
             }
-            player.openInventory(TeamManager.getTeam(player).backpack);
+            player.openInventory(team.backpack);
             return true;
         }
 
         Inventory backpack;
 
-        if (!backpackMap.containsKey(player)) {
+        if (!backpackMap.containsKey(player.getUniqueId())) {
             backpack = Bukkit.createInventory(null, 27, ChatColor.GOLD + "Backpack");
-            backpackMap.put(player, backpack);
+            backpackMap.put(player.getUniqueId(), backpack);
         } else {
-            backpack = backpackMap.get(player);
+            backpack = backpackMap.get(player.getUniqueId());
         }
 
         player.openInventory(backpack);

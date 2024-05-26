@@ -2,6 +2,7 @@ package net.fameless.forcebattle.team;
 
 import net.fameless.forcebattle.manager.BossbarManager;
 import net.fameless.forcebattle.manager.NametagManager;
+import net.fameless.forcebattle.manager.PointsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,27 +13,31 @@ import java.util.List;
 
 public class Team {
 
+    public final Inventory backpack;
     private final int id;
     private final List<Player> players;
     private boolean isPrivate = true;
     private Player leader;
-    private int points;
-    public final Inventory backpack;
+    private int points = 0;
 
     public Team(List<Player> players, Player leader) {
         this.id = TeamManager.getTeams().size() + 1;
         this.players = new ArrayList<>(players);
         this.leader = leader;
-        this.points = 0;
         this.backpack = Bukkit.createInventory(null, 27, ChatColor.GOLD + "Team Backpack | " + id);
+        updatePoints();
     }
 
     public Player getLeader() {
         return leader;
     }
 
-    public void setPoints(int points) {
-        this.points = points;
+    public void updatePoints() {
+        int newPoints = 0;
+        for (Player player : players) {
+            newPoints += PointsManager.getPoints(player);
+        }
+        this.points = newPoints;
     }
 
     public int getPoints() {
@@ -75,6 +80,10 @@ public class Team {
         }
     }
 
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
     public void setPrivate(boolean b) {
         this.isPrivate = b;
 
@@ -89,9 +98,11 @@ public class Team {
         }
     }
 
-    public boolean isPrivate() { return isPrivate; }
+    public List<Player> getPlayers() {
+        return players;
+    }
 
-    public List<Player> getPlayers() { return players; }
-
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 }

@@ -14,7 +14,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 public class Timer implements CommandExecutor {
     private static int startTime;
@@ -32,7 +32,7 @@ public class Timer implements CommandExecutor {
 
     public static void setStartTime(int newStartTime) {
         startTime = newStartTime;
-        ForceBattlePlugin.getInstance().getConfig().set("challenge_duration", startTime);
+        ForceBattlePlugin.getInstance().getConfig().set("time", startTime);
         ForceBattlePlugin.getInstance().saveConfig();
     }
 
@@ -55,33 +55,33 @@ public class Timer implements CommandExecutor {
     public static void run() {
         if (ForceBattlePlugin.getInstance().getConfig().get("time") != null) {
             setStartTime(ForceBattlePlugin.getInstance().getConfig().getInt("time"));
-            setTime(getStartTime());
+            setTime(startTime);
         } else {
             setStartTime(5400);
-            setTime(getStartTime());
+            setTime(startTime);
         }
-        new BukkitRunnable() {
-            public void run() {
-                sendActionbar();
-                if (time == 0) {
-                    setRunning(false);
-                    setTime(startTime);
-                    LeaderboardManager.displayLeaderboard();
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        PointsManager.setPoints(player, 0);
-                        ItemManager.updateObjective(player);
-                    }
-                    for (Team team : TeamManager.getTeams()) {
-                        team.setPoints(0);
-                    }
-                    return;
+        Bukkit.getScheduler().runTaskTimer(ForceBattlePlugin.getInstance(), () -> {
+            sendActionbar();
+            if (time == 0) {
+                setRunning(false);
+                setTime(startTime);
+                LeaderboardManager.displayLeaderboard();
+
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    PointsManager.setPoints(player, 0);
+                    ObjectiveManager.updateObjective(player);
                 }
 
-                if (isRunning()) {
-                    setTime(getTime() - 1);
+                for (Team team : TeamManager.getTeams()) {
+                    team.updatePoints();
                 }
+                return;
             }
-        }.runTaskTimer(ForceBattlePlugin.getInstance(), 0L, 20L);
+
+            if (isRunning()) {
+                setTime(getTime() - 1);
+            }
+        }, 0, 20);
     }
 
     public static void sendActionbar() {
@@ -95,7 +95,7 @@ public class Timer implements CommandExecutor {
     }
 
     public static void toggle(Player player) {
-        if (ItemManager.activeChallenges.isEmpty()) {
+        if (ObjectiveManager.activeChallenges.isEmpty()) {
             player.sendMessage(ChatColor.GOLD + "You need to select at least 1 challenge to start the timer. /menu");
             return;
         }
@@ -111,8 +111,7 @@ public class Timer implements CommandExecutor {
             setRunning(true);
             for (Player players : Bukkit.getOnlinePlayers()) {
                 players.sendTitle(ChatColor.RED + "Timer started.", "", 20, 40, 20);
-                if (ItemManager.getChallenge(players) instanceof Advancement) {
-                    Advancement advancement = (Advancement) ItemManager.getChallenge(players);
+                if (ObjectiveManager.getChallenge(players) instanceof Advancement advancement) {
                     player.sendMessage(ChatColor.GRAY + "-----------------------");
                     player.sendMessage(ChatColor.GOLD + "Advancement Description:");
                     player.sendMessage(ChatColor.GOLD + advancement.getDescription());
@@ -125,9 +124,8 @@ public class Timer implements CommandExecutor {
         }
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
+        if (sender instanceof Player player) {
             if (!player.hasPermission("forcebattle.timer")) {
                 player.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.timer'");
                 return false;

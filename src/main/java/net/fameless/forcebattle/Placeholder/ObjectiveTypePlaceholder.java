@@ -1,7 +1,8 @@
 package net.fameless.forcebattle.Placeholder;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.fameless.forcebattle.manager.ItemManager;
+import net.fameless.forcebattle.manager.ObjectiveManager;
+import net.fameless.forcebattle.util.Challenge;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,7 @@ public class ObjectiveTypePlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return "Fxmeless";
+        return "Fameless9";
     }
 
     @Override
@@ -25,26 +26,14 @@ public class ObjectiveTypePlaceholder extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-        if (ItemManager.getChallengeType(player) == null) return "Nothing";
-        switch (ItemManager.getChallengeType(player)) {
-            case FORCE_ITEM: {
-                return "Force Item";
-            }
-            case FORCE_MOB: {
-                return "Force Mob";
-            }
-            case FORCE_BIOME: {
-                return "Force Biome";
-            }
-            case FORCE_ADVANCEMENT: {
-                return "Force Advancement";
-            }
-            case FORCE_HEIGHT: {
-                return "Force Height";
-            }
-            default: {
-                return "Nothing";
-            }
-        }
+        Challenge challenge = ObjectiveManager.getChallengeType(player);
+        if (challenge == null) return "Nothing";
+        return switch (challenge) {
+            case FORCE_ITEM -> "Force Item";
+            case FORCE_MOB -> "Force Mob";
+            case FORCE_BIOME -> "Force Biome";
+            case FORCE_ADVANCEMENT -> "Force Advancement";
+            case FORCE_HEIGHT -> "Force Height";
+        };
     }
 }

@@ -3,8 +3,8 @@ package net.fameless.forcebattle.listener;
 import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.command.ExcludeCommand;
 import net.fameless.forcebattle.manager.BossbarManager;
-import net.fameless.forcebattle.manager.ItemManager;
 import net.fameless.forcebattle.manager.NametagManager;
+import net.fameless.forcebattle.manager.ObjectiveManager;
 import net.fameless.forcebattle.manager.PointsManager;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.Challenge;
@@ -25,7 +25,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,58 +34,52 @@ import java.util.concurrent.ThreadLocalRandom;
 public class GameListener implements Listener {
 
     public static void run() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!Timer.isRunning()) return;
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (ExcludeCommand.excludedPlayers.contains(player)) continue;
-                    Challenge playerChallengeType = ItemManager.getChallengeType(player);
-                    Object challengeObject = ItemManager.getChallenge(player);
+        Bukkit.getScheduler().runTaskTimer(ForceBattlePlugin.getInstance(), () -> {
+            if (!Timer.isRunning()) return;
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (ExcludeCommand.excludedPlayers.contains(player)) continue;
+                Challenge playerChallengeType = ObjectiveManager.getChallengeType(player);
+                Object challengeObject = ObjectiveManager.getChallenge(player);
 
-                    if (playerChallengeType == Challenge.FORCE_ITEM && challengeObject instanceof Material) {
-                        Material requiredMaterial = (Material) challengeObject;
+                if (playerChallengeType == Challenge.FORCE_ITEM && challengeObject instanceof Material requiredMaterial) {
 
-                        if (player.getInventory().contains(requiredMaterial)) {
-                            Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " found item " + BossbarManager.formatItemName(requiredMaterial.name().replace("_", " ")));
-                            PointsManager.addPoint(player);
-                            ItemManager.updateObjective(player);
-                        }
-                        continue;
+                    if (player.getInventory().contains(requiredMaterial)) {
+                        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " found item " + BossbarManager.formatItemName(requiredMaterial.name().replace("_", " ")));
+                        PointsManager.addPoint(player);
+                        ObjectiveManager.updateObjective(player);
                     }
-                    if (playerChallengeType == Challenge.FORCE_BIOME && challengeObject instanceof Biome) {
-                        Biome requiredBiome = (Biome) challengeObject;
+                    continue;
+                }
+                if (playerChallengeType == Challenge.FORCE_BIOME && challengeObject instanceof Biome requiredBiome) {
 
-                        if (player.getWorld().getBiome(player.getLocation()) == requiredBiome) {
-                            Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " found biome " + BossbarManager.formatItemName(requiredBiome.name().replace("_", " ")));
-                            PointsManager.addPoint(player);
-                            ItemManager.updateObjective(player);
-                        }
-                        continue;
+                    if (player.getWorld().getBiome(player.getLocation()) == requiredBiome) {
+                        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " found biome " + BossbarManager.formatItemName(requiredBiome.name().replace("_", " ")));
+                        PointsManager.addPoint(player);
+                        ObjectiveManager.updateObjective(player);
                     }
-                    if (playerChallengeType == Challenge.FORCE_ADVANCEMENT && challengeObject instanceof net.fameless.forcebattle.util.Advancement) {
-                        net.fameless.forcebattle.util.Advancement requiredAdvancement = (net.fameless.forcebattle.util.Advancement) challengeObject;
+                    continue;
+                }
+                if (playerChallengeType == Challenge.FORCE_ADVANCEMENT && challengeObject instanceof net.fameless.forcebattle.util.Advancement requiredAdvancement) {
 
-                        if (hasAdvancement(player, requiredAdvancement.getKey().toString())) {
-                            Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " completed advancement " + BossbarManager.formatItemName(requiredAdvancement.name().replace("_", " ")));
-                            PointsManager.addPoint(player);
-                            ItemManager.updateObjective(player);
-                            resetAdvancements(player);
-                        }
-                        continue;
+                    if (hasAdvancement(player, requiredAdvancement.getKey().toString())) {
+                        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " completed advancement " + BossbarManager.formatItemName(requiredAdvancement.name().replace("_", " ")));
+                        PointsManager.addPoint(player);
+                        ObjectiveManager.updateObjective(player);
+                        resetAdvancements(player);
                     }
-                    if (playerChallengeType == Challenge.FORCE_HEIGHT && challengeObject instanceof Integer) {
-                        int requiredHeight = (Integer) challengeObject;
+                    continue;
+                }
+                if (playerChallengeType == Challenge.FORCE_HEIGHT && challengeObject instanceof Integer) {
+                    int requiredHeight = (Integer) challengeObject;
 
-                        if (player.getLocation().getBlockY() == requiredHeight) {
-                            Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " reached height " + requiredHeight);
-                            PointsManager.addPoint(player);
-                            ItemManager.updateObjective(player);
-                        }
+                    if (player.getLocation().getBlockY() == requiredHeight) {
+                        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " reached height " + requiredHeight);
+                        PointsManager.addPoint(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 }
             }
-        }.runTaskTimer(ForceBattlePlugin.getInstance(), 0, 2);
+        }, 0, 2);
     }
 
     private static boolean hasAdvancement(Player player, String name) {
@@ -121,16 +114,14 @@ public class GameListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!Timer.isRunning()) return;
-        if (!(event.getDamager() instanceof  Player)) return;
-        Player player = (Player) event.getDamager();
+        if (!(event.getDamager() instanceof Player player)) return;
         if (ExcludeCommand.excludedPlayers.contains(player)) return;
         if (!event.getEntity().isDead()) {
             LivingEntity entity = (LivingEntity) event.getEntity();
             if (entity.getHealth() - event.getDamage() > 0) return;
         }
 
-        if (!(ItemManager.getChallenge(player) instanceof EntityType)) return;
-        EntityType requiredEntity = (EntityType) ItemManager.getChallenge(player);
+        if (!(ObjectiveManager.getChallenge(player) instanceof EntityType requiredEntity)) return;
 
         if (event.getEntity().getType().equals(requiredEntity)) {
             if (!event.getEntity().isDead()) {
@@ -139,7 +130,7 @@ public class GameListener implements Listener {
             }
             Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " killed mob " + BossbarManager.formatItemName(event.getEntity().getType().name().replace("_", " ")));
             PointsManager.addPoint(player);
-            ItemManager.updateObjective(player);
+            ObjectiveManager.updateObjective(player);
         }
     }
 
@@ -156,7 +147,7 @@ public class GameListener implements Listener {
                 return;
             }
 
-            if (ItemManager.getChallenge(event.getPlayer()) == null) {
+            if (ObjectiveManager.getChallenge(event.getPlayer()) == null) {
                 event.getPlayer().sendMessage(ChatColor.RED + "No objective to skip.");
                 return;
             }
@@ -168,12 +159,12 @@ public class GameListener implements Listener {
             inventory.setItem(slot, stack);
             event.getPlayer().setCooldown(stack.getType(), 20);
 
-            if (ItemManager.getChallenge(event.getPlayer()) instanceof Material) {
-                Bukkit.getWorld(event.getPlayer().getWorld().getName()).dropItemNaturally(event.getPlayer().getLocation(),
-                        new ItemStack((Material) ItemManager.getChallenge(event.getPlayer())));
+            if (ObjectiveManager.getChallenge(event.getPlayer()) instanceof Material material) {
+                event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(),
+                        new ItemStack(material));
             }
 
-            ItemManager.updateObjective(event.getPlayer());
+            ObjectiveManager.updateObjective(event.getPlayer());
             PointsManager.addPoint(event.getPlayer());
             NametagManager.updateNametag(event.getPlayer());
             BossbarManager.updateBossbar(event.getPlayer());
@@ -193,7 +184,7 @@ public class GameListener implements Listener {
                 return;
             }
 
-            if (ItemManager.getChallenge(event.getPlayer()) == null) {
+            if (ObjectiveManager.getChallenge(event.getPlayer()) == null) {
                 event.getPlayer().sendMessage(ChatColor.RED + "No objective to swap.");
                 return;
             }
@@ -201,7 +192,7 @@ public class GameListener implements Listener {
             List<Player> availablePlayers = new ArrayList<>();
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (event.getPlayer().equals(player)) continue;
-                if (ItemManager.getChallenge(player) == null) continue;
+                if (ObjectiveManager.getChallenge(player) == null) continue;
                 availablePlayers.add(player);
             }
 
@@ -220,17 +211,17 @@ public class GameListener implements Listener {
             ThreadLocalRandom random = ThreadLocalRandom.current();
             Player target = availablePlayers.get(random.nextInt(availablePlayers.size()));
 
-            Challenge playerChallenge = ItemManager.getChallengeType(event.getPlayer());
-            Challenge targetChallenge = ItemManager.getChallengeType(target);
+            Challenge playerChallenge = ObjectiveManager.getChallengeType(event.getPlayer());
+            Challenge targetChallenge = ObjectiveManager.getChallengeType(target);
 
-            Object playerObjective = ItemManager.getChallenge(event.getPlayer());
-            Object targetObjective = ItemManager.getChallenge(target);
+            Object playerObjective = ObjectiveManager.getChallenge(event.getPlayer());
+            Object targetObjective = ObjectiveManager.getChallenge(target);
 
-            ItemManager.setChallengeType(event.getPlayer(), targetChallenge);
-            ItemManager.setChallengeType(target, playerChallenge);
+            ObjectiveManager.setChallengeType(event.getPlayer(), targetChallenge);
+            ObjectiveManager.setChallengeType(target, playerChallenge);
 
-            ItemManager.setChallenge(event.getPlayer(), targetChallenge, targetObjective);
-            ItemManager.setChallenge(target, playerChallenge, playerObjective);
+            ObjectiveManager.setChallenge(event.getPlayer(), targetChallenge, targetObjective);
+            ObjectiveManager.setChallenge(target, playerChallenge, playerObjective);
 
             event.getPlayer().setCooldown(stack.getType(), 20);
 
@@ -254,8 +245,8 @@ public class GameListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (event.getItemDrop().getItemStack().getItemMeta().equals(ItemProvider.getSkipItem(1).getItemMeta()) ||
-                event.getItemDrop().getItemStack().getItemMeta().equals(ItemProvider.getSwapitem(1).getItemMeta())) {
+        if (event.getItemDrop().getItemStack().isSimilar(ItemProvider.getSkipItem(1)) ||
+                event.getItemDrop().getItemStack().isSimilar(ItemProvider.getSwapitem(1))) {
             event.setCancelled(true);
         }
     }

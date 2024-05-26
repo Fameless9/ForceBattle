@@ -1,7 +1,7 @@
 package net.fameless.forcebattle.GUI;
 
 import net.fameless.forcebattle.manager.ChainManager;
-import net.fameless.forcebattle.manager.ItemManager;
+import net.fameless.forcebattle.manager.ObjectiveManager;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.Challenge;
 import org.bukkit.*;
@@ -33,7 +33,7 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (!sender.hasPermission("forcebattle.menu")) {
             sender.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.menu'");
             return false;
@@ -54,30 +54,30 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
         }
         int slot = event.getSlot();
 
-        boolean isForceItemEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_ITEM);
-        boolean isForceMobEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_MOB);
-        boolean isForceBiomeEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_BIOME);
-        boolean isForceAdvancementEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_ADVANCEMENT);
-        boolean isForceHeightEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_HEIGHT);
+        boolean isForceItemEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_ITEM);
+        boolean isForceMobEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_MOB);
+        boolean isForceBiomeEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_BIOME);
+        boolean isForceAdvancementEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_ADVANCEMENT);
+        boolean isForceHeightEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_HEIGHT);
 
         switch (slot) {
             case 0: {
                 if (isForceItemEnabled) {
-                    ItemManager.removeChallenge(Challenge.FORCE_ITEM);
+                    ObjectiveManager.removeChallenge(Challenge.FORCE_ITEM);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Item has been disabled.");
                     ChainManager.updateLists();
-                    if (ItemManager.activeChallenges.isEmpty()) {
+                    if (ObjectiveManager.activeChallenges.isEmpty()) {
                         Timer.setRunning(false);
                     }
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 } else {
-                    ItemManager.addChallenge(Challenge.FORCE_ITEM);
+                    ObjectiveManager.addChallenge(Challenge.FORCE_ITEM);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Item has been added.");
                     ChainManager.updateLists();
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 }
                 event.getWhoClicked().openInventory(menuGUI());
@@ -85,21 +85,21 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
             }
             case 1: {
                 if (isForceMobEnabled) {
-                    ItemManager.removeChallenge(Challenge.FORCE_MOB);
+                    ObjectiveManager.removeChallenge(Challenge.FORCE_MOB);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Mob has been disabled.");
                     ChainManager.updateLists();
-                    if (ItemManager.activeChallenges.isEmpty()) {
+                    if (ObjectiveManager.activeChallenges.isEmpty()) {
                         Timer.setRunning(false);
                     }
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 } else {
-                    ItemManager.addChallenge(Challenge.FORCE_MOB);
+                    ObjectiveManager.addChallenge(Challenge.FORCE_MOB);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Mob has been added.");
                     ChainManager.updateLists();
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 }
                 event.getWhoClicked().openInventory(menuGUI());
@@ -107,21 +107,21 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
             }
             case 2: {
                 if (isForceBiomeEnabled) {
-                    ItemManager.removeChallenge(Challenge.FORCE_BIOME);
+                    ObjectiveManager.removeChallenge(Challenge.FORCE_BIOME);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Biome has been disabled.");
                     ChainManager.updateLists();
-                    if (ItemManager.activeChallenges.isEmpty()) {
+                    if (ObjectiveManager.activeChallenges.isEmpty()) {
                         Timer.setRunning(false);
                     }
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 } else {
-                    ItemManager.addChallenge(Challenge.FORCE_BIOME);
+                    ObjectiveManager.addChallenge(Challenge.FORCE_BIOME);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Biome has been added.");
                     ChainManager.updateLists();
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 }
                 event.getWhoClicked().openInventory(menuGUI());
@@ -129,21 +129,21 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
             }
             case 3: {
                 if (isForceAdvancementEnabled) {
-                    ItemManager.removeChallenge(Challenge.FORCE_ADVANCEMENT);
+                    ObjectiveManager.removeChallenge(Challenge.FORCE_ADVANCEMENT);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Advancement has been disabled.");
                     ChainManager.updateLists();
-                    if (ItemManager.activeChallenges.isEmpty()) {
+                    if (ObjectiveManager.activeChallenges.isEmpty()) {
                         Timer.setRunning(false);
                     }
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 } else {
-                    ItemManager.addChallenge(Challenge.FORCE_ADVANCEMENT);
+                    ObjectiveManager.addChallenge(Challenge.FORCE_ADVANCEMENT);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Advancement has been added.");
                     ChainManager.updateLists();
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 }
                 event.getWhoClicked().openInventory(menuGUI());
@@ -151,21 +151,21 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
             }
             case 4: {
                 if (isForceHeightEnabled) {
-                    ItemManager.removeChallenge(Challenge.FORCE_HEIGHT);
+                    ObjectiveManager.removeChallenge(Challenge.FORCE_HEIGHT);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Height has been disabled.");
                     ChainManager.updateLists();
-                    if (ItemManager.activeChallenges.isEmpty()) {
+                    if (ObjectiveManager.activeChallenges.isEmpty()) {
                         Timer.setRunning(false);
                     }
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 } else {
-                    ItemManager.addChallenge(Challenge.FORCE_HEIGHT);
+                    ObjectiveManager.addChallenge(Challenge.FORCE_HEIGHT);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Force Height has been added.");
                     ChainManager.updateLists();
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 }
                 break;
@@ -196,13 +196,13 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
                     ChainManager.setChainModeEnabled(false);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Chain Mode has been disabled.");
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 } else {
                     ChainManager.setChainModeEnabled(true);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "Chain Mode has been enabled.");
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        ItemManager.updateObjective(player);
+                        ObjectiveManager.updateObjective(player);
                     }
                 }
                 break;
@@ -213,20 +213,20 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
 
     private Inventory menuGUI() {
 
-        boolean isForceItemEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_ITEM);
-        boolean isForceMobEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_MOB);
-        boolean isForceBiomeEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_BIOME);
-        boolean isForceAdvancementEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_ADVANCEMENT);
-        boolean isForceHeightEnabled = ItemManager.activeChallenges.contains(Challenge.FORCE_HEIGHT);
+        boolean isForceItemEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_ITEM);
+        boolean isForceMobEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_MOB);
+        boolean isForceBiomeEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_BIOME);
+        boolean isForceAdvancementEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_ADVANCEMENT);
+        boolean isForceHeightEnabled = ObjectiveManager.activeChallenges.contains(Challenge.FORCE_HEIGHT);
 
-        inventory = Bukkit.createInventory(this, 9,ChatColor.GOLD + "Select Challenges");
+        inventory = Bukkit.createInventory(this, 9, ChatColor.GOLD + "Select Challenges");
         inventory.setItem(0, buildItem(new ItemStack(Material.ITEM_FRAME), null, 0, null, ChatColor.GOLD + "Force Item",
                 ChatColor.GRAY + "Click to toggle Force Item.", "", ChatColor.BLUE + "Currently set to: " +
                         (isForceItemEnabled ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(1, buildItem(new ItemStack(Material.SPIDER_SPAWN_EGG), null, 0, null, ChatColor.GOLD + "Force Mob",
                 ChatColor.GRAY + "Click to toggle Force Mob.", "", ChatColor.BLUE + "Currently set to: " +
                         (isForceMobEnabled ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
-        inventory.setItem(2, buildItem(new ItemStack(Material.GRASS), null, 0, null, ChatColor.GOLD + "Force Biome",
+        inventory.setItem(2, buildItem(new ItemStack(Material.TALL_GRASS), null, 0, null, ChatColor.GOLD + "Force Biome",
                 ChatColor.GRAY + "Click to toggle Force Biome.", "", ChatColor.BLUE + "Currently set to: " +
                         (isForceBiomeEnabled ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         inventory.setItem(3, buildItem(new ItemStack(Material.BLAZE_ROD), null, 0, null, ChatColor.GOLD + "Force Advancement",
@@ -242,7 +242,7 @@ public class MenuUI implements CommandExecutor, Listener, InventoryHolder {
                 ChatColor.GOLD + "Keep Inventory", ChatColor.GRAY + "Click to toggle Keep Inventory in all worlds.", "",
                 ChatColor.BLUE + "Currently set to: " +
                         (isKeepInventory ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
-        inventory.setItem(6, buildItem(new ItemStack(Material.CHEST), null, 0, null, ChatColor.GOLD  + "Backpack",
+        inventory.setItem(6, buildItem(new ItemStack(Material.CHEST), null, 0, null, ChatColor.GOLD + "Backpack",
                 ChatColor.GRAY + "Click to toggle team/personal backpacks.", "", ChatColor.BLUE + "Currently set to: " + (isBackpackEnabled() ?
                         ChatColor.GREEN + "true" : ChatColor.RED + "false")));
         return inventory;

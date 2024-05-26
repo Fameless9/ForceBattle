@@ -3,6 +3,7 @@ package net.fameless.forcebattle.listener;
 import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.command.BackpackCommand;
 import net.fameless.forcebattle.manager.*;
+import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,12 +15,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 public class JoinListener implements Listener {
 
+    public static boolean isUpdated = true;
     private final List<UUID> receivedSkip;
     private final List<UUID> receivedSwap;
 
@@ -28,13 +29,12 @@ public class JoinListener implements Listener {
         this.receivedSwap = new ArrayList<>();
     }
 
-    public static boolean isUpdated = true;
-
     @EventHandler(ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         NametagManager.removeTag(event.getPlayer());
-        if (TeamManager.getTeam(event.getPlayer()) != null) {
-            TeamManager.getTeam(event.getPlayer()).removePlayer(event.getPlayer());
+        Team team = TeamManager.getTeam(event.getPlayer());
+        if (team != null) {
+            team.removePlayer(event.getPlayer());
         }
     }
 
@@ -56,29 +56,29 @@ public class JoinListener implements Listener {
         if (!PointsManager.pointsMap.containsKey(player.getUniqueId())) {
             PointsManager.pointsMap.put(player.getUniqueId(), 0);
         }
-        if (!ItemManager.finishedObjectives.containsKey(player.getUniqueId())) {
-            ItemManager.finishedObjectives.put(player.getUniqueId(), new ArrayList<>());
+        if (!ObjectiveManager.finishedObjectives.containsKey(player.getUniqueId())) {
+            ObjectiveManager.finishedObjectives.put(player.getUniqueId(), new ArrayList<>());
         }
-        if (!ItemManager.objectiveTimeMap.containsKey(player.getUniqueId())) {
-            ItemManager.objectiveTimeMap.put(player.getUniqueId(), new ArrayList<>());
+        if (!ObjectiveManager.objectiveTimeMap.containsKey(player.getUniqueId())) {
+            ObjectiveManager.objectiveTimeMap.put(player.getUniqueId(), new ArrayList<>());
         }
-        if (ItemManager.getChallenge(player) == null) {
-            ItemManager.updateObjective(player);
+        if (ObjectiveManager.getChallenge(player) == null) {
+            ObjectiveManager.updateObjective(player);
         }
-        if (!BackpackCommand.backpackMap.containsKey(player)) {
-            BackpackCommand.backpackMap.put(player, Bukkit.createInventory(null, 27, ChatColor.GOLD + "Backpack"));
+        if (!BackpackCommand.backpackMap.containsKey(player.getUniqueId())) {
+            BackpackCommand.backpackMap.put(player.getUniqueId(), Bukkit.createInventory(null, 27, ChatColor.GOLD + "Backpack"));
         }
 
         ChainManager.addPlayer(player);
 
         if (!receivedSkip.contains(player.getUniqueId())) {
             int skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("jokers");
-            ItemManager.giveSkipItem(player, skipAmount);
+            ObjectiveManager.giveSkipItem(player, skipAmount);
             receivedSkip.add(player.getUniqueId());
         }
         if (!receivedSwap.contains(player.getUniqueId())) {
             int swapAmount = ForceBattlePlugin.getInstance().getConfig().getInt("swappers");
-            ItemManager.giveSwapItem(player, swapAmount);
+            ObjectiveManager.giveSwapItem(player, swapAmount);
             receivedSwap.add(player.getUniqueId());
         }
 

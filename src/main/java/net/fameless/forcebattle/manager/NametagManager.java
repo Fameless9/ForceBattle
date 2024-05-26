@@ -29,44 +29,43 @@ public class NametagManager implements Listener {
             team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(player.getUniqueId().toString());
         }
 
-        Challenge type = ItemManager.getChallengeType(player);
-        Object challenge = ItemManager.getChallenge(player);
+        Challenge type = ObjectiveManager.getChallengeType(player);
+        Object challenge = ObjectiveManager.getChallenge(player);
 
         StringBuilder suffix = new StringBuilder();
 
         if (ExcludeCommand.excludedPlayers.contains(player)) {
-            suffix.append(ChatColor.GRAY + " - excluded");
+            suffix.append(ChatColor.GRAY).append(" - excluded");
             team.setSuffix(suffix.toString());
             return;
         }
 
-        suffix.append(" " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player));
+        suffix.append(" ").append(ChatColor.GOLD).append("Points").append(ChatColor.DARK_GRAY).append(": ").append(ChatColor.GOLD)
+                .append(PointsManager.getPoints(player));
 
         if (!Timer.isRunning()) {
-            suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Waiting...");
+            suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GOLD).append("Waiting...");
             team.setSuffix(suffix.toString());
             return;
         }
         if (type != null) {
-            if (type.equals(Challenge.FORCE_ITEM)) {
-                Material item = (Material) challenge;
-                suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Item" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + BossbarManager.formatItemName(item.name().replace("_", " ")));
-            } else if (type.equals(Challenge.FORCE_MOB)) {
-                EntityType mob = (EntityType) challenge;
-                suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Mob" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + BossbarManager.formatItemName(mob.name().replace("_", " ")));
-            } else if (type.equals(Challenge.FORCE_BIOME)) {
-                Biome biome = (Biome) challenge;
-                suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Biome" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + BossbarManager.formatItemName(biome.name().replace("_", " ")));
-            } else if (type.equals(Challenge.FORCE_ADVANCEMENT)) {
-                Advancement advancement = (Advancement) challenge;
+            if (challenge instanceof Material item) {
+                suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GOLD).append("Item").append(ChatColor.DARK_GRAY)
+                        .append(": ").append(ChatColor.GOLD).append(BossbarManager.formatItemName(item.name().replace("_", " ")));
+            } else if (challenge instanceof EntityType mob) {
+                suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GOLD).append("Mob").append(ChatColor.DARK_GRAY)
+                        .append(": ").append(ChatColor.GOLD).append(BossbarManager.formatItemName(mob.name().replace("_", " ")));
+            } else if (challenge instanceof Biome biome) {
+                suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Biome" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD).append(BossbarManager.formatItemName(biome.name().replace("_", " ")));
+            } else if (challenge instanceof Advancement advancement) {
                 suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Advancement" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + BossbarManager.formatItemName(advancement.name().replace("_", " ")));
-            } else if (type.equals(Challenge.FORCE_HEIGHT)) {
-                int height = (int) challenge;
+            } else if (challenge instanceof Integer height) {
                 suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Height" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + height);
             }
         }
-        if (TeamManager.getTeam(player) != null) {
-            suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Team" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + TeamManager.getTeam(player).getId());
+        net.fameless.forcebattle.team.Team playerTeam = TeamManager.getTeam(player);
+        if (playerTeam != null) {
+            suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Team" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + playerTeam.getId());
         }
         String formattedSuffix = String.valueOf(suffix).replace("_", " ");
         team.setSuffix(formattedSuffix);

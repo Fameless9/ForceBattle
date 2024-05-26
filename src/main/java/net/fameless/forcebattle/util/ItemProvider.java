@@ -15,6 +15,7 @@ public class ItemProvider {
 
     public static ItemStack buildItem(ItemStack item, List<Enchantment> enchantments, int level, List<ItemFlag> itemFlags, String name, String... lore) {
         ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
         meta.setDisplayName(name);
 
         if (enchantments != null) {
@@ -34,18 +35,6 @@ public class ItemProvider {
         meta.setLore(lores);
         item.setItemMeta(meta);
         return item;
-    }
-
-    public static List<Enchantment> enchantments(Enchantment... enchantments) {
-        List<Enchantment> list = new ArrayList<>();
-        Collections.addAll(list, enchantments);
-        return list;
-    }
-
-    public static List<ItemFlag> itemFlags(ItemFlag... itemFlags) {
-        List<ItemFlag> list = new ArrayList<>();
-        Collections.addAll(list, itemFlags);
-        return list;
     }
 
     public static ItemStack getSkipItem(int amount) {

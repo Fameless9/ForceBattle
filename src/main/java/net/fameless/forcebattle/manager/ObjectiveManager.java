@@ -1,6 +1,5 @@
 package net.fameless.forcebattle.manager;
 
-import com.google.gson.JsonObject;
 import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.Advancement;
@@ -16,17 +15,17 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.*;
 
-public class ItemManager {
+public class ObjectiveManager {
 
+    public static final HashMap<UUID, List<Object>> finishedObjectives = new HashMap<>();
+    public static final HashMap<UUID, List<Integer>> objectiveTimeMap = new HashMap<>();
+    public static final List<Challenge> activeChallenges = new ArrayList<>();
     private static final HashMap<UUID, Challenge> playerTypeMap = new HashMap<>();
     private static final HashMap<UUID, Material> itemMap = new HashMap<>();
     private static final HashMap<UUID, EntityType> mobMap = new HashMap<>();
     private static final HashMap<UUID, Biome> biomeMap = new HashMap<>();
     private static final HashMap<UUID, Advancement> advancementMap = new HashMap<>();
     private static final HashMap<UUID, Integer> heightMap = new HashMap<>();
-    public static final HashMap<UUID, List<Object>> finishedObjectives = new HashMap<>();
-    public static final HashMap<UUID, List<Integer>> objectiveTimeMap = new HashMap<>();
-    public static final List<Challenge> activeChallenges = new ArrayList<>();
     private static final Random random = new Random();
 
     public static void addChallenge(Challenge challenge) {
@@ -90,24 +89,13 @@ public class ItemManager {
             return null;
         }
 
-        switch (playerChallenge) {
-            case FORCE_ITEM: {
-                return itemMap.get(player.getUniqueId());
-            }
-            case FORCE_MOB: {
-                return mobMap.get(player.getUniqueId());
-            }
-            case FORCE_BIOME: {
-                return biomeMap.get(player.getUniqueId());
-            }
-            case FORCE_ADVANCEMENT: {
-                return advancementMap.get(player.getUniqueId());
-            }
-            case FORCE_HEIGHT: {
-                return heightMap.get(player.getUniqueId());
-            }
-        }
-        return null;
+        return switch (playerChallenge) {
+            case FORCE_ITEM -> itemMap.get(player.getUniqueId());
+            case FORCE_MOB -> mobMap.get(player.getUniqueId());
+            case FORCE_BIOME -> biomeMap.get(player.getUniqueId());
+            case FORCE_ADVANCEMENT -> advancementMap.get(player.getUniqueId());
+            case FORCE_HEIGHT -> heightMap.get(player.getUniqueId());
+        };
     }
 
     private static void newObjective(Player player, Challenge challenge) {
@@ -134,14 +122,14 @@ public class ItemManager {
                     ChainManager.itemProgressMap.put(player, ChainManager.itemProgressMap.get(player) + 1);
                     return;
                 }
-                List<String> list = toList(ItemFile.getItemObject());
+                List<Material> list = ObjectiveLists.getAvailableItems();
                 if (list.isEmpty()) {
                     Bukkit.getLogger().info("Item list is empty.");
                     player.sendMessage(ChatColor.RED + "Item list is empty.");
                     return;
                 }
 
-                Material newMaterial = Material.valueOf(list.get(random.nextInt(list.size())));
+                Material newMaterial = list.get(random.nextInt(list.size()));
                 itemMap.put(player.getUniqueId(), newMaterial);
                 break;
             }
@@ -159,14 +147,14 @@ public class ItemManager {
                     ChainManager.mobProgressMap.put(player, ChainManager.mobProgressMap.get(player) + 1);
                     return;
                 }
-                List<String> availableMobs = toList(ItemFile.getMobObject());
+                List<EntityType> availableMobs = ObjectiveLists.getAvailableMobs();
                 if (availableMobs.isEmpty()) {
                     Bukkit.getLogger().info("Mob list is empty.");
                     player.sendMessage(ChatColor.RED + "Mob list is empty.");
                     return;
                 }
 
-                EntityType newMob = EntityType.valueOf(availableMobs.get(random.nextInt(availableMobs.size())));
+                EntityType newMob = availableMobs.get(random.nextInt(availableMobs.size()));
                 mobMap.put(player.getUniqueId(), newMob);
                 break;
             }
@@ -184,14 +172,14 @@ public class ItemManager {
                     ChainManager.biomeProgressMap.put(player, ChainManager.biomeProgressMap.get(player) + 1);
                     return;
                 }
-                List<String> availableBiomes = toList(ItemFile.getBiomeObject());
+                List<Biome> availableBiomes = ObjectiveLists.getAvailableBiomes();
                 if (availableBiomes.isEmpty()) {
                     Bukkit.getLogger().info("Biome list is empty.");
                     player.sendMessage(ChatColor.RED + "Biome list is empty.");
                     return;
                 }
 
-                Biome newBiome = Biome.valueOf(availableBiomes.get(random.nextInt(availableBiomes.size())));
+                Biome newBiome = availableBiomes.get(random.nextInt(availableBiomes.size()));
                 biomeMap.put(player.getUniqueId(), newBiome);
                 break;
             }
@@ -215,14 +203,14 @@ public class ItemManager {
                     }
                     return;
                 }
-                List<String> availableAdvancements = toList(ItemFile.getAdvancementObject());
+                List<Advancement> availableAdvancements = ObjectiveLists.getAvailableAdvancements();
                 if (availableAdvancements.isEmpty()) {
                     Bukkit.getLogger().info("Advancement list is empty.");
                     player.sendMessage(ChatColor.RED + "Advancement list is empty.");
                     return;
                 }
 
-                Advancement newAdvancement = Advancement.valueOf(availableAdvancements.get(random.nextInt(availableAdvancements.size())));
+                Advancement newAdvancement = availableAdvancements.get(random.nextInt(availableAdvancements.size()));
                 advancementMap.put(player.getUniqueId(), newAdvancement);
                 if (Timer.isRunning()) {
                     player.sendMessage(ChatColor.GRAY + "-----------------------");
@@ -246,14 +234,14 @@ public class ItemManager {
                     ChainManager.heightProgressMap.put(player, ChainManager.heightProgressMap.get(player) + 1);
                     return;
                 }
-                List<String> availableHeights = toList(ItemFile.getHeightObject());
+                List<Integer> availableHeights = ObjectiveLists.getAvailableHeights();
                 if (availableHeights.isEmpty()) {
                     Bukkit.getLogger().info("Height list is empty.");
                     player.sendMessage(ChatColor.RED + "Height list is empty.");
                     return;
                 }
 
-                int newHeight = Integer.parseInt(availableHeights.get(random.nextInt(availableHeights.size())));
+                int newHeight = availableHeights.get(random.nextInt(availableHeights.size()));
                 heightMap.put(player.getUniqueId(), newHeight);
                 break;
             }
@@ -265,10 +253,6 @@ public class ItemManager {
             return null;
         }
         return activeChallenges.get(random.nextInt(activeChallenges.size()));
-    }
-
-    private static List<String> toList(JsonObject jsonObject) {
-        return new ArrayList<>(jsonObject.keySet());
     }
 
     public static void updateObjective(Player player) {

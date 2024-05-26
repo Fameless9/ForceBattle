@@ -15,7 +15,7 @@ public class PointsPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return "Fxmeless";
+        return "Fameless9";
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,12 +22,11 @@ public class TeamCommand implements CommandExecutor {
     public HashMap<Player, Team> inviteMap = new HashMap<>();
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(ChatColor.RED + "Only players can use this command.");
             return false;
         }
-        final Player player = (Player) sender;
         if (args.length >= 1) {
             switch (args[0]) {
                 case "join": {
@@ -43,29 +43,32 @@ public class TeamCommand implements CommandExecutor {
                             return false;
                         }
                         Team newTeam = TeamManager.getTeam(teamId);
-                        if (newTeam.isPrivate() && !player.isOp()) {
+                        if (newTeam != null && newTeam.isPrivate() && !player.isOp()) {
                             player.sendMessage(ChatColor.RED + "Team is private.");
                             return false;
                         }
-                        if (TeamManager.getTeam(player) != null && TeamManager.getTeam(player).getId() == (newTeam.getId())) {
+                        Team playerTeam = TeamManager.getTeam(player);
+                        if (playerTeam != null && newTeam != null && playerTeam.getId() == newTeam.getId()) {
                             player.sendMessage(ChatColor.RED + "You are already part of that team.");
                             return false;
                         }
-                        if (TeamManager.getTeam(player) != null) {
-                            TeamManager.getTeam(player).removePlayer(player);
+                        if (playerTeam != null && newTeam != null) {
+                            playerTeam.removePlayer(player);
+                            newTeam.addPlayer(player);
+                            NametagManager.updateNametag(player);
+                            BossbarManager.updateBossbar(player);
+                            player.sendMessage(ChatColor.GREEN + "Joined team " + newTeam.getId());
+                        } else {
+                            player.sendMessage(ChatColor.RED + "Team does not exist.");
                         }
-                        newTeam.addPlayer(player);
-                        NametagManager.updateNametag(player);
-                        BossbarManager.updateBossbar(player);
-                        player.sendMessage(ChatColor.GREEN + "Joined team " + newTeam.getId());
                     } else {
                         sendUsage(player);
                     }
                     break;
                 }
                 case "leave": {
-                    if (TeamManager.getTeam(player) != null) {
-                        Team team = TeamManager.getTeam(player);
+                    Team team = TeamManager.getTeam(player);
+                    if (team != null) {
                         team.removePlayer(player);
                         player.sendMessage(ChatColor.RED + "Left team " + team.getId());
                         NametagManager.updateNametag(player);
@@ -84,7 +87,7 @@ public class TeamCommand implements CommandExecutor {
                         int teamId;
                         try {
                             teamId = Integer.parseInt(args[1]);
-                        } catch (NumberFormatException e){
+                        } catch (NumberFormatException e) {
                             player.sendMessage(ChatColor.RED + "ID must be number.");
                             return false;
                         }
@@ -94,11 +97,11 @@ public class TeamCommand implements CommandExecutor {
                             NametagManager.updateNametag(player);
                             BossbarManager.updateBossbar(player);
                         } else {
-                            player.sendMessage(ChatColor.RED + "Team " + teamId +  " couldn't be found.");
+                            player.sendMessage(ChatColor.RED + "Team " + teamId + " couldn't be found.");
                         }
                     } else {
-                        if (TeamManager.getTeam(player) != null) {
-                            Team team = TeamManager.getTeam(player);
+                        Team team = TeamManager.getTeam(player);
+                        if (team != null) {
                             if (player.getUniqueId().equals(team.getLeader().getUniqueId()) || player.isOp()) {
                                 TeamManager.removeTeam(team);
                             } else {
@@ -126,7 +129,7 @@ public class TeamCommand implements CommandExecutor {
                         return false;
                     }
                     Team team = TeamManager.getTeam(player);
-                    if (!player.getUniqueId().equals(team.getLeader().getUniqueId()) && team.isPrivate()) {
+                    if (team != null && !player.getUniqueId().equals(team.getLeader().getUniqueId()) && team.isPrivate()) {
                         player.sendMessage(ChatColor.RED + "You are not the team leader.");
                         return false;
                     }
@@ -140,17 +143,19 @@ public class TeamCommand implements CommandExecutor {
                     }
 
                     Player target = Bukkit.getPlayer(args[1]);
-                    inviteMap.put(target, team);
-                    target.sendMessage(ChatColor.GOLD + player.getName() + " invited you to join their team. /team accept | decline");
+                    if (target != null) {
+                        inviteMap.put(target, team);
+                        target.sendMessage(ChatColor.GOLD + player.getName() + " invited you to join their team. /team accept | decline");
+                    }
 
                     break;
                 }
                 case "open": {
-                    if (TeamManager.getTeam(player) == null) {
+                    Team team = TeamManager.getTeam(player);
+                    if (team == null) {
                         player.sendMessage(ChatColor.RED + "You are not in a team.");
                         return false;
                     }
-                    Team team = TeamManager.getTeam(player);
                     if (!player.getUniqueId().equals(team.getLeader().getUniqueId()) && !player.isOp()) {
                         player.sendMessage(ChatColor.RED + "You are not the team leader.");
                         return false;
@@ -160,11 +165,11 @@ public class TeamCommand implements CommandExecutor {
                     break;
                 }
                 case "close": {
-                    if (TeamManager.getTeam(player) == null) {
+                    Team team = TeamManager.getTeam(player);
+                    if (team == null) {
                         player.sendMessage(ChatColor.RED + "You are not in a team.");
                         return false;
                     }
-                    Team team = TeamManager.getTeam(player);
                     if (!player.getUniqueId().equals(team.getLeader().getUniqueId()) && !player.isOp()) {
                         player.sendMessage(ChatColor.RED + "You are not the team leader.");
                         return false;
@@ -211,12 +216,12 @@ public class TeamCommand implements CommandExecutor {
                             return false;
                         }
                         Team team = TeamManager.getTeam(player);
-                        if (!player.getUniqueId().equals(team.getLeader().getUniqueId()) && !player.isOp()) {
+                        if (team != null && !player.getUniqueId().equals(team.getLeader().getUniqueId()) && !player.isOp()) {
                             player.sendMessage(ChatColor.RED + "You are not the team leader.");
                             return false;
                         }
-                        if (Bukkit.getPlayer(args[1]) != null) {
-                            Player target = Bukkit.getPlayer(args[1]);
+                        Player target = Bukkit.getPlayer(args[1]);
+                        if (team != null && target != null) {
                             if (!team.getPlayers().contains(target)) {
                                 player.sendMessage(ChatColor.RED + "Player is not part of the team.");
                                 return false;
@@ -247,7 +252,7 @@ public class TeamCommand implements CommandExecutor {
                             }
                             Team team = TeamManager.getTeam(teamId);
                             Player target = Bukkit.getPlayer(args[2]);
-                            if (team.getPlayers().contains(target)) {
+                            if (target != null && team != null && team.getPlayers().contains(target)) {
                                 team.removePlayer(target);
                                 target.sendMessage(ChatColor.RED + "An operator has kicked you from your team.");
                                 player.sendMessage(ChatColor.GREEN + "Player has been kicked.");
