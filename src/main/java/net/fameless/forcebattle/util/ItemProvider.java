@@ -39,11 +39,11 @@ public class ItemProvider {
 
     public static ItemStack getSkipItem(int amount) {
         return buildItem(new ItemStack(Material.BARRIER, amount), null, 0, null,
-                ChatColor.GOLD + "Skip Item", ChatColor.BLUE + "Right click to skip item.");
+                ChatColor.GOLD + "Skip", ChatColor.GRAY + "Right click to skip item.");
     }
 
     public static ItemStack getSwapitem(int amount) {
         return buildItem(new ItemStack(Material.STRUCTURE_VOID, amount), null, 0, null,
-                ChatColor.GOLD + "Swap Item", ChatColor.BLUE + "Right click to swap items with another player.");
+                ChatColor.GOLD + "Swap", ChatColor.GRAY + "Right click to swap items with another player.");
     }
 }

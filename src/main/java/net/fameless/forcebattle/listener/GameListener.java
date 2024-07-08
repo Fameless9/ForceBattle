@@ -6,8 +6,8 @@ import net.fameless.forcebattle.manager.BossbarManager;
 import net.fameless.forcebattle.manager.NametagManager;
 import net.fameless.forcebattle.manager.ObjectiveManager;
 import net.fameless.forcebattle.manager.PointsManager;
-import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.Challenge;
+import net.fameless.forcebattle.util.Format;
 import net.fameless.forcebattle.util.ItemProvider;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -26,25 +26,26 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GameListener implements Listener {
 
+    private static final List<UUID> onSkipCooldown = new ArrayList<>();
+    private static final List<UUID> onSwapCooldown = new ArrayList<>();
+
     public static void run() {
         Bukkit.getScheduler().runTaskTimer(ForceBattlePlugin.getInstance(), () -> {
-            if (!Timer.isRunning()) return;
+            if (!ForceBattlePlugin.getInstance().getTimer().isRunning()) return;
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (ExcludeCommand.excludedPlayers.contains(player)) continue;
                 Challenge playerChallengeType = ObjectiveManager.getChallengeType(player);
-                Object challengeObject = ObjectiveManager.getChallenge(player);
+                Object challengeObject = ObjectiveManager.getObjective(player);
 
                 if (playerChallengeType == Challenge.FORCE_ITEM && challengeObject instanceof Material requiredMaterial) {
 
                     if (player.getInventory().contains(requiredMaterial)) {
-                        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " found item " + BossbarManager.formatItemName(requiredMaterial.name().replace("_", " ")));
+                        Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " found item " + ChatColor.GOLD + Format.formatName(requiredMaterial.name()));
                         PointsManager.addPoint(player);
                         ObjectiveManager.updateObjective(player);
                     }
@@ -53,7 +54,7 @@ public class GameListener implements Listener {
                 if (playerChallengeType == Challenge.FORCE_BIOME && challengeObject instanceof Biome requiredBiome) {
 
                     if (player.getWorld().getBiome(player.getLocation()) == requiredBiome) {
-                        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " found biome " + BossbarManager.formatItemName(requiredBiome.name().replace("_", " ")));
+                        Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " found biome " + ChatColor.GOLD + Format.formatName(requiredBiome.name()));
                         PointsManager.addPoint(player);
                         ObjectiveManager.updateObjective(player);
                     }
@@ -62,7 +63,7 @@ public class GameListener implements Listener {
                 if (playerChallengeType == Challenge.FORCE_ADVANCEMENT && challengeObject instanceof net.fameless.forcebattle.util.Advancement requiredAdvancement) {
 
                     if (hasAdvancement(player, requiredAdvancement.getKey().toString())) {
-                        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " completed advancement " + BossbarManager.formatItemName(requiredAdvancement.name().replace("_", " ")));
+                        Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " completed advancement " + ChatColor.GOLD + Format.formatName(requiredAdvancement.name()));
                         PointsManager.addPoint(player);
                         ObjectiveManager.updateObjective(player);
                         resetAdvancements(player);
@@ -73,7 +74,7 @@ public class GameListener implements Listener {
                     int requiredHeight = (Integer) challengeObject;
 
                     if (player.getLocation().getBlockY() == requiredHeight) {
-                        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " reached height " + requiredHeight);
+                        Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " reached height " + ChatColor.GOLD + requiredHeight);
                         PointsManager.addPoint(player);
                         ObjectiveManager.updateObjective(player);
                     }
@@ -113,7 +114,7 @@ public class GameListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!Timer.isRunning()) return;
+        if (!ForceBattlePlugin.getInstance().getTimer().isRunning()) return;
         if (!(event.getDamager() instanceof Player player)) return;
         if (ExcludeCommand.excludedPlayers.contains(player)) return;
         if (!event.getEntity().isDead()) {
@@ -121,14 +122,14 @@ public class GameListener implements Listener {
             if (entity.getHealth() - event.getDamage() > 0) return;
         }
 
-        if (!(ObjectiveManager.getChallenge(player) instanceof EntityType requiredEntity)) return;
+        if (!(ObjectiveManager.getObjective(player) instanceof EntityType requiredEntity)) return;
 
         if (event.getEntity().getType().equals(requiredEntity)) {
             if (!event.getEntity().isDead()) {
                 LivingEntity entity = (LivingEntity) event.getEntity();
                 if (entity.getHealth() - event.getDamage() > 0) return;
             }
-            Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " killed mob " + BossbarManager.formatItemName(event.getEntity().getType().name().replace("_", " ")));
+            Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " killed mob " + ChatColor.GOLD + Format.formatName(event.getEntity().getType().name()));
             PointsManager.addPoint(player);
             ObjectiveManager.updateObjective(player);
         }
@@ -139,16 +140,17 @@ public class GameListener implements Listener {
         if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) return;
         if (ExcludeCommand.excludedPlayers.contains(event.getPlayer())) return;
+        if (onSkipCooldown.contains(event.getPlayer().getUniqueId())) return;
         if (event.getItem() != null && event.getItem().isSimilar(ItemProvider.getSkipItem(1))) {
             event.setCancelled(true);
 
-            if (!Timer.isRunning()) {
-                event.getPlayer().sendMessage(ChatColor.RED + "Can't skip while timer is paused.");
+            if (!ForceBattlePlugin.getInstance().getTimer().isRunning()) {
+                event.getPlayer().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Can't skip while timer is paused.");
                 return;
             }
 
-            if (ObjectiveManager.getChallenge(event.getPlayer()) == null) {
-                event.getPlayer().sendMessage(ChatColor.RED + "No objective to skip.");
+            if (ObjectiveManager.getObjective(event.getPlayer()) == null) {
+                event.getPlayer().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "No objective to skip.");
                 return;
             }
 
@@ -159,15 +161,28 @@ public class GameListener implements Listener {
             inventory.setItem(slot, stack);
             event.getPlayer().setCooldown(stack.getType(), 20);
 
-            if (ObjectiveManager.getChallenge(event.getPlayer()) instanceof Material material) {
+            Object objective = ObjectiveManager.getObjective(event.getPlayer());
+            if (objective instanceof Material material) {
                 event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(),
                         new ItemStack(material));
+                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.GRAY + " skipped item " + ChatColor.GOLD + Format.formatName(material.name()));
+            } else if (objective instanceof EntityType mob) {
+                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.GRAY + " skipped mob " + ChatColor.GOLD + Format.formatName(mob.name()));
+            } else if (objective instanceof Biome biome) {
+                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.GRAY + " skipped biome " + ChatColor.GOLD + Format.formatName(biome.name()));
+            } else if (objective instanceof net.fameless.forcebattle.util.Advancement advancement) {
+                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.GRAY + " skipped advancement " + ChatColor.GOLD + advancement.getName());
+            } else if (objective instanceof Integer height) {
+                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.GRAY + " skipped height " + ChatColor.GOLD + height);
             }
 
             ObjectiveManager.updateObjective(event.getPlayer());
             PointsManager.addPoint(event.getPlayer());
             NametagManager.updateNametag(event.getPlayer());
             BossbarManager.updateBossbar(event.getPlayer());
+            onSkipCooldown.add(event.getPlayer().getUniqueId());
+
+            Bukkit.getScheduler().runTaskLater(ForceBattlePlugin.getInstance(), () -> onSkipCooldown.remove(event.getPlayer().getUniqueId()), 20);
         }
     }
 
@@ -176,28 +191,29 @@ public class GameListener implements Listener {
         if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) return;
         if (ExcludeCommand.excludedPlayers.contains(event.getPlayer())) return;
+        if (onSwapCooldown.contains(event.getPlayer().getUniqueId())) return;
         if (event.getItem() != null && event.getItem().isSimilar(ItemProvider.getSwapitem(1))) {
             event.setCancelled(true);
 
-            if (!Timer.isRunning()) {
-                event.getPlayer().sendMessage(ChatColor.RED + "Can't swap while timer is paused.");
+            if (!ForceBattlePlugin.getInstance().getTimer().isRunning()) {
+                event.getPlayer().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Can't swap while timer is paused.");
                 return;
             }
 
-            if (ObjectiveManager.getChallenge(event.getPlayer()) == null) {
-                event.getPlayer().sendMessage(ChatColor.RED + "No objective to swap.");
+            if (ObjectiveManager.getObjective(event.getPlayer()) == null) {
+                event.getPlayer().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "No objective to swap.");
                 return;
             }
 
             List<Player> availablePlayers = new ArrayList<>();
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (event.getPlayer().equals(player)) continue;
-                if (ObjectiveManager.getChallenge(player) == null) continue;
+                if (ObjectiveManager.getObjective(player) == null) continue;
                 availablePlayers.add(player);
             }
 
             if (availablePlayers.isEmpty()) {
-                event.getPlayer().sendMessage(ChatColor.RED + "No players available.");
+                event.getPlayer().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "No players available.");
                 return;
             }
 
@@ -214,8 +230,8 @@ public class GameListener implements Listener {
             Challenge playerChallenge = ObjectiveManager.getChallengeType(event.getPlayer());
             Challenge targetChallenge = ObjectiveManager.getChallengeType(target);
 
-            Object playerObjective = ObjectiveManager.getChallenge(event.getPlayer());
-            Object targetObjective = ObjectiveManager.getChallenge(target);
+            Object playerObjective = ObjectiveManager.getObjective(event.getPlayer());
+            Object targetObjective = ObjectiveManager.getObjective(target);
 
             ObjectiveManager.setChallengeType(event.getPlayer(), targetChallenge);
             ObjectiveManager.setChallengeType(target, playerChallenge);
@@ -225,12 +241,12 @@ public class GameListener implements Listener {
 
             event.getPlayer().setCooldown(stack.getType(), 20);
 
-            target.sendMessage(ChatColor.GOLD + event.getPlayer().getName() + " swapped their objective with yours.");
-            event.getPlayer().sendMessage(ChatColor.GOLD + "Your objective was swapped with " + target.getName() + "'s.");
+            target.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + event.getPlayer().getName() + " swapped their objective with yours.");
+            event.getPlayer().sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Your objective was swapped with " + target.getName() + "'s.");
 
             for (Player player3 : Bukkit.getOnlinePlayers()) {
                 if (player3 != target && player3 != event.getPlayer()) {
-                    player3.sendMessage(ChatColor.GOLD + event.getPlayer().getName() + " swapped their item with " + target.getName() + ".");
+                    player3.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + event.getPlayer().getName() + " swapped their item with " + target.getName() + ".");
                 }
             }
 
@@ -240,6 +256,9 @@ public class GameListener implements Listener {
             NametagManager.updateNametag(event.getPlayer());
             BossbarManager.updateBossbar(target);
             BossbarManager.updateBossbar(event.getPlayer());
+            onSwapCooldown.add(event.getPlayer().getUniqueId());
+
+            Bukkit.getScheduler().runTaskLater(ForceBattlePlugin.getInstance(), () -> onSwapCooldown.remove(event.getPlayer().getUniqueId()), 20);
         }
     }
 

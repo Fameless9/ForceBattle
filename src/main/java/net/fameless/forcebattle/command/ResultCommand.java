@@ -1,10 +1,9 @@
 package net.fameless.forcebattle.command;
 
-import net.fameless.forcebattle.manager.BossbarManager;
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.manager.ObjectiveManager;
-import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.Advancement;
-import net.fameless.forcebattle.util.FormatTime;
+import net.fameless.forcebattle.util.Format;
 import net.fameless.forcebattle.util.ItemProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,28 +21,26 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ResultCommand implements CommandExecutor, Listener {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(ChatColor.RED + "/result <player>");
+            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "/result <player>");
             return false;
         }
         if (Bukkit.getPlayerExact(args[0]) == null) {
-            sender.sendMessage(ChatColor.RED + "Player couldn't be found.");
+            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Player couldn't be found.");
             return false;
         }
         if (sender instanceof Player player) {
-            if (Timer.isRunning()) {
-                sender.sendMessage(ChatColor.AQUA + "Only available when timer is not running.");
-                return false;
-            }
             Player target = Bukkit.getPlayer(args[0]);
             new GUI(player, target, 1);
         }
@@ -55,8 +52,17 @@ public class ResultCommand implements CommandExecutor, Listener {
         if (!(event.getInventory().getHolder() instanceof GUI)) return;
         if (event.getCurrentItem() == null) return;
 
-        Player target = Bukkit.getPlayer(event.getInventory().getItem(8).getItemMeta().getLocalizedName());
-        int page = Integer.parseInt(event.getInventory().getItem(0).getItemMeta().getLocalizedName());
+        String UUIDString = event.getInventory().getItem(0).getItemMeta().getPersistentDataContainer().get(ForceBattlePlugin.playerKey, PersistentDataType.STRING);
+        if (UUIDString == null) return;
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(UUIDString);
+        } catch (IllegalArgumentException e) {
+            return;
+        }
+
+        Player target = Bukkit.getPlayer(uuid);
+        int page = event.getInventory().getItem(0).getItemMeta().getPersistentDataContainer().get(ForceBattlePlugin.pageKey, PersistentDataType.INTEGER);
 
         if (event.getRawSlot() == 0 && event.getCurrentItem().getType().equals(Material.LIME_STAINED_GLASS_PANE)) {
             new GUI((Player) event.getWhoClicked(), target, page - 1);
@@ -71,7 +77,7 @@ public class ResultCommand implements CommandExecutor, Listener {
 
         public GUI(Player player, Player target, int page) {
             if (target == null) {
-                player.sendMessage(ChatColor.RED + "Target player is not available anymore!");
+                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Target player is not available anymore!");
                 player.closeInventory();
                 return;
             }
@@ -95,14 +101,12 @@ public class ResultCommand implements CommandExecutor, Listener {
                 }
             }
 
-            if (leftMeta != null) {
-                leftMeta.setLocalizedName(page + "");
-                left.setItemMeta(leftMeta);
-            }
+            leftMeta.getPersistentDataContainer().set(ForceBattlePlugin.pageKey, PersistentDataType.INTEGER, page);
+            leftMeta.getPersistentDataContainer().set(ForceBattlePlugin.playerKey, PersistentDataType.STRING, player.getUniqueId().toString());
+            left.setItemMeta(leftMeta);
 
             ItemStack right;
             ItemMeta rightMeta;
-
             if (PageUtil.isPageValid(allObjectives, page + 1, 52)) {
                 right = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
                 rightMeta = right.getItemMeta();
@@ -117,10 +121,7 @@ public class ResultCommand implements CommandExecutor, Listener {
                 }
             }
 
-            if (rightMeta != null) {
-                rightMeta.setLocalizedName(target.getName());
-                right.setItemMeta(rightMeta);
-            }
+            right.setItemMeta(rightMeta);
 
             inventory.setItem(0, left);
             inventory.setItem(8, right);
@@ -152,32 +153,32 @@ public class ResultCommand implements CommandExecutor, Listener {
 
                     if (object instanceof Material material) {
                         newObjectives.add(ItemProvider.buildItem(new ItemStack(material), null, 0, null,
-                                ChatColor.GOLD + "Item: " + BossbarManager.formatItemName(material.name().replace("_", " ")),
-                                "", ChatColor.GRAY + "Time: " + FormatTime.toFormatted(time)));
+                                ChatColor.GOLD + "Item: " + Format.formatName(material.name()),
+                                "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                         continue;
                     }
                     if (object instanceof EntityType entityType) {
                         newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.SPIDER_SPAWN_EGG), null, 0, null,
-                                ChatColor.GOLD + "Mob: " + BossbarManager.formatItemName(entityType.name().replace("_", " ")),
-                                "", ChatColor.GRAY + "Time: " + FormatTime.toFormatted(time)));
+                                ChatColor.GOLD + "Mob: " + Format.formatName(entityType.name()),
+                                "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                         continue;
                     }
                     if (object instanceof Biome biome) {
                         newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.GRASS_BLOCK), null, 0, null,
-                                ChatColor.GOLD + "Biome: " + BossbarManager.formatItemName(biome.name().replace("_", " ")),
-                                "", ChatColor.GRAY + "Time: " + FormatTime.toFormatted(time)));
+                                ChatColor.GOLD + "Biome: " + Format.formatName(biome.name()),
+                                "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                         continue;
                     }
                     if (object instanceof Advancement advancement) {
                         newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.GOLD_NUGGET), null, 0, null,
-                                ChatColor.GOLD + "Advancement: " + BossbarManager.formatItemName(advancement.name().replace("_", " ")),
-                                "", ChatColor.GRAY + "Time: " + FormatTime.toFormatted(time)));
+                                ChatColor.GOLD + "Advancement: " + Format.formatName(advancement.name()),
+                                "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                         continue;
                     }
                     if (object instanceof Integer height) {
                         newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.SCAFFOLDING), null, 0, null,
                                 ChatColor.GOLD + "Height: " + height,
-                                "", ChatColor.GRAY + "Time: " + FormatTime.toFormatted(time)));
+                                "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                     }
                 }
             }

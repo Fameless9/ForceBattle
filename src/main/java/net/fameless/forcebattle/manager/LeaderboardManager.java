@@ -17,7 +17,7 @@ public class LeaderboardManager {
         List<Team> excluded = new ArrayList<>();
         List<Map.Entry<UUID, Integer>> sortedEntries = new ArrayList<>(PointsManager.pointsMap.entrySet());
         sortedEntries.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-        StringBuilder message = new StringBuilder(ChatColor.GOLD.toString() + ChatColor.BOLD + "LEADERBOARD:\n");
+        StringBuilder message = new StringBuilder("\n" + ChatColor.GOLD + ChatColor.BOLD + "LEADERBOARD:\n");
         int position = 1;
         for (Map.Entry<UUID, Integer> entry : sortedEntries) {
             Player player = Bukkit.getPlayer(entry.getKey());

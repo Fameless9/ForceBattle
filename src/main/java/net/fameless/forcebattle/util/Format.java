@@ -1,8 +1,8 @@
 package net.fameless.forcebattle.util;
 
-public class FormatTime {
+public class Format {
 
-    public static String toFormatted(int time) {
+    public static String formatTime(int time) {
         int days = time / 86400;
         int hours = time / 3600 % 24;
         int minutes = time / 60 % 60;
@@ -26,5 +26,16 @@ public class FormatTime {
             message.append("0s");
         }
         return String.valueOf(message);
+    }
+
+    public static String formatName(String input) {
+        input = input.replace("_", " ");
+        String[] words = input.split(" ");
+        StringBuilder formatted = new StringBuilder();
+        for (String word : words) {
+            String formattedWord = word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+            formatted.append(formattedWord).append(" ");
+        }
+        return formatted.toString().trim();
     }
 }

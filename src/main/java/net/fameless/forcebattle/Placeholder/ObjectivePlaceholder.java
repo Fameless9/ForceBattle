@@ -1,8 +1,8 @@
 package net.fameless.forcebattle.Placeholder;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.fameless.forcebattle.manager.BossbarManager;
 import net.fameless.forcebattle.manager.ObjectiveManager;
+import net.fameless.forcebattle.util.Format;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +26,7 @@ public class ObjectivePlaceholder extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-        return ObjectiveManager.getChallenge(player) != null ? BossbarManager.formatItemName(ObjectiveManager.getChallenge(player).toString().replace("_", " ")) :
+        return ObjectiveManager.getObjective(player) != null ? Format.formatName(ObjectiveManager.getObjective(player).toString()) :
                 "Nothing";
     }
 }

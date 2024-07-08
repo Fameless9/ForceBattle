@@ -1,9 +1,10 @@
 package net.fameless.forcebattle.manager;
 
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.command.ExcludeCommand;
-import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.Advancement;
 import net.fameless.forcebattle.util.Challenge;
+import net.fameless.forcebattle.util.Format;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -38,7 +39,7 @@ public class BossbarManager {
 
     private static void getBossbar(Player player) {
         BossBar bossBar;
-        Object challenge = ObjectiveManager.getChallenge(player);
+        Object challenge = ObjectiveManager.getObjective(player);
         Challenge type = ObjectiveManager.getChallengeType(player);
 
         if (ExcludeCommand.excludedPlayers.contains(player)) {
@@ -49,46 +50,36 @@ public class BossbarManager {
         }
 
         if (type == null) {
-            bossBar = Bukkit.createBossBar(ChatColor.GOLD + "No challenge selected. /menu", BarColor.WHITE, BarStyle.SOLID);
+            bossBar = Bukkit.createBossBar(ChatColor.GRAY + "No challenge selected." + ChatColor.GOLD + " /menu", BarColor.WHITE, BarStyle.SOLID);
             bossBar.addPlayer(player);
             bossBarHashMap.put(player.getUniqueId(), bossBar);
             return;
         }
 
-        if (!Timer.isRunning()) {
-            bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Waiting... /timer toggle", BarColor.WHITE, BarStyle.SOLID);
+        if (!ForceBattlePlugin.getInstance().getTimer().isRunning()) {
+            bossBar = Bukkit.createBossBar(ChatColor.GRAY + "Waiting..." + ChatColor.GOLD + " /timer toggle", BarColor.WHITE, BarStyle.SOLID);
             bossBar.addPlayer(player);
             bossBarHashMap.put(player.getUniqueId(), bossBar);
             return;
         } else if (challenge instanceof Material playerMaterial) {
-            String itemName = formatItemName(playerMaterial.name().replace("_", " "));
-            bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Item" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + itemName + ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
+            String itemName = Format.formatName(playerMaterial.name());
+            bossBar = Bukkit.createBossBar(ChatColor.GRAY + "Item" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + itemName + ChatColor.DARK_GRAY + " | " + ChatColor.GRAY + "Points" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
         } else if (challenge instanceof EntityType mob) {
-            String mobName = formatItemName(mob.name().replace("_", " "));
-            bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Mob" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + mobName + ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
+            String mobName = Format.formatName(mob.name());
+            bossBar = Bukkit.createBossBar(ChatColor.GRAY + "Mob" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + mobName + ChatColor.DARK_GRAY + " | " + ChatColor.GRAY + "Points" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
         } else if (challenge instanceof Biome biome) {
-            String biomeName = formatItemName(biome.name().replace("_", " "));
-            bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Biome" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + biomeName + ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
+            String biomeName = Format.formatName(biome.name());
+            bossBar = Bukkit.createBossBar(ChatColor.GRAY + "Biome" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + biomeName + ChatColor.DARK_GRAY + " | " + ChatColor.GRAY + "Points" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
         } else if (challenge instanceof Advancement advancement) {
-            String biomeName = formatItemName(advancement.name().replace("_", " "));
-            bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Advancement" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + biomeName + ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
+            String biomeName = Format.formatName(advancement.name());
+            bossBar = Bukkit.createBossBar(ChatColor.GRAY + "Advancement" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + biomeName + ChatColor.DARK_GRAY + " | " + ChatColor.GRAY + "Points" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
         } else if (challenge instanceof Integer) {
             int height = (Integer) challenge;
-            bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Height" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + height + ChatColor.DARK_GRAY + " | " + ChatColor.GOLD + "Points" + ChatColor.DARK_GRAY + ": " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
+            bossBar = Bukkit.createBossBar(ChatColor.GRAY + "Height" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + height + ChatColor.DARK_GRAY + " | " + ChatColor.GRAY + "Points" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + PointsManager.getPoints(player), BarColor.WHITE, BarStyle.SOLID);
         } else {
-            bossBar = Bukkit.createBossBar(ChatColor.GOLD + "No objective...", BarColor.WHITE, BarStyle.SOLID);
+            bossBar = Bukkit.createBossBar(ChatColor.GRAY + "No objective...", BarColor.WHITE, BarStyle.SOLID);
         }
         bossBar.addPlayer(player);
         bossBarHashMap.put(player.getUniqueId(), bossBar);
-    }
-
-    public static String formatItemName(String input) {
-        String[] words = input.split(" ");
-        StringBuilder formatted = new StringBuilder();
-        for (String word : words) {
-            String formattedWord = word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
-            formatted.append(formattedWord).append(" ");
-        }
-        return formatted.toString().trim();
     }
 }

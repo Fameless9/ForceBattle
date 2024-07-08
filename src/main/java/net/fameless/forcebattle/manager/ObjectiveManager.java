@@ -1,7 +1,6 @@
 package net.fameless.forcebattle.manager;
 
 import net.fameless.forcebattle.ForceBattlePlugin;
-import net.fameless.forcebattle.timer.Timer;
 import net.fameless.forcebattle.util.Advancement;
 import net.fameless.forcebattle.util.Challenge;
 import net.fameless.forcebattle.util.ItemProvider;
@@ -83,7 +82,7 @@ public class ObjectiveManager {
         }
     }
 
-    public static Object getChallenge(Player player) {
+    public static Object getObjective(Player player) {
         Challenge playerChallenge = getChallengeType(player);
         if (playerChallenge == null) {
             return null;
@@ -195,7 +194,7 @@ public class ObjectiveManager {
                     }
                     advancementMap.put(player.getUniqueId(), newAdvancement);
                     ChainManager.advancementProgressMap.put(player, ChainManager.advancementProgressMap.get(player) + 1);
-                    if (Timer.isRunning()) {
+                    if (ForceBattlePlugin.getInstance().getTimer().isRunning()) {
                         player.sendMessage(ChatColor.GRAY + "-----------------------");
                         player.sendMessage(ChatColor.GOLD + "Advancement Description:");
                         player.sendMessage(ChatColor.GOLD + newAdvancement.getDescription());
@@ -212,7 +211,7 @@ public class ObjectiveManager {
 
                 Advancement newAdvancement = availableAdvancements.get(random.nextInt(availableAdvancements.size()));
                 advancementMap.put(player.getUniqueId(), newAdvancement);
-                if (Timer.isRunning()) {
+                if (ForceBattlePlugin.getInstance().getTimer().isRunning()) {
                     player.sendMessage(ChatColor.GRAY + "-----------------------");
                     player.sendMessage(ChatColor.GOLD + "Advancement Description:");
                     player.sendMessage(ChatColor.GOLD + newAdvancement.getDescription());
@@ -257,9 +256,9 @@ public class ObjectiveManager {
 
     public static void updateObjective(Player player) {
         Challenge challenge = newChallengeType();
-        if (Timer.isRunning()) {
-            finishedObjectives.get(player.getUniqueId()).add(getChallenge(player));
-            objectiveTimeMap.get(player.getUniqueId()).add(Timer.getTime());
+        if (ForceBattlePlugin.getInstance().getTimer().isRunning()) {
+            finishedObjectives.get(player.getUniqueId()).add(getObjective(player));
+            objectiveTimeMap.get(player.getUniqueId()).add(ForceBattlePlugin.getInstance().getTimer().getTime());
         }
         setChallengeType(player, challenge);
         newObjective(player, challenge);

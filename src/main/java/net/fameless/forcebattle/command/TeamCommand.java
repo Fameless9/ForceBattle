@@ -1,5 +1,6 @@
 package net.fameless.forcebattle.command;
 
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.manager.BossbarManager;
 import net.fameless.forcebattle.manager.NametagManager;
 import net.fameless.forcebattle.team.Team;
@@ -24,7 +25,7 @@ public class TeamCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
+            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Only players can use this command.");
             return false;
         }
         if (args.length >= 1) {
@@ -35,21 +36,21 @@ public class TeamCommand implements CommandExecutor {
                         try {
                             teamId = Integer.parseInt(args[1]);
                         } catch (NumberFormatException e) {
-                            player.sendMessage(ChatColor.RED + "Team ID must be a number.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Team ID must be a number.");
                             return false;
                         }
                         if (TeamManager.getTeam(teamId) == null) {
-                            player.sendMessage(ChatColor.RED + "Team does not exist.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Team does not exist.");
                             return false;
                         }
                         Team newTeam = TeamManager.getTeam(teamId);
                         if (newTeam != null && newTeam.isPrivate() && !player.isOp()) {
-                            player.sendMessage(ChatColor.RED + "Team is private.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Team is private.");
                             return false;
                         }
                         Team playerTeam = TeamManager.getTeam(player);
                         if (playerTeam != null && newTeam != null && playerTeam.getId() == newTeam.getId()) {
-                            player.sendMessage(ChatColor.RED + "You are already part of that team.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are already part of that team.");
                             return false;
                         }
                         if (playerTeam != null && newTeam != null) {
@@ -57,9 +58,9 @@ public class TeamCommand implements CommandExecutor {
                             newTeam.addPlayer(player);
                             NametagManager.updateNametag(player);
                             BossbarManager.updateBossbar(player);
-                            player.sendMessage(ChatColor.GREEN + "Joined team " + newTeam.getId());
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GREEN + "Joined team " + newTeam.getId());
                         } else {
-                            player.sendMessage(ChatColor.RED + "Team does not exist.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Team does not exist.");
                         }
                     } else {
                         sendUsage(player);
@@ -70,34 +71,34 @@ public class TeamCommand implements CommandExecutor {
                     Team team = TeamManager.getTeam(player);
                     if (team != null) {
                         team.removePlayer(player);
-                        player.sendMessage(ChatColor.RED + "Left team " + team.getId());
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Left team " + team.getId());
                         NametagManager.updateNametag(player);
                         BossbarManager.updateBossbar(player);
                     } else {
-                        player.sendMessage(ChatColor.RED + "You are not in a team.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not in a team.");
                     }
                     break;
                 }
                 case "delete": {
                     if (args.length == 2) {
                         if (!player.isOp()) {
-                            player.sendMessage(ChatColor.RED + "You need to be an operator to delete Teams you are not the leader of.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You need to be an operator to delete Teams you are not the leader of.");
                             return false;
                         }
                         int teamId;
                         try {
                             teamId = Integer.parseInt(args[1]);
                         } catch (NumberFormatException e) {
-                            player.sendMessage(ChatColor.RED + "ID must be number.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "ID must be number.");
                             return false;
                         }
                         if (TeamManager.getTeam(teamId) != null) {
                             TeamManager.removeTeam(teamId);
-                            player.sendMessage(ChatColor.GREEN + "Successfully deleted Team " + teamId + ".");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GREEN + "Successfully deleted Team " + teamId + ".");
                             NametagManager.updateNametag(player);
                             BossbarManager.updateBossbar(player);
                         } else {
-                            player.sendMessage(ChatColor.RED + "Team " + teamId + " couldn't be found.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Team " + teamId + " couldn't be found.");
                         }
                     } else {
                         Team team = TeamManager.getTeam(player);
@@ -105,10 +106,10 @@ public class TeamCommand implements CommandExecutor {
                             if (player.getUniqueId().equals(team.getLeader().getUniqueId()) || player.isOp()) {
                                 TeamManager.removeTeam(team);
                             } else {
-                                player.sendMessage(ChatColor.RED + "You are not the team leader.");
+                                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not the team leader.");
                             }
                         } else {
-                            player.sendMessage(ChatColor.RED + "You are not in a team.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not in a team.");
                         }
                     }
                     break;
@@ -119,33 +120,33 @@ public class TeamCommand implements CommandExecutor {
                         NametagManager.updateNametag(player);
                         BossbarManager.updateBossbar(player);
                     } else {
-                        player.sendMessage(ChatColor.RED + "You are already in a team. /team leave");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are already in a team. /team leave");
                     }
                     break;
                 }
                 case "invite": {
                     if (TeamManager.getTeam(player) != null) {
-                        player.sendMessage(ChatColor.RED + "You are not in a team.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not in a team.");
                         return false;
                     }
                     Team team = TeamManager.getTeam(player);
                     if (team != null && !player.getUniqueId().equals(team.getLeader().getUniqueId()) && team.isPrivate()) {
-                        player.sendMessage(ChatColor.RED + "You are not the team leader.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not the team leader.");
                         return false;
                     }
                     if (args.length != 2) {
-                        player.sendMessage(ChatColor.RED + "Specify a player.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Specify a player.");
                         return false;
                     }
                     if (Bukkit.getPlayer(args[1]) != null) {
-                        player.sendMessage(ChatColor.RED + "Player couldn't be found.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Player couldn't be found.");
                         return false;
                     }
 
                     Player target = Bukkit.getPlayer(args[1]);
                     if (target != null) {
                         inviteMap.put(target, team);
-                        target.sendMessage(ChatColor.GOLD + player.getName() + " invited you to join their team. /team accept | decline");
+                        target.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + player.getName() + " invited you to join their team. /team accept | decline");
                     }
 
                     break;
@@ -153,43 +154,43 @@ public class TeamCommand implements CommandExecutor {
                 case "open": {
                     Team team = TeamManager.getTeam(player);
                     if (team == null) {
-                        player.sendMessage(ChatColor.RED + "You are not in a team.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not in a team.");
                         return false;
                     }
                     if (!player.getUniqueId().equals(team.getLeader().getUniqueId()) && !player.isOp()) {
-                        player.sendMessage(ChatColor.RED + "You are not the team leader.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not the team leader.");
                         return false;
                     }
                     team.setPrivate(false);
-                    player.sendMessage(ChatColor.GREEN + "Team has been set to open.");
+                    player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GREEN + "Team has been set to open.");
                     break;
                 }
                 case "close": {
                     Team team = TeamManager.getTeam(player);
                     if (team == null) {
-                        player.sendMessage(ChatColor.RED + "You are not in a team.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not in a team.");
                         return false;
                     }
                     if (!player.getUniqueId().equals(team.getLeader().getUniqueId()) && !player.isOp()) {
-                        player.sendMessage(ChatColor.RED + "You are not the team leader.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not the team leader.");
                         return false;
                     }
                     team.setPrivate(true);
-                    player.sendMessage(ChatColor.RED + "Team has been set to closed.");
+                    player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Team has been set to closed.");
                     break;
                 }
                 case "decline": {
                     if (!inviteMap.containsKey(player)) {
-                        player.sendMessage(ChatColor.RED + "You have not been invited to a team.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You have not been invited to a team.");
                         return false;
                     }
-                    inviteMap.get(player).getLeader().sendMessage(ChatColor.RED + player.getName() + " has declined your invite.");
+                    inviteMap.get(player).getLeader().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + player.getName() + " has declined your invite.");
                     inviteMap.remove(player);
                     break;
                 }
                 case "accept": {
                     if (!inviteMap.containsKey(player)) {
-                        player.sendMessage(ChatColor.RED + "You have not been invited to a team.");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You have not been invited to a team.");
                         return false;
                     }
                     inviteMap.get(player).addPlayer(player);
@@ -212,61 +213,61 @@ public class TeamCommand implements CommandExecutor {
                 case "kick": {
                     if (args.length == 2) {
                         if (TeamManager.getTeam(player) == null) {
-                            player.sendMessage(ChatColor.RED + "You are not in a team.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not in a team.");
                             return false;
                         }
                         Team team = TeamManager.getTeam(player);
                         if (team != null && !player.getUniqueId().equals(team.getLeader().getUniqueId()) && !player.isOp()) {
-                            player.sendMessage(ChatColor.RED + "You are not the team leader.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not the team leader.");
                             return false;
                         }
                         Player target = Bukkit.getPlayer(args[1]);
                         if (team != null && target != null) {
                             if (!team.getPlayers().contains(target)) {
-                                player.sendMessage(ChatColor.RED + "Player is not part of the team.");
+                                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Player is not part of the team.");
                                 return false;
                             }
                             team.removePlayer(target);
-                            player.sendMessage(ChatColor.GREEN + "Kicked " + target.getName() + ".");
-                            target.sendMessage(ChatColor.RED + "You have been kicked from your team.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GREEN + "Kicked " + target.getName() + ".");
+                            target.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You have been kicked from your team.");
                             NametagManager.updateNametag(target);
                             BossbarManager.updateBossbar(target);
                         } else {
-                            player.sendMessage(ChatColor.RED + "Player couldn't be found.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Player couldn't be found.");
                         }
                     } else if (args.length == 3) {
                         if (!player.isOp()) {
-                            player.sendMessage(ChatColor.RED + "You need to be an operator to kick players outside of your team.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You need to be an operator to kick players outside of your team.");
                         }
                         int teamId;
                         try {
                             teamId = Integer.parseInt(args[1]);
                         } catch (NumberFormatException e) {
-                            player.sendMessage(ChatColor.RED + "Team Id must be a number.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Team Id must be a number.");
                             return false;
                         }
                         if (Bukkit.getPlayer(args[2]) != null) {
                             if (TeamManager.getTeam(teamId) == null) {
-                                player.sendMessage(ChatColor.RED + "Team does not exist.");
+                                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Team does not exist.");
                                 return false;
                             }
                             Team team = TeamManager.getTeam(teamId);
                             Player target = Bukkit.getPlayer(args[2]);
                             if (target != null && team != null && team.getPlayers().contains(target)) {
                                 team.removePlayer(target);
-                                target.sendMessage(ChatColor.RED + "An operator has kicked you from your team.");
-                                player.sendMessage(ChatColor.GREEN + "Player has been kicked.");
+                                target.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "An operator has kicked you from your team.");
+                                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GREEN + "Player has been kicked.");
                                 NametagManager.updateNametag(target);
                                 BossbarManager.updateBossbar(target);
                             } else {
-                                player.sendMessage(ChatColor.RED + "Player is not part of the team.");
+                                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Player is not part of the team.");
                             }
                         } else {
-                            player.sendMessage(ChatColor.RED + "Player couldn't be found.");
+                            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Player couldn't be found.");
                             return false;
                         }
                     } else {
-                        player.sendMessage(ChatColor.RED + "Usage of kick: /team kick <player> | OP: /team kick <team> <player>");
+                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Usage: /team kick <player> | OP: /team kick <team> <player>");
                     }
                     break;
                 }
@@ -282,6 +283,6 @@ public class TeamCommand implements CommandExecutor {
     }
 
     private void sendUsage(Player player) {
-        player.sendMessage(ChatColor.GOLD + "Usage: /team <list, join, leave, delete, create, invite, open, close, accept, decline, kick> <id, player> <player>");
+        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Usage: /team <list, join, leave, delete, create, invite, open, close, accept, decline, kick> <id, player> <player>");
     }
 }

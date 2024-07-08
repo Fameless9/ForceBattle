@@ -1,5 +1,6 @@
 package net.fameless.forcebattle.GUI;
 
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.manager.BossbarManager;
 import net.fameless.forcebattle.manager.NametagManager;
 import net.fameless.forcebattle.manager.PointsManager;
@@ -28,20 +29,20 @@ public class PointsUI implements CommandExecutor, Listener, InventoryHolder {
     @Override
     public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (!sender.hasPermission("forcebattle.points")) {
-            sender.sendMessage(ChatColor.RED + "Lacking permission: 'forcebattle.points'");
+            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Lacking permission: 'forcebattle.points'");
             return false;
         }
         if (!(sender instanceof Player senderPlayer)) {
-            sender.sendMessage(ChatColor.RED + "You are not a player.");
+            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "You are not a player.");
             return false;
         }
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "Specify a player. /points <player>.");
+            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Specify a player. /points <player>.");
             return false;
         }
         Player player = Bukkit.getPlayer(args[0]);
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + "Player couldn't be found.");
+            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Player couldn't be found.");
             return false;
         }
         senderPlayer.openInventory(pointsGUI(player.getName()));
@@ -70,7 +71,7 @@ public class PointsUI implements CommandExecutor, Listener, InventoryHolder {
             PointsManager.setPoints(target, PointsManager.getPoints(target) - 1);
             NametagManager.updateNametag(target);
             BossbarManager.updateBossbar(target);
-            target.sendMessage(ChatColor.GOLD + "Your points have been adjusted.");
+            target.sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "Your points have been adjusted.");
             event.getWhoClicked().openInventory(pointsGUI(target.getName()));
             return;
         }
@@ -78,7 +79,7 @@ public class PointsUI implements CommandExecutor, Listener, InventoryHolder {
             PointsManager.setPoints(target, PointsManager.getPoints(target) + 1);
             NametagManager.updateNametag(target);
             BossbarManager.updateBossbar(target);
-            target.sendMessage(ChatColor.GOLD + "Your points have been adjusted.");
+            target.sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "Your points have been adjusted.");
             event.getWhoClicked().openInventory(pointsGUI(target.getName()));
         }
     }

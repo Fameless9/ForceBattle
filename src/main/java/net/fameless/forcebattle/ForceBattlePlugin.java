@@ -19,6 +19,8 @@ import net.fameless.forcebattle.util.UpdateChecker;
 import org.apache.commons.io.FileUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -28,10 +30,11 @@ import java.time.Duration;
 public final class ForceBattlePlugin extends JavaPlugin {
 
     private static ForceBattlePlugin instance;
+    public static NamespacedKey pageKey;
+    public static NamespacedKey playerKey;
+    public static String prefix = ChatColor.GOLD.toString() + ChatColor.BOLD + "ForceBattle" + ChatColor.RESET + ChatColor.DARK_GRAY + "» " + ChatColor.RESET;
 
-    public static ForceBattlePlugin getInstance() {
-        return instance;
-    }
+    private Timer timer;
 
     @Override
     public void onLoad() {
@@ -55,6 +58,9 @@ public final class ForceBattlePlugin extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
         }
 
+        pageKey = new NamespacedKey(this, "page");
+        playerKey = new NamespacedKey(this, "player");
+
         GameListener.run();
         ChainManager.updateLists();
 
@@ -63,7 +69,7 @@ public final class ForceBattlePlugin extends JavaPlugin {
         JokerUI jokerUI = new JokerUI();
         ResetUI resetUI = new ResetUI();
         MenuUI menuGUI = new MenuUI();
-        Timer timer = new Timer();
+        timer = new Timer();
 
         getCommand("team").setExecutor(new TeamCommand());
         getCommand("skip").setExecutor(new SkipObjectiveCommand());
@@ -120,5 +126,13 @@ public final class ForceBattlePlugin extends JavaPlugin {
         } catch (IOException e) {
             Bukkit.getLogger().severe("Failed to delete world: " + worldName);
         }
+    }
+
+    public Timer getTimer() {
+        return timer;
+    }
+
+    public static ForceBattlePlugin getInstance() {
+        return instance;
     }
 }

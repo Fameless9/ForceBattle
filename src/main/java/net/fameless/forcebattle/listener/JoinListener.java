@@ -5,11 +5,13 @@ import net.fameless.forcebattle.command.BackpackCommand;
 import net.fameless.forcebattle.manager.*;
 import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
+import net.kyori.adventure.platform.facet.Facet;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
@@ -41,11 +43,11 @@ public class JoinListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerResourcePackStatus(PlayerResourcePackStatusEvent event) {
         if (event.getStatus().equals(PlayerResourcePackStatusEvent.Status.DECLINED)) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Allow resource packs to hide the bossbar!");
+            event.getPlayer().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Allow resource packs to hide the bossbar!");
             return;
         }
         if (event.getStatus().equals(PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD)) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Failed to download resource pack!");
+            event.getPlayer().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Failed to download resource pack!");
         }
     }
 
@@ -62,11 +64,11 @@ public class JoinListener implements Listener {
         if (!ObjectiveManager.objectiveTimeMap.containsKey(player.getUniqueId())) {
             ObjectiveManager.objectiveTimeMap.put(player.getUniqueId(), new ArrayList<>());
         }
-        if (ObjectiveManager.getChallenge(player) == null) {
+        if (ObjectiveManager.getObjective(player) == null) {
             ObjectiveManager.updateObjective(player);
         }
         if (!BackpackCommand.backpackMap.containsKey(player.getUniqueId())) {
-            BackpackCommand.backpackMap.put(player.getUniqueId(), Bukkit.createInventory(null, 27, ChatColor.GOLD + "Backpack"));
+            BackpackCommand.backpackMap.put(player.getUniqueId(), Bukkit.createInventory(null, 27, "Backpack"));
         }
 
         ChainManager.addPlayer(player);
@@ -83,11 +85,11 @@ public class JoinListener implements Listener {
         }
 
         if (player.isOp() && !isUpdated) {
-            player.sendMessage(ChatColor.GREEN + "There is an update available for ForceBattle. You can download it from the spigot website.");
+            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GREEN + "There is an update available for ForceBattle. You can download it from the spigot website.");
         }
 
         BossbarManager.createBossbar(player);
-        NametagManager.setupNametag(player);
         NametagManager.newTag(player);
+        NametagManager.setupNametag(player);
     }
 }
