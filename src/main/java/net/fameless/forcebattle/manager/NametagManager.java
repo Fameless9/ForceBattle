@@ -13,34 +13,32 @@ import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 public class NametagManager {
 
-    private static final Scoreboard customScoreboard;
+    private final ObjectiveManager objectiveManager = ForceBattlePlugin.get().getObjectiveManager();
 
-    static {
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        customScoreboard = manager.getNewScoreboard();
+    public Scoreboard customScoreboard() {
+        return Bukkit.getScoreboardManager().getNewScoreboard();
     }
 
-    public static void setupNametag(Player player) {
+    public void setupNametag(Player player) {
         getNametag(player);
     }
 
-    public static void updateNametag(Player player) {
+    public void updateNametag(Player player) {
         getNametag(player);
     }
 
-    private static void getNametag(Player player) {
-        Team team = customScoreboard.getTeam(player.getUniqueId().toString());
+    private void getNametag(Player player) {
+        Team team = customScoreboard().getTeam(player.getUniqueId().toString());
         if (team == null) {
-            team = customScoreboard.registerNewTeam(player.getUniqueId().toString());
+            team = customScoreboard().registerNewTeam(player.getUniqueId().toString());
         }
 
-        Challenge type = ObjectiveManager.getChallengeType(player);
-        Object challenge = ObjectiveManager.getObjective(player);
+        Challenge type = objectiveManager.getChallengeType(player);
+        Object challenge = objectiveManager.getObjective(player);
 
         StringBuilder suffix = new StringBuilder();
 
@@ -52,7 +50,7 @@ public class NametagManager {
             return;
         }
 
-        if (!ForceBattlePlugin.getInstance().getTimer().isRunning()) {
+        if (!ForceBattlePlugin.get().getTimer().isRunning()) {
             suffix.append(ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Waiting...");
             team.setSuffix(suffix.toString());
             return;
@@ -73,7 +71,7 @@ public class NametagManager {
             suffix.append(ChatColor.GRAY + "No objective");
         }
 
-        suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GRAY + "Points" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + PointsManager.getPoints(player));
+        suffix.append(ChatColor.DARK_GRAY + " | " + ChatColor.GRAY + "Points" + ChatColor.DARK_GRAY + " » " + ChatColor.GOLD + ForceBattlePlugin.get().getPointsManager().getPoints(player));
 
         net.fameless.forcebattle.team.Team playerTeam = TeamManager.getTeam(player);
         if (playerTeam != null) {
@@ -83,20 +81,20 @@ public class NametagManager {
         team.setSuffix(formattedSuffix);
     }
 
-    public static void newTag(Player player) {
-        Team team = customScoreboard.getTeam(player.getUniqueId().toString());
+    public void newTag(Player player) {
+        Team team = customScoreboard().getTeam(player.getUniqueId().toString());
         if (team != null) {
             team.addEntry(player.getName());
         } else {
-            team = customScoreboard.registerNewTeam(player.getUniqueId().toString());
+            team = customScoreboard().registerNewTeam(player.getUniqueId().toString());
             team.addEntry(player.getName());
         }
 
-        player.setScoreboard(customScoreboard);
+        player.setScoreboard(customScoreboard());
     }
 
-    public static void removeTag(Player player) {
-        Team team = customScoreboard.getTeam(player.getUniqueId().toString());
+    public void removeTag(Player player) {
+        Team team = customScoreboard().getTeam(player.getUniqueId().toString());
         if (team != null) {
             team.unregister();
         }

@@ -1,8 +1,6 @@
 package net.fameless.forcebattle.command;
 
 import net.fameless.forcebattle.ForceBattlePlugin;
-import net.fameless.forcebattle.manager.BossbarManager;
-import net.fameless.forcebattle.manager.NametagManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -23,27 +21,27 @@ public class ExcludeCommand implements CommandExecutor {
         if (excluded) {
             excludedPlayers.add(player);
             player.setGameMode(GameMode.SPECTATOR);
-            NametagManager.updateNametag(player);
-            BossbarManager.updateBossbar(player);
-            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "You are now excluded.");
+            ForceBattlePlugin.get().getNametagManager().updateNametag(player);
+            ForceBattlePlugin.get().getBossbarManager().updateBossbar(player);
+            player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GRAY + "You are now excluded.");
             return;
         }
         excludedPlayers.remove(player);
         player.setGameMode(GameMode.SURVIVAL);
-        NametagManager.updateNametag(player);
-        BossbarManager.updateBossbar(player);
-        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "You are not excluded anymore.");
+        ForceBattlePlugin.get().getNametagManager().updateNametag(player);
+        ForceBattlePlugin.get().getBossbarManager().updateBossbar(player);
+        player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GRAY + "You are not excluded anymore.");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (!sender.hasPermission("forcebattle.exclude")) {
-            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Lacking permission: 'forcebattle.exclude'");
+            sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Lacking permission: 'forcebattle.exclude'");
             return false;
         }
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "This command can only be used for players.");
+                sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "This command can only be used for players.");
                 return false;
             }
             if (excludedPlayers.contains(player)) {

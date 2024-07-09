@@ -1,9 +1,6 @@
 package net.fameless.forcebattle.team;
 
 import net.fameless.forcebattle.ForceBattlePlugin;
-import net.fameless.forcebattle.manager.BossbarManager;
-import net.fameless.forcebattle.manager.NametagManager;
-import net.fameless.forcebattle.manager.PointsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,6 +12,7 @@ import java.util.List;
 public class Team {
 
     public final Inventory backpack;
+    private final ForceBattlePlugin forceBattlePlugin = ForceBattlePlugin.get();
     private final int id;
     private final List<Player> players;
     private boolean isPrivate = true;
@@ -36,7 +34,7 @@ public class Team {
     public void updatePoints() {
         int newPoints = 0;
         for (Player player : players) {
-            newPoints += PointsManager.getPoints(player);
+            newPoints += forceBattlePlugin.getPointsManager().getPoints(player);
         }
         this.points = newPoints;
     }
@@ -47,24 +45,24 @@ public class Team {
 
     public void addPlayer(Player player) {
         for (Player player1 : players) {
-            player1.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + player.getName() + " joined your team.");
+            player1.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + player.getName() + " joined your team.");
         }
         if (players.isEmpty()) {
             this.leader = player;
-            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Joined team as a leader.");
+            player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Joined team as a leader.");
         }
         players.add(player);
-        NametagManager.updateNametag(player);
-        BossbarManager.updateBossbar(player);
+        forceBattlePlugin.getNametagManager().updateNametag(player);
+        forceBattlePlugin.getBossbarManager().updateBossbar(player);
     }
 
     public void removePlayer(Player player) {
         if (players.contains(player)) {
             players.removeIf(player1 -> player1.getUniqueId().equals(player.getUniqueId()));
-            NametagManager.updateNametag(player);
-            BossbarManager.updateBossbar(player);
+            forceBattlePlugin.getNametagManager().updateNametag(player);
+            forceBattlePlugin.getBossbarManager().updateBossbar(player);
             for (Player player1 : players) {
-                player1.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + player.getName() + " left your team.");
+                player1.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + player.getName() + " left your team.");
             }
             if (getLeader().equals(player)) {
                 if (!getPlayers().isEmpty()) {
@@ -72,7 +70,7 @@ public class Team {
                     this.leader = newLeader;
 
                     for (Player player1 : players) {
-                        player1.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + newLeader.getName() + " is now the leader of your team.");
+                        player1.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + newLeader.getName() + " is now the leader of your team.");
                     }
                 } else {
                     TeamManager.removeTeam(this);
@@ -90,11 +88,11 @@ public class Team {
 
         if (b) {
             for (Player player : players) {
-                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Your party is now open.");
+                player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Your party is now open.");
             }
         } else {
             for (Player player : players) {
-                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Your party is now private.");
+                player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Your party is now private.");
             }
         }
     }

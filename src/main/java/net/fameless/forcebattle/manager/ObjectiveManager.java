@@ -16,37 +16,45 @@ import java.util.*;
 
 public class ObjectiveManager {
 
-    public static final HashMap<UUID, List<Object>> finishedObjectives = new HashMap<>();
-    public static final HashMap<UUID, List<Integer>> objectiveTimeMap = new HashMap<>();
-    public static final List<Challenge> activeChallenges = new ArrayList<>();
-    private static final HashMap<UUID, Challenge> playerTypeMap = new HashMap<>();
-    private static final HashMap<UUID, Material> itemMap = new HashMap<>();
-    private static final HashMap<UUID, EntityType> mobMap = new HashMap<>();
-    private static final HashMap<UUID, Biome> biomeMap = new HashMap<>();
-    private static final HashMap<UUID, Advancement> advancementMap = new HashMap<>();
-    private static final HashMap<UUID, Integer> heightMap = new HashMap<>();
-    private static final Random random = new Random();
+    private final ForceBattlePlugin forceBattlePlugin;
+    private final ObjectiveLists objectiveLists;
+    private ChainManager chainManager;
+    private final HashMap<UUID, List<Object>> finishedObjectives = new HashMap<>();
+    private final HashMap<UUID, List<Integer>> objectiveTimeMap = new HashMap<>();
+    private final HashMap<UUID, Challenge> playerTypeMap = new HashMap<>();
+    private final HashMap<UUID, Material> itemMap = new HashMap<>();
+    private final HashMap<UUID, EntityType> mobMap = new HashMap<>();
+    private final HashMap<UUID, Biome> biomeMap = new HashMap<>();
+    private final HashMap<UUID, Advancement> advancementMap = new HashMap<>();
+    private final HashMap<UUID, Integer> heightMap = new HashMap<>();
+    private final List<Challenge> activeChallenges = new ArrayList<>();
+    private final Random random = new Random();
 
-    public static void addChallenge(Challenge challenge) {
+    public ObjectiveManager(ForceBattlePlugin forceBattlePlugin) {
+        this.forceBattlePlugin = forceBattlePlugin;
+        this.objectiveLists = forceBattlePlugin.getObjectiveLists();
+    }
+
+    public void addChallenge(Challenge challenge) {
         activeChallenges.add(challenge);
     }
 
-    public static void removeChallenge(Challenge challenge) {
+    public void removeChallenge(Challenge challenge) {
         activeChallenges.remove(challenge);
     }
 
-    public static void setChallengeType(Player player, Challenge challengeType) {
+    public void setChallengeType(Player player, Challenge challengeType) {
         playerTypeMap.put(player.getUniqueId(), challengeType);
     }
 
-    public static Challenge getChallengeType(Player player) {
+    public Challenge getChallengeType(Player player) {
         if (playerTypeMap.containsKey(player.getUniqueId())) {
             return playerTypeMap.get(player.getUniqueId());
         }
         return null;
     }
 
-    public static void setChallenge(Player player, Challenge challenge, Object objective) {
+    public void setChallenge(Player player, Challenge challenge, Object objective) {
         setChallengeType(player, challenge);
         switch (challenge) {
             case FORCE_ITEM: {
@@ -82,7 +90,7 @@ public class ObjectiveManager {
         }
     }
 
-    public static Object getObjective(Player player) {
+    public Object getObjective(Player player) {
         Challenge playerChallenge = getChallengeType(player);
         if (playerChallenge == null) {
             return null;
@@ -97,7 +105,7 @@ public class ObjectiveManager {
         };
     }
 
-    private static void newObjective(Player player, Challenge challenge) {
+    private void newObjective(Player player, Challenge challenge) {
         if (challenge == null) {
             itemMap.put(player.getUniqueId(), null);
             mobMap.put(player.getUniqueId(), null);
@@ -108,20 +116,20 @@ public class ObjectiveManager {
         }
         switch (challenge) {
             case FORCE_ITEM: {
-                if (ChainManager.isChainModeEnabled()) {
+                if (chainManager.isChainModeEnabled()) {
                     Material newMaterial;
                     try {
-                        newMaterial = ChainManager.itemChainList.get(ChainManager.itemProgressMap.get(player));
+                        newMaterial = chainManager.getItemChainList().get(chainManager.getItemProgressMap().get(player));
                     } catch (IndexOutOfBoundsException e) {
                         player.sendMessage(ChatColor.GOLD + "Reached the end of Item Chain list. Starting over.");
-                        ChainManager.itemProgressMap.put(player, 0);
-                        newMaterial = ChainManager.itemChainList.get(ChainManager.itemProgressMap.get(player));
+                        chainManager.getItemProgressMap().put(player, 0);
+                        newMaterial = chainManager.getItemChainList().get(chainManager.getItemProgressMap().get(player));
                     }
                     itemMap.put(player.getUniqueId(), newMaterial);
-                    ChainManager.itemProgressMap.put(player, ChainManager.itemProgressMap.get(player) + 1);
+                    chainManager.getItemProgressMap().put(player, chainManager.getItemProgressMap().get(player) + 1);
                     return;
                 }
-                List<Material> list = ObjectiveLists.getAvailableItems();
+                List<Material> list = objectiveLists.getAvailableItems();
                 if (list.isEmpty()) {
                     Bukkit.getLogger().info("Item list is empty.");
                     player.sendMessage(ChatColor.RED + "Item list is empty.");
@@ -133,20 +141,20 @@ public class ObjectiveManager {
                 break;
             }
             case FORCE_MOB: {
-                if (ChainManager.isChainModeEnabled()) {
+                if (chainManager.isChainModeEnabled()) {
                     EntityType newMob;
                     try {
-                        newMob = ChainManager.mobChainList.get(ChainManager.mobProgressMap.get(player));
+                        newMob = chainManager.getMobChainList().get(chainManager.getMobProgressMap().get(player));
                     } catch (IndexOutOfBoundsException e) {
                         player.sendMessage(ChatColor.GOLD + "Reached the end of Mob Chain list. Starting over.");
-                        ChainManager.mobProgressMap.put(player, 0);
-                        newMob = ChainManager.mobChainList.get(ChainManager.mobProgressMap.get(player));
+                        chainManager.getMobProgressMap().put(player, 0);
+                        newMob = chainManager.getMobChainList().get(chainManager.getMobProgressMap().get(player));
                     }
                     mobMap.put(player.getUniqueId(), newMob);
-                    ChainManager.mobProgressMap.put(player, ChainManager.mobProgressMap.get(player) + 1);
+                    chainManager.getMobProgressMap().put(player, chainManager.getMobProgressMap().get(player) + 1);
                     return;
                 }
-                List<EntityType> availableMobs = ObjectiveLists.getAvailableMobs();
+                List<EntityType> availableMobs = objectiveLists.getAvailableMobs();
                 if (availableMobs.isEmpty()) {
                     Bukkit.getLogger().info("Mob list is empty.");
                     player.sendMessage(ChatColor.RED + "Mob list is empty.");
@@ -158,20 +166,20 @@ public class ObjectiveManager {
                 break;
             }
             case FORCE_BIOME: {
-                if (ChainManager.isChainModeEnabled()) {
+                if (chainManager.isChainModeEnabled()) {
                     Biome newBiome;
                     try {
-                        newBiome = ChainManager.biomeChainList.get(ChainManager.biomeProgressMap.get(player));
+                        newBiome = chainManager.getBiomeChainList().get(chainManager.getBiomeProgressMap().get(player));
                     } catch (IndexOutOfBoundsException e) {
                         player.sendMessage(ChatColor.GOLD + "Reached the end of Biome Chain list. Starting over.");
-                        ChainManager.biomeProgressMap.put(player, 0);
-                        newBiome = ChainManager.biomeChainList.get(ChainManager.biomeProgressMap.get(player));
+                        chainManager.getBiomeProgressMap().put(player, 0);
+                        newBiome = chainManager.getBiomeChainList().get(chainManager.getBiomeProgressMap().get(player));
                     }
                     biomeMap.put(player.getUniqueId(), newBiome);
-                    ChainManager.biomeProgressMap.put(player, ChainManager.biomeProgressMap.get(player) + 1);
+                    chainManager.getBiomeProgressMap().put(player, chainManager.getBiomeProgressMap().get(player) + 1);
                     return;
                 }
-                List<Biome> availableBiomes = ObjectiveLists.getAvailableBiomes();
+                List<Biome> availableBiomes = objectiveLists.getAvailableBiomes();
                 if (availableBiomes.isEmpty()) {
                     Bukkit.getLogger().info("Biome list is empty.");
                     player.sendMessage(ChatColor.RED + "Biome list is empty.");
@@ -183,18 +191,18 @@ public class ObjectiveManager {
                 break;
             }
             case FORCE_ADVANCEMENT: {
-                if (ChainManager.isChainModeEnabled()) {
+                if (chainManager.isChainModeEnabled()) {
                     Advancement newAdvancement;
                     try {
-                        newAdvancement = ChainManager.advancementChainList.get(ChainManager.advancementProgressMap.get(player));
+                        newAdvancement = chainManager.getAdvancementChainList().get(chainManager.getAdvancementProgressMap().get(player));
                     } catch (IndexOutOfBoundsException e) {
                         player.sendMessage(ChatColor.GOLD + "Reached the end of Advancement Chain list. Starting over.");
-                        ChainManager.advancementProgressMap.put(player, 0);
-                        newAdvancement = ChainManager.advancementChainList.get(ChainManager.advancementProgressMap.get(player));
+                        chainManager.getAdvancementProgressMap().put(player, 0);
+                        newAdvancement = chainManager.getAdvancementChainList().get(chainManager.getAdvancementProgressMap().get(player));
                     }
                     advancementMap.put(player.getUniqueId(), newAdvancement);
-                    ChainManager.advancementProgressMap.put(player, ChainManager.advancementProgressMap.get(player) + 1);
-                    if (ForceBattlePlugin.getInstance().getTimer().isRunning()) {
+                    chainManager.getAdvancementProgressMap().put(player, chainManager.getAdvancementProgressMap().get(player) + 1);
+                    if (forceBattlePlugin.getTimer().isRunning()) {
                         player.sendMessage(ChatColor.GRAY + "-----------------------");
                         player.sendMessage(ChatColor.GOLD + "Advancement Description:");
                         player.sendMessage(ChatColor.GOLD + newAdvancement.getDescription());
@@ -202,7 +210,7 @@ public class ObjectiveManager {
                     }
                     return;
                 }
-                List<Advancement> availableAdvancements = ObjectiveLists.getAvailableAdvancements();
+                List<Advancement> availableAdvancements = objectiveLists.getAvailableAdvancements();
                 if (availableAdvancements.isEmpty()) {
                     Bukkit.getLogger().info("Advancement list is empty.");
                     player.sendMessage(ChatColor.RED + "Advancement list is empty.");
@@ -211,7 +219,7 @@ public class ObjectiveManager {
 
                 Advancement newAdvancement = availableAdvancements.get(random.nextInt(availableAdvancements.size()));
                 advancementMap.put(player.getUniqueId(), newAdvancement);
-                if (ForceBattlePlugin.getInstance().getTimer().isRunning()) {
+                if (forceBattlePlugin.getTimer().isRunning()) {
                     player.sendMessage(ChatColor.GRAY + "-----------------------");
                     player.sendMessage(ChatColor.GOLD + "Advancement Description:");
                     player.sendMessage(ChatColor.GOLD + newAdvancement.getDescription());
@@ -220,20 +228,20 @@ public class ObjectiveManager {
                 break;
             }
             case FORCE_HEIGHT: {
-                if (ChainManager.isChainModeEnabled()) {
+                if (chainManager.isChainModeEnabled()) {
                     int newHeight;
                     try {
-                        newHeight = ChainManager.heightChainList.get(ChainManager.heightProgressMap.get(player));
+                        newHeight = chainManager.getHeightChainList().get(chainManager.getHeightProgressMap().get(player));
                     } catch (IndexOutOfBoundsException e) {
                         player.sendMessage(ChatColor.GOLD + "Reached the end of Height Chain list. Starting over.");
-                        ChainManager.heightProgressMap.put(player, 0);
-                        newHeight = ChainManager.heightChainList.get(ChainManager.heightProgressMap.get(player));
+                        chainManager.getHeightProgressMap().put(player, 0);
+                        newHeight = chainManager.getHeightChainList().get(chainManager.getHeightProgressMap().get(player));
                     }
                     heightMap.put(player.getUniqueId(), newHeight);
-                    ChainManager.heightProgressMap.put(player, ChainManager.heightProgressMap.get(player) + 1);
+                    chainManager.getHeightProgressMap().put(player, chainManager.getHeightProgressMap().get(player) + 1);
                     return;
                 }
-                List<Integer> availableHeights = ObjectiveLists.getAvailableHeights();
+                List<Integer> availableHeights = objectiveLists.getAvailableHeights();
                 if (availableHeights.isEmpty()) {
                     Bukkit.getLogger().info("Height list is empty.");
                     player.sendMessage(ChatColor.RED + "Height list is empty.");
@@ -247,45 +255,42 @@ public class ObjectiveManager {
         }
     }
 
-    private static Challenge newChallengeType() {
+    private Challenge newChallengeType() {
         if (activeChallenges.isEmpty()) {
             return null;
         }
         return activeChallenges.get(random.nextInt(activeChallenges.size()));
     }
 
-    public static void updateObjective(Player player) {
+    public void updateObjective(Player player) {
         Challenge challenge = newChallengeType();
-        if (ForceBattlePlugin.getInstance().getTimer().isRunning()) {
+        if (forceBattlePlugin.getTimer().isRunning()) {
             finishedObjectives.get(player.getUniqueId()).add(getObjective(player));
-            objectiveTimeMap.get(player.getUniqueId()).add(ForceBattlePlugin.getInstance().getTimer().getTime());
+            objectiveTimeMap.get(player.getUniqueId()).add(forceBattlePlugin.getTimer().getTime());
         }
         setChallengeType(player, challenge);
         newObjective(player, challenge);
-        NametagManager.updateNametag(player);
-        BossbarManager.updateBossbar(player);
+        forceBattlePlugin.getNametagManager().updateNametag(player);
+        forceBattlePlugin.getBossbarManager().updateBossbar(player);
     }
 
-    public static void resetProgress(Player player) {
-        PointsManager.setPoints(player, 0);
+    public void resetProgress(Player player) {
+        forceBattlePlugin.getPointsManager().setPoints(player, 0);
+        finishedObjectives.put(player.getUniqueId(), new ArrayList<>());
     }
 
-    public static void giveJokers(Player player) {
-        int skipAmount;
-        if (ForceBattlePlugin.getInstance().getConfig().get("jokers") == null) {
-            skipAmount = 3;
-        } else {
-            skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("jokers");
-        }
+    public void giveJokers(Player player) {
+        int skipAmount = forceBattlePlugin.getConfig().getInt("jokers", 3);
+
         if (skipAmount > 64) {
             skipAmount = 64;
         }
 
         int swapAmount;
-        if (ForceBattlePlugin.getInstance().getConfig().get("swappers") == null) {
+        if (forceBattlePlugin.getConfig().get("swappers") == null) {
             swapAmount = 1;
         } else {
-            swapAmount = ForceBattlePlugin.getInstance().getConfig().getInt("swappers");
+            swapAmount = forceBattlePlugin.getConfig().getInt("swappers");
         }
         if (swapAmount > 64) {
             swapAmount = 64;
@@ -295,18 +300,8 @@ public class ObjectiveManager {
         player.getInventory().setItem(8, ItemProvider.getSkipItem(skipAmount));
     }
 
-    public static void giveSkipItem(Player player, Integer amount) {
-
-        int skipAmount;
-        if (amount != null) {
-            skipAmount = amount;
-        } else {
-            if (ForceBattlePlugin.getInstance().getConfig().get("jokers") == null) {
-                skipAmount = 3;
-            } else {
-                skipAmount = ForceBattlePlugin.getInstance().getConfig().getInt("jokers");
-            }
-        }
+    public void giveSkipItem(Player player, Integer amount) {
+        int skipAmount = Objects.requireNonNullElseGet(amount, () -> forceBattlePlugin.getConfig().getInt("jokers", 3));
 
         if (skipAmount > 64) {
             skipAmount = 64;
@@ -316,22 +311,30 @@ public class ObjectiveManager {
         inventory.addItem(ItemProvider.getSkipItem(skipAmount));
     }
 
-    public static void giveSwapItem(Player player, Integer amount) {
-        int swapAmount;
-        if (amount != null) {
-            swapAmount = amount;
-        } else {
-            if (ForceBattlePlugin.getInstance().getConfig().get("swappers") == null) {
-                swapAmount = 1;
-            } else {
-                swapAmount = ForceBattlePlugin.getInstance().getConfig().getInt("swappers");
-            }
-        }
+    public void giveSwapItem(Player player, Integer amount) {
+        int swapAmount = Objects.requireNonNullElseGet(amount, () -> forceBattlePlugin.getConfig().getInt("swappers", 1));
+
         if (swapAmount > 64) {
             swapAmount = 64;
         }
 
         Inventory inventory = player.getInventory();
         inventory.addItem(ItemProvider.getSwapitem(swapAmount));
+    }
+
+    public List<Challenge> getActiveChallenges() {
+        return activeChallenges;
+    }
+
+    public HashMap<UUID, List<Object>> getFinishedObjectives() {
+        return finishedObjectives;
+    }
+
+    public HashMap<UUID, List<Integer>> getObjectiveTimeMap() {
+        return objectiveTimeMap;
+    }
+
+    public void setChainManager(ChainManager chainManager) {
+        this.chainManager = chainManager;
     }
 }

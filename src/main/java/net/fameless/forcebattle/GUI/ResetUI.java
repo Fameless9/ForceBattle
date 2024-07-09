@@ -1,8 +1,6 @@
 package net.fameless.forcebattle.GUI;
 
 import net.fameless.forcebattle.ForceBattlePlugin;
-import net.fameless.forcebattle.manager.BossbarManager;
-import net.fameless.forcebattle.manager.NametagManager;
 import net.fameless.forcebattle.manager.ObjectiveManager;
 import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
@@ -30,17 +28,24 @@ import java.util.UUID;
 
 public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
 
-    private static final HashMap<UUID, UUID> commandMap = new HashMap<>();
+    private final ObjectiveManager objectiveManager;
+    private final ForceBattlePlugin forceBattlePlugin;
+    private final HashMap<UUID, UUID> commandMap = new HashMap<>();
     private Inventory inventory;
+
+    public ResetUI(ForceBattlePlugin forceBattlePlugin) {
+        this.forceBattlePlugin = forceBattlePlugin;
+        this.objectiveManager = forceBattlePlugin.getObjectiveManager();
+    }
 
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Only players may use this command.");
+            sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Only players may use this command.");
             return false;
         }
         if (!sender.hasPermission("forcebattle.reset.player")) {
-            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Lacking permission: 'forcebattle.reset.player'");
+            sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Lacking permission: 'forcebattle.reset.player'");
             return false;
         }
 
@@ -48,9 +53,9 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
         if (args.length == 1) {
             target = Bukkit.getPlayer(args[0]);
             if (target != null) {
-                ResetUI.commandMap.put(player.getUniqueId(), target.getUniqueId());
+                commandMap.put(player.getUniqueId(), target.getUniqueId());
             } else {
-                sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Player couldn't be found.");
+                sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Player couldn't be found.");
             }
         }
 
@@ -90,52 +95,56 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
         if (!(event.getInventory().getHolder() instanceof ResetUI)) return;
         event.setCancelled(true);
         Player target = null;
-        if (ResetUI.commandMap.containsKey(event.getWhoClicked().getUniqueId())) {
-            if (Bukkit.getPlayer(ResetUI.commandMap.get(event.getWhoClicked().getUniqueId())) == null) {
-                event.getWhoClicked().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Target player is not available anymore.");
+        if (commandMap.containsKey(event.getWhoClicked().getUniqueId())) {
+            if (Bukkit.getPlayer(commandMap.get(event.getWhoClicked().getUniqueId())) == null) {
+                event.getWhoClicked().sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Target player is not available anymore.");
                 event.getWhoClicked().closeInventory();
                 return;
             }
-            target = Bukkit.getPlayer(ResetUI.commandMap.get(event.getWhoClicked().getUniqueId()));
+            target = Bukkit.getPlayer(commandMap.get(event.getWhoClicked().getUniqueId()));
         }
         switch (event.getSlot()) {
             case 0: {
                 if (target != null) {
                     target.getInventory().clear();
-                    ObjectiveManager.giveJokers(target);
-                    ObjectiveManager.resetProgress(target);
+                    objectiveManager.giveJokers(target);
+                    objectiveManager.resetProgress(target);
                     target.teleport(target.getWorld().getSpawnLocation());
                     target.setHealth(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                     target.setFoodLevel(20);
-                    target.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "You have been reset.");
+                    forceBattlePlugin.getBossbarManager().updateBossbar(target);
+                    forceBattlePlugin.getNametagManager().updateNametag(target);
+                    target.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "You have been reset.");
                     break;
                 }
 
-                ForceBattlePlugin.getInstance().getTimer().setTime(ForceBattlePlugin.getInstance().getTimer().getStartTime());
-                ForceBattlePlugin.getInstance().getTimer().setRunning(false);
+                forceBattlePlugin.getTimer().setTime(forceBattlePlugin.getTimer().getStartTime());
+                forceBattlePlugin.getTimer().setRunning(false);
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.getInventory().clear();
-                    ObjectiveManager.giveJokers(player);
-                    ObjectiveManager.resetProgress(player);
+                    objectiveManager.giveJokers(player);
+                    objectiveManager.resetProgress(player);
                     player.teleport(player.getWorld().getSpawnLocation());
                     player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                     player.setFoodLevel(20);
+                    forceBattlePlugin.getBossbarManager().updateBossbar(player);
+                    forceBattlePlugin.getNametagManager().updateNametag(player);
                 }
 
-                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Challenge has been reset.");
+                Bukkit.broadcastMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Challenge has been reset.");
                 break;
             }
             case 1: {
-                ForceBattlePlugin.getInstance().getTimer().setTime(ForceBattlePlugin.getInstance().getTimer().getStartTime());
-                ForceBattlePlugin.getInstance().getTimer().setRunning(false);
-                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Timer has been reset.");
+                forceBattlePlugin.getTimer().setTime(forceBattlePlugin.getTimer().getStartTime());
+                forceBattlePlugin.getTimer().setRunning(false);
+                Bukkit.broadcastMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Timer has been reset.");
                 break;
             }
             case 2: {
                 if (target != null) {
                     target.getInventory().clear();
-                    target.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Your inventory has been cleared.");
+                    target.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Your inventory has been cleared.");
                     break;
                 }
 
@@ -143,39 +152,39 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
                     player.getInventory().clear();
                 }
 
-                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Inventories have been cleared.");
+                Bukkit.broadcastMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Inventories have been cleared.");
                 break;
             }
             case 3: {
                 if (target != null) {
-                    ObjectiveManager.giveJokers(target);
-                    target.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Your jokers have been refilled.");
+                    objectiveManager.giveJokers(target);
+                    target.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Your jokers have been refilled.");
                     break;
                 }
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    ObjectiveManager.giveJokers(player);
+                    objectiveManager.giveJokers(player);
                 }
 
-                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Jokers have been refilled.");
+                Bukkit.broadcastMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Jokers have been refilled.");
                 break;
             }
             case 4: {
                 if (target != null) {
-                    ObjectiveManager.resetProgress(target);
-                    NametagManager.updateNametag(target);
-                    BossbarManager.updateBossbar(target);
-                    target.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Your points have been reset.");
+                    objectiveManager.resetProgress(target);
+                    forceBattlePlugin.getNametagManager().updateNametag(target);
+                    forceBattlePlugin.getBossbarManager().updateBossbar(target);
+                    target.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Your points have been reset.");
                     break;
                 }
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    ObjectiveManager.resetProgress(player);
-                    NametagManager.updateNametag(player);
-                    BossbarManager.updateBossbar(player);
+                    objectiveManager.resetProgress(player);
+                    forceBattlePlugin.getNametagManager().updateNametag(player);
+                    forceBattlePlugin.getBossbarManager().updateBossbar(player);
                 }
 
-                Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Points have been reset.");
+                Bukkit.broadcastMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Points have been reset.");
                 break;
             }
         }
@@ -188,7 +197,7 @@ public class ResetUI implements Listener, CommandExecutor, InventoryHolder {
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof ResetUI)) return;
-        ResetUI.commandMap.remove(event.getPlayer().getUniqueId());
+        commandMap.remove(event.getPlayer().getUniqueId());
     }
 
     @NotNull

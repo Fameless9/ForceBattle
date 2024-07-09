@@ -19,6 +19,12 @@ import java.util.Collections;
 
 public class TimerUI implements Listener, InventoryHolder {
 
+    private final Timer timer;
+
+    public TimerUI(Timer timer) {
+        this.timer = timer;
+    }
+
     public Inventory getTimerUI() {
         Inventory inventory = Bukkit.createInventory(this, 9, "Timer");
         inventory.setItem(3, ItemProvider.buildItem(new ItemStack(Material.PURPLE_DYE),
@@ -27,14 +33,14 @@ public class TimerUI implements Listener, InventoryHolder {
                 Collections.emptyList(),
                 ChatColor.GOLD + "Change Color",
                 ChatColor.GRAY + "Click to cycle through colors",
-                ChatColor.GRAY + "Current color: " + (ForceBattlePlugin.getInstance().getTimer().getDecoration() != null ? ForceBattlePlugin.getInstance().getTimer().getDecoration() : "") + ForceBattlePlugin.getInstance().getTimer().getColor() + Format.formatName(ForceBattlePlugin.getInstance().getTimer().getColor().name()))
+                ChatColor.GRAY + "Current color: " + (timer.getDecoration() != null ? timer.getDecoration() : "") + timer.getColor() + Format.formatName(timer.getColor().name()))
         );
         inventory.setItem(4, ItemProvider.buildItem(new ItemStack(Material.CLOCK),
                 Collections.emptyList(),
                 0,
                 Collections.emptyList(),
                 ChatColor.GOLD + "Timer",
-                ChatColor.GRAY + "Current time: " + ChatColor.GOLD + Format.formatTime(ForceBattlePlugin.getInstance().getTimer().getTime()),
+                ChatColor.GRAY + "Current time: " + ChatColor.GOLD + Format.formatTime(timer.getTime()),
                 "",
                 ChatColor.GRAY + "Right-click to add 1 Minute",
                 ChatColor.GRAY + "Shift + Right-click to add 1 Hour",
@@ -50,7 +56,7 @@ public class TimerUI implements Listener, InventoryHolder {
                 Collections.emptyList(),
                 ChatColor.GOLD + "Change Decoration",
                 ChatColor.GRAY + "Click to cycle through decorations",
-                ChatColor.GRAY + "Current decoration: " + ForceBattlePlugin.getInstance().getTimer().getColor() + (ForceBattlePlugin.getInstance().getTimer().getDecoration() != null ? ForceBattlePlugin.getInstance().getTimer().getDecoration() : "") + (ForceBattlePlugin.getInstance().getTimer().getDecoration() != null ? Format.formatName(ForceBattlePlugin.getInstance().getTimer().getDecoration().name()) : "None"))
+                ChatColor.GRAY + "Current decoration: " + timer.getColor() + (timer.getDecoration() != null ? timer.getDecoration() : "") + (timer.getDecoration() != null ? Format.formatName(timer.getDecoration().name()) : "None"))
         );
         return inventory;
     }
@@ -61,58 +67,58 @@ public class TimerUI implements Listener, InventoryHolder {
         event.setCancelled(true);
         switch (event.getSlot()) {
             case 3: {
-                ForceBattlePlugin.getInstance().getTimer().cycleColors();
+                timer.cycleColors();
                 break;
             }
             case 4: {
                 switch (event.getClick()) {
                     case RIGHT: {
-                        ForceBattlePlugin.getInstance().getTimer().setTime(ForceBattlePlugin.getInstance().getTimer().getTime() + 60);
-                        ForceBattlePlugin.getInstance().getTimer().setStartTime(ForceBattlePlugin.getInstance().getTimer().getStartTime() + 60);
-                        event.getWhoClicked().sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "Added 1 Minute to the timer.");
-                        ForceBattlePlugin.getInstance().getTimer().sendActionbar();
+                        timer.setTime(timer.getTime() + 60);
+                        timer.setStartTime(timer.getStartTime() + 60);
+                        event.getWhoClicked().sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GRAY + "Added 1 Minute to the timer.");
+                        timer.sendActionbar();
                         break;
                     }
                     case SHIFT_RIGHT: {
-                        ForceBattlePlugin.getInstance().getTimer().setTime(ForceBattlePlugin.getInstance().getTimer().getTime() + 3600);
-                        ForceBattlePlugin.getInstance().getTimer().setStartTime(ForceBattlePlugin.getInstance().getTimer().getStartTime() + 3600);
-                        event.getWhoClicked().sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "Added 1 Hour to the timer.");
-                        ForceBattlePlugin.getInstance().getTimer().sendActionbar();
+                        timer.setTime(timer.getTime() + 3600);
+                        timer.setStartTime(timer.getStartTime() + 3600);
+                        event.getWhoClicked().sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GRAY + "Added 1 Hour to the timer.");
+                        timer.sendActionbar();
                         break;
                     }
                     case LEFT: {
-                        if (ForceBattlePlugin.getInstance().getTimer().getTime() - 60 < 1) {
-                            event.getWhoClicked().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Timer can't go below 1 second.");
-                            ForceBattlePlugin.getInstance().getTimer().sendActionbar();
+                        if (timer.getTime() - 60 < 1) {
+                            event.getWhoClicked().sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Timer can't go below 1 second.");
+                            timer.sendActionbar();
                             return;
                         }
-                        ForceBattlePlugin.getInstance().getTimer().setTime(ForceBattlePlugin.getInstance().getTimer().getTime() - 60);
-                        ForceBattlePlugin.getInstance().getTimer().setStartTime(ForceBattlePlugin.getInstance().getTimer().getStartTime() - 60);
-                        event.getWhoClicked().sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "Subtracted 1 Minute from the timer.");
-                        ForceBattlePlugin.getInstance().getTimer().sendActionbar();
+                        timer.setTime(timer.getTime() - 60);
+                        timer.setStartTime(timer.getStartTime() - 60);
+                        event.getWhoClicked().sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GRAY + "Subtracted 1 Minute from the timer.");
+                        timer.sendActionbar();
                         break;
                     }
                     case SHIFT_LEFT: {
-                        if (ForceBattlePlugin.getInstance().getTimer().getTime() - 3600 < 1) {
-                            event.getWhoClicked().sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Timer can't go below 1 second.");
-                            ForceBattlePlugin.getInstance().getTimer().sendActionbar();
+                        if (timer.getTime() - 3600 < 1) {
+                            event.getWhoClicked().sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Timer can't go below 1 second.");
+                            timer.sendActionbar();
                             return;
                         }
-                        ForceBattlePlugin.getInstance().getTimer().setTime(ForceBattlePlugin.getInstance().getTimer().getTime() - 3600);
-                        ForceBattlePlugin.getInstance().getTimer().setStartTime(ForceBattlePlugin.getInstance().getTimer().getStartTime() - 3600);
-                        event.getWhoClicked().sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "Subtracted 1 Hour from the timer.");
-                        ForceBattlePlugin.getInstance().getTimer().sendActionbar();
+                        timer.setTime(timer.getTime() - 3600);
+                        timer.setStartTime(timer.getStartTime() - 3600);
+                        event.getWhoClicked().sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GRAY + "Subtracted 1 Hour from the timer.");
+                        timer.sendActionbar();
                         break;
                     }
                     case MIDDLE: {
-                        ForceBattlePlugin.getInstance().getTimer().toggle((Player) event.getWhoClicked());
+                        timer.toggle((Player) event.getWhoClicked());
                         break;
                     }
                 }
                 break;
             }
             case 5: {
-                ForceBattlePlugin.getInstance().getTimer().cycleDecorations();
+                timer.cycleDecorations();
                 break;
             }
         }

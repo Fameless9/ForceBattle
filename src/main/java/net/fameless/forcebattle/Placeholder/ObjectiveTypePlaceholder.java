@@ -1,7 +1,7 @@
 package net.fameless.forcebattle.Placeholder;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.fameless.forcebattle.manager.ObjectiveManager;
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.util.Challenge;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class ObjectiveTypePlaceholder extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-        Challenge challenge = ObjectiveManager.getChallengeType(player);
+        Challenge challenge = ForceBattlePlugin.get().getObjectiveManager().getChallengeType(player);
         if (challenge == null) return "Nothing";
         return switch (challenge) {
             case FORCE_ITEM -> "Force Item";

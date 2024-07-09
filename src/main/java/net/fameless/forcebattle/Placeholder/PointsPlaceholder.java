@@ -1,7 +1,7 @@
 package net.fameless.forcebattle.Placeholder;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.fameless.forcebattle.manager.PointsManager;
+import net.fameless.forcebattle.ForceBattlePlugin;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +25,6 @@ public class PointsPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-        return String.valueOf(PointsManager.getPoints(player));
+        return String.valueOf(ForceBattlePlugin.get().getPointsManager().getPoints(player));
     }
 }

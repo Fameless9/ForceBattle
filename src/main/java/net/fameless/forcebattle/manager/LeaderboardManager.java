@@ -1,5 +1,6 @@
 package net.fameless.forcebattle.manager;
 
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
 import org.bukkit.Bukkit;
@@ -15,7 +16,7 @@ public class LeaderboardManager {
 
     public static void displayLeaderboard() {
         List<Team> excluded = new ArrayList<>();
-        List<Map.Entry<UUID, Integer>> sortedEntries = new ArrayList<>(PointsManager.pointsMap.entrySet());
+        List<Map.Entry<UUID, Integer>> sortedEntries = new ArrayList<>(ForceBattlePlugin.get().getPointsManager().getPointsMap().entrySet());
         sortedEntries.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
         StringBuilder message = new StringBuilder("\n" + ChatColor.GOLD + ChatColor.BOLD + "LEADERBOARD:\n");
         int position = 1;

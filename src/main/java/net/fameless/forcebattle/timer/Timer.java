@@ -1,7 +1,8 @@
 package net.fameless.forcebattle.timer;
 
 import net.fameless.forcebattle.ForceBattlePlugin;
-import net.fameless.forcebattle.manager.*;
+import net.fameless.forcebattle.manager.LeaderboardManager;
+import net.fameless.forcebattle.manager.ObjectiveManager;
 import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
 import net.fameless.forcebattle.util.Advancement;
@@ -21,19 +22,24 @@ import java.util.List;
 
 public class Timer implements CommandExecutor {
 
-    private int startTime;
-    private int time;
-    private boolean running;
-    private final TimerUI timerUI = new TimerUI();
-
-    private ChatColor color = ChatColor.GOLD;
-    private ChatColor decoration = null;
-    private int colorProgress = 0;
-    private int decorationProgress = 0;
     private final List<ChatColor> colorList = new ArrayList<>();
     private final List<ChatColor> decorationList = new ArrayList<>();
+    private final TimerUI timerUI = new TimerUI(this);
+    private final ForceBattlePlugin forceBattlePlugin;
+    private final ObjectiveManager objectiveManager;
+    
+    private int startTime;
+    private int time;
+    private int colorProgress = 0;
+    private int decorationProgress = 0;
+    private boolean running;
+    private ChatColor color = ChatColor.GOLD;
+    private ChatColor decoration = null;
+    
+    public Timer(ForceBattlePlugin forceBattlePlugin) {
+        this.forceBattlePlugin = forceBattlePlugin;
+        this.objectiveManager = forceBattlePlugin.getObjectiveManager();
 
-    public Timer() {
         colorList.add(ChatColor.BLUE);
         colorList.add(ChatColor.DARK_BLUE);
         colorList.add(ChatColor.GREEN);
@@ -74,8 +80,8 @@ public class Timer implements CommandExecutor {
 
     public void setStartTime(int newStartTime) {
         startTime = newStartTime;
-        ForceBattlePlugin.getInstance().getConfig().set("time", startTime);
-        ForceBattlePlugin.getInstance().saveConfig();
+        forceBattlePlugin.getConfig().set("time", startTime);
+        forceBattlePlugin.saveConfig();
     }
 
     public int getTime() {
@@ -113,14 +119,14 @@ public class Timer implements CommandExecutor {
     }
 
     private void run() {
-        if (ForceBattlePlugin.getInstance().getConfig().get("time") != null) {
-            setStartTime(ForceBattlePlugin.getInstance().getConfig().getInt("time"));
+        if (forceBattlePlugin.getConfig().get("time") != null) {
+            setStartTime(forceBattlePlugin.getConfig().getInt("time"));
             setTime(startTime);
         } else {
             setStartTime(5400);
             setTime(startTime);
         }
-        Bukkit.getScheduler().runTaskTimer(ForceBattlePlugin.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimer(forceBattlePlugin, () -> {
             sendActionbar();
             if (time == 0) {
                 setRunning(false);
@@ -128,8 +134,8 @@ public class Timer implements CommandExecutor {
                 LeaderboardManager.displayLeaderboard();
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    PointsManager.setPoints(player, 0);
-                    ObjectiveManager.updateObjective(player);
+                    forceBattlePlugin.getPointsManager().setPoints(player, 0);
+                    objectiveManager.updateObjective(player);
                 }
 
                 for (Team team : TeamManager.getTeams()) {
@@ -155,32 +161,32 @@ public class Timer implements CommandExecutor {
     }
 
     public void toggle(Player player) {
-        if (ObjectiveManager.activeChallenges.isEmpty()) {
-            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "Please select a challenge first. " + ChatColor.GOLD + "/menu");
+        if (objectiveManager.getActiveChallenges().isEmpty()) {
+            player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GRAY + "Please select a challenge first. " + ChatColor.GOLD + "/menu");
             return;
         }
         if (isRunning()) {
             setRunning(false);
             for (Player players : Bukkit.getOnlinePlayers()) {
                 players.sendTitle(ChatColor.GOLD + "TIMER PAUSED", "", 20, 30, 20);
-                NametagManager.updateNametag(players);
-                BossbarManager.updateBossbar(players);
+                forceBattlePlugin.getNametagManager().updateNametag(players);
+                forceBattlePlugin.getBossbarManager().updateBossbar(players);
             }
-            Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Timer has been paused.");
+            Bukkit.broadcastMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Timer has been paused.");
         } else {
             setRunning(true);
             for (Player players : Bukkit.getOnlinePlayers()) {
                 players.sendTitle(ChatColor.GOLD + "TIMER STARTED", "", 20, 30, 20);
-                if (ObjectiveManager.getObjective(players) instanceof Advancement advancement) {
+                if (objectiveManager.getObjective(players) instanceof Advancement advancement) {
                     player.sendMessage(ChatColor.GRAY + "-----------------------");
                     player.sendMessage(ChatColor.GOLD + "Advancement Description:");
                     player.sendMessage(ChatColor.GOLD + advancement.getDescription());
                     player.sendMessage(ChatColor.GRAY + "-----------------------");
                 }
-                NametagManager.updateNametag(players);
-                BossbarManager.updateBossbar(players);
+                forceBattlePlugin.getNametagManager().updateNametag(players);
+                forceBattlePlugin.getBossbarManager().updateBossbar(players);
             }
-            Bukkit.broadcastMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Timer has been started.");
+            Bukkit.broadcastMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Timer has been started.");
         }
         sendActionbar();
     }
@@ -188,7 +194,7 @@ public class Timer implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (sender instanceof Player player) {
             if (!player.hasPermission("forcebattle.timer")) {
-                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Lacking permission: 'forcebattle.timer'");
+                player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Lacking permission: 'forcebattle.timer'");
                 return false;
             }
             if (args.length >= 1) {
@@ -203,22 +209,22 @@ public class Timer implements CommandExecutor {
                             try {
                                 int time = Integer.parseInt(args[1]);
                                 if (time < 1) {
-                                    player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Timer can't be set below 1 second.");
+                                    player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Timer can't be set below 1 second.");
                                 }
                                 setTime(time);
                                 setStartTime(time);
-                                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Timer has been set to " + time + " seconds.");
+                                player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Timer has been set to " + time + " seconds.");
                                 sendActionbar();
                             } catch (NumberFormatException e) {
-                                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Time value must be an integer.");
+                                player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Time value must be an integer.");
                             }
                             break;
                         }
-                        player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Usage: /timer set <time>");
+                        player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Usage: /timer set <time>");
                         break;
                     }
                     default: {
-                        sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Usage: /timer <toggle | set> <time>");
+                        sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Usage: /timer <toggle | set> <time>");
                         break;
                     }
                 }
@@ -227,5 +233,9 @@ public class Timer implements CommandExecutor {
             }
         }
         return false;
+    }
+
+    public TimerUI getTimerUI() {
+        return timerUI;
     }
 }

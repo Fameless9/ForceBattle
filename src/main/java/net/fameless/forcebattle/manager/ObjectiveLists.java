@@ -7,28 +7,54 @@ import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectiveLists {
 
-    private static final FileConfiguration configuration = ForceBattlePlugin.getInstance().getConfig();
+    private final ForceBattlePlugin forceBattlePlugin;
+    private final FileConfiguration configuration;
 
-    private static final boolean excludeSpawnEggs = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_spawn_eggs");
-    private static final boolean excludeMusicDiscs = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_music_discs");
-    private static final boolean excludeBannerPatterns = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_banner_patterns");
-    private static final boolean excludeBanners = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_banners");
-    private static final boolean excludeArmorTemplates = ForceBattlePlugin.getInstance().getConfig().getBoolean("exclude.exclude_armor_templates");
+    private boolean excludeSpawnEggs;
+    private boolean excludeMusicDiscs;
+    private boolean excludeBannerPatterns;
+    private boolean excludeBanners;
+    private boolean excludeArmorTemplates;
 
-    private static final List<Material> availableItems = new ArrayList<>();
-    private static final List<EntityType> availableMobs = new ArrayList<>();
-    private static final List<Biome> availableBiomes = new ArrayList<>();
-    private static final List<Advancement> availableAdvancements = new ArrayList<>();
-    private static final List<Integer> availableHeights = new ArrayList<>();
+    private final List<Material> availableItems = new ArrayList<>();
+    private final List<EntityType> availableMobs = new ArrayList<>();
+    private final List<Biome> availableBiomes = new ArrayList<>();
+    private final List<Advancement> availableAdvancements = new ArrayList<>();
+    private final List<Integer> availableHeights = new ArrayList<>();
 
-    public static void initLists() throws IOException {
+    public ObjectiveLists(ForceBattlePlugin forceBattlePlugin) {
+        this.forceBattlePlugin = forceBattlePlugin;
+        this.configuration = forceBattlePlugin.getConfig();
+        this.excludeSpawnEggs = configuration.getBoolean("exclude.exclude_spawn_eggs", true);
+        this.excludeMusicDiscs = configuration.getBoolean("exclude.exclude_music_discs", true);
+        this.excludeBannerPatterns = configuration.getBoolean("exclude.exclude_banner_patterns", true);
+        this.excludeBanners = configuration.getBoolean("exclude.exclude_banners", false);
+        this.excludeArmorTemplates = configuration.getBoolean("exclude.exclude_armor_templates", false);
+        initLists();
+    }
 
+    public void update() {
+        this.excludeSpawnEggs = forceBattlePlugin.getConfig().getBoolean("exclude.exclude_spawn_eggs");
+        this.excludeMusicDiscs = forceBattlePlugin.getConfig().getBoolean("exclude.exclude_music_discs");
+        this.excludeBannerPatterns = forceBattlePlugin.getConfig().getBoolean("exclude.exclude_banner_patterns");
+        this.excludeBanners = forceBattlePlugin.getConfig().getBoolean("exclude.exclude_banners");
+        this.excludeArmorTemplates = forceBattlePlugin.getConfig().getBoolean("exclude.exclude_armor_templates");
+
+        this.availableItems.clear();
+        this.availableMobs.clear();
+        this.availableBiomes.clear();
+        this.availableAdvancements.clear();
+        this.availableHeights.clear();
+
+        initLists();
+    }
+
+    private void initLists() {
         List<String> itemsToExclude = configuration.getStringList("exclude.items");
 
         for (Material material : Material.values()) {
@@ -79,23 +105,23 @@ public class ObjectiveLists {
         }
     }
 
-    public static List<Material> getAvailableItems() {
+    public List<Material> getAvailableItems() {
         return availableItems;
     }
 
-    public static List<EntityType> getAvailableMobs() {
+    public List<EntityType> getAvailableMobs() {
         return availableMobs;
     }
 
-    public static List<Biome> getAvailableBiomes() {
+    public List<Biome> getAvailableBiomes() {
         return availableBiomes;
     }
 
-    public static List<Advancement> getAvailableAdvancements() {
+    public List<Advancement> getAvailableAdvancements() {
         return availableAdvancements;
     }
 
-    public static List<Integer> getAvailableHeights() {
+    public List<Integer> getAvailableHeights() {
         return availableHeights;
     }
 }

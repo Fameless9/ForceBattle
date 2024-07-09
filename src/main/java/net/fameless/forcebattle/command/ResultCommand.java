@@ -1,7 +1,6 @@
 package net.fameless.forcebattle.command;
 
 import net.fameless.forcebattle.ForceBattlePlugin;
-import net.fameless.forcebattle.manager.ObjectiveManager;
 import net.fameless.forcebattle.util.Advancement;
 import net.fameless.forcebattle.util.Format;
 import net.fameless.forcebattle.util.ItemProvider;
@@ -19,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -33,11 +33,11 @@ public class ResultCommand implements CommandExecutor, Listener {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "/result <player>");
+            sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "/result <player>");
             return false;
         }
         if (Bukkit.getPlayerExact(args[0]) == null) {
-            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Player couldn't be found.");
+            sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Player couldn't be found.");
             return false;
         }
         if (sender instanceof Player player) {
@@ -52,7 +52,7 @@ public class ResultCommand implements CommandExecutor, Listener {
         if (!(event.getInventory().getHolder() instanceof GUI)) return;
         if (event.getCurrentItem() == null) return;
 
-        String UUIDString = event.getInventory().getItem(0).getItemMeta().getPersistentDataContainer().get(ForceBattlePlugin.playerKey, PersistentDataType.STRING);
+        String UUIDString = event.getInventory().getItem(0).getItemMeta().getPersistentDataContainer().get(ForceBattlePlugin.getPlayerKey(), PersistentDataType.STRING);
         if (UUIDString == null) return;
         UUID uuid;
         try {
@@ -62,7 +62,7 @@ public class ResultCommand implements CommandExecutor, Listener {
         }
 
         Player target = Bukkit.getPlayer(uuid);
-        int page = event.getInventory().getItem(0).getItemMeta().getPersistentDataContainer().get(ForceBattlePlugin.pageKey, PersistentDataType.INTEGER);
+        int page = event.getInventory().getItem(0).getItemMeta().getPersistentDataContainer().get(ForceBattlePlugin.getPageKey(), PersistentDataType.INTEGER);
 
         if (event.getRawSlot() == 0 && event.getCurrentItem().getType().equals(Material.LIME_STAINED_GLASS_PANE)) {
             new GUI((Player) event.getWhoClicked(), target, page - 1);
@@ -77,13 +77,13 @@ public class ResultCommand implements CommandExecutor, Listener {
 
         public GUI(Player player, Player target, int page) {
             if (target == null) {
-                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Target player is not available anymore!");
+                player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Target player is not available anymore!");
                 player.closeInventory();
                 return;
             }
 
             inventory = Bukkit.createInventory(this, 54, "Results " + target.getName() + " | Page " + page);
-            List<Object> allObjectives = ObjectiveManager.finishedObjectives.get(target.getUniqueId());
+            List<Object> allObjectives = ForceBattlePlugin.get().getObjectiveManager().getFinishedObjectives().get(target.getUniqueId());
 
             ItemStack left;
             ItemMeta leftMeta;
@@ -101,8 +101,8 @@ public class ResultCommand implements CommandExecutor, Listener {
                 }
             }
 
-            leftMeta.getPersistentDataContainer().set(ForceBattlePlugin.pageKey, PersistentDataType.INTEGER, page);
-            leftMeta.getPersistentDataContainer().set(ForceBattlePlugin.playerKey, PersistentDataType.STRING, player.getUniqueId().toString());
+            leftMeta.getPersistentDataContainer().set(ForceBattlePlugin.getPageKey(), PersistentDataType.INTEGER, page);
+            leftMeta.getPersistentDataContainer().set(ForceBattlePlugin.getPlayerKey(), PersistentDataType.STRING, player.getUniqueId().toString());
             left.setItemMeta(leftMeta);
 
             ItemStack right;
@@ -126,7 +126,7 @@ public class ResultCommand implements CommandExecutor, Listener {
             inventory.setItem(0, left);
             inventory.setItem(8, right);
 
-            for (ItemStack itemStack : PageUtil.getPageItems(allObjectives, ObjectiveManager.objectiveTimeMap.get(player.getUniqueId()), page, 52)) {
+            for (ItemStack itemStack : PageUtil.getPageItems(allObjectives, ForceBattlePlugin.get().getObjectiveManager().getObjectiveTimeMap().get(player.getUniqueId()), page, 52)) {
                 inventory.addItem(itemStack);
             }
             player.openInventory(inventory);
@@ -152,31 +152,31 @@ public class ResultCommand implements CommandExecutor, Listener {
                     Integer time = timeList.get(i);
 
                     if (object instanceof Material material) {
-                        newObjectives.add(ItemProvider.buildItem(new ItemStack(material), null, 0, null,
+                        newObjectives.add(ItemProvider.buildItem(new ItemStack(material), null, 0, List.of(ItemFlag.HIDE_ATTRIBUTES),
                                 ChatColor.GOLD + "Item: " + Format.formatName(material.name()),
                                 "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                         continue;
                     }
                     if (object instanceof EntityType entityType) {
-                        newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.SPIDER_SPAWN_EGG), null, 0, null,
+                        newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.SPIDER_SPAWN_EGG), null, 0, List.of(ItemFlag.HIDE_ATTRIBUTES),
                                 ChatColor.GOLD + "Mob: " + Format.formatName(entityType.name()),
                                 "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                         continue;
                     }
                     if (object instanceof Biome biome) {
-                        newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.GRASS_BLOCK), null, 0, null,
+                        newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.GRASS_BLOCK), null, 0, List.of(ItemFlag.HIDE_ATTRIBUTES),
                                 ChatColor.GOLD + "Biome: " + Format.formatName(biome.name()),
                                 "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                         continue;
                     }
                     if (object instanceof Advancement advancement) {
-                        newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.GOLD_NUGGET), null, 0, null,
+                        newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.GOLD_NUGGET), null, 0, List.of(ItemFlag.HIDE_ATTRIBUTES),
                                 ChatColor.GOLD + "Advancement: " + Format.formatName(advancement.name()),
                                 "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                         continue;
                     }
                     if (object instanceof Integer height) {
-                        newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.SCAFFOLDING), null, 0, null,
+                        newObjectives.add(ItemProvider.buildItem(new ItemStack(Material.SCAFFOLDING), null, 0, List.of(ItemFlag.HIDE_ATTRIBUTES),
                                 ChatColor.GOLD + "Height: " + height,
                                 "", ChatColor.GRAY + "Time: " + Format.formatTime(time)));
                     }

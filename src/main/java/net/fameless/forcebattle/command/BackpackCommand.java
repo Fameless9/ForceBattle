@@ -1,7 +1,6 @@
 package net.fameless.forcebattle.command;
 
 import net.fameless.forcebattle.ForceBattlePlugin;
-import net.fameless.forcebattle.GUI.MenuUI;
 import net.fameless.forcebattle.team.Team;
 import net.fameless.forcebattle.team.TeamManager;
 import org.bukkit.Bukkit;
@@ -23,18 +22,18 @@ public class BackpackCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "Only players can use backpacks.");
+            sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GRAY + "Only players can use backpacks.");
             return false;
         }
-        if (!MenuUI.isBackpackEnabled()) {
-            sender.sendMessage(ForceBattlePlugin.prefix + ChatColor.RED + "Backpacks are disabled.");
+        if (!ForceBattlePlugin.get().getMenuUI().isBackpackEnabled()) {
+            sender.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.RED + "Backpacks are disabled.");
             return false;
         }
 
         if (args.length > 0 && args[0].equals("team")) {
             Team team = TeamManager.getTeam(player);
             if (team == null) {
-                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GRAY + "You are not in a team.");
+                player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GRAY + "You are not in a team.");
                 return false;
             }
             player.openInventory(team.backpack);

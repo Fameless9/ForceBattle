@@ -1,5 +1,6 @@
 package net.fameless.forcebattle.manager;
 
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.util.Advancement;
 import net.fameless.forcebattle.util.Challenge;
 import org.bukkit.Material;
@@ -14,19 +15,25 @@ import java.util.List;
 
 public class ChainManager {
 
-    public static final HashMap<Player, Integer> itemProgressMap = new HashMap<>();
-    public static final HashMap<Player, Integer> mobProgressMap = new HashMap<>();
-    public static final HashMap<Player, Integer> biomeProgressMap = new HashMap<>();
-    public static final HashMap<Player, Integer> advancementProgressMap = new HashMap<>();
-    public static final HashMap<Player, Integer> heightProgressMap = new HashMap<>();
-    public static List<Material> itemChainList = new ArrayList<>();
-    public static List<EntityType> mobChainList = new ArrayList<>();
-    public static List<Biome> biomeChainList = new ArrayList<>();
-    public static List<Advancement> advancementChainList = new ArrayList<>();
-    public static List<Integer> heightChainList = new ArrayList<>();
-    private static boolean enabled;
+    private final ObjectiveManager objectiveManager = ForceBattlePlugin.get().getObjectiveManager();
+    private final ObjectiveLists objectiveLists = ForceBattlePlugin.get().getObjectiveLists();
+    private final HashMap<Player, Integer> itemProgressMap = new HashMap<>();
+    private final HashMap<Player, Integer> mobProgressMap = new HashMap<>();
+    private final HashMap<Player, Integer> biomeProgressMap = new HashMap<>();
+    private final HashMap<Player, Integer> advancementProgressMap = new HashMap<>();
+    private final HashMap<Player, Integer> heightProgressMap = new HashMap<>();
+    private List<Material> itemChainList = new ArrayList<>();
+    private List<EntityType> mobChainList = new ArrayList<>();
+    private List<Biome> biomeChainList = new ArrayList<>();
+    private List<Advancement> advancementChainList = new ArrayList<>();
+    private List<Integer> heightChainList = new ArrayList<>();
+    private boolean chainModeEnabled;
 
-    public static void addPlayer(Player player) {
+    public ChainManager() {
+        updateLists();
+    }
+
+    public void addPlayer(Player player) {
         if (!itemProgressMap.containsKey(player)) {
             itemProgressMap.put(player, 0);
         }
@@ -44,40 +51,80 @@ public class ChainManager {
         }
     }
 
-    public static void updateLists() {
-        if (ObjectiveManager.activeChallenges.contains(Challenge.FORCE_ITEM)) {
-            List<Material> itemList = ObjectiveLists.getAvailableItems();
+    public void updateLists() {
+        if (objectiveManager.getActiveChallenges().contains(Challenge.FORCE_ITEM)) {
+            List<Material> itemList = objectiveLists.getAvailableItems();
             Collections.shuffle(itemList);
-            ChainManager.itemChainList = itemList;
+            this.itemChainList = itemList;
         }
-        if (ObjectiveManager.activeChallenges.contains(Challenge.FORCE_MOB)) {
-            List<EntityType> mobList = ObjectiveLists.getAvailableMobs();
+        if (objectiveManager.getActiveChallenges().contains(Challenge.FORCE_MOB)) {
+            List<EntityType> mobList = objectiveLists.getAvailableMobs();
             Collections.shuffle(mobList);
-            ChainManager.mobChainList = mobList;
+            this.mobChainList = mobList;
         }
-        if (ObjectiveManager.activeChallenges.contains(Challenge.FORCE_BIOME)) {
-            List<Biome> biomeList = ObjectiveLists.getAvailableBiomes();
+        if (objectiveManager.getActiveChallenges().contains(Challenge.FORCE_BIOME)) {
+            List<Biome> biomeList = objectiveLists.getAvailableBiomes();
             Collections.shuffle(biomeList);
-            ChainManager.biomeChainList = biomeList;
+            this.biomeChainList = biomeList;
         }
 
-        if (ObjectiveManager.activeChallenges.contains(Challenge.FORCE_ADVANCEMENT)) {
-            List<Advancement> advancementList = ObjectiveLists.getAvailableAdvancements();
+        if (objectiveManager.getActiveChallenges().contains(Challenge.FORCE_ADVANCEMENT)) {
+            List<Advancement> advancementList = objectiveLists.getAvailableAdvancements();
             Collections.shuffle(advancementList);
-            ChainManager.advancementChainList = advancementList;
+            this.advancementChainList = advancementList;
         }
-        if (ObjectiveManager.activeChallenges.contains(Challenge.FORCE_HEIGHT)) {
-            List<Integer> heightList = ObjectiveLists.getAvailableHeights();
+        if (objectiveManager.getActiveChallenges().contains(Challenge.FORCE_HEIGHT)) {
+            List<Integer> heightList = objectiveLists.getAvailableHeights();
             Collections.shuffle(heightList);
-            ChainManager.heightChainList = heightList;
+            this.heightChainList = heightList;
         }
     }
 
-    public static boolean isChainModeEnabled() {
-        return enabled;
+    public boolean isChainModeEnabled() {
+        return chainModeEnabled;
     }
 
-    public static void setChainModeEnabled(boolean enabled) {
-        ChainManager.enabled = enabled;
+    public void setChainModeEnabled(boolean chainModeEnabled) {
+        this.chainModeEnabled = chainModeEnabled;
+    }
+
+    public HashMap<Player, Integer> getItemProgressMap() {
+        return itemProgressMap;
+    }
+
+    public HashMap<Player, Integer> getMobProgressMap() {
+        return mobProgressMap;
+    }
+
+    public HashMap<Player, Integer> getBiomeProgressMap() {
+        return biomeProgressMap;
+    }
+
+    public HashMap<Player, Integer> getAdvancementProgressMap() {
+        return advancementProgressMap;
+    }
+
+    public HashMap<Player, Integer> getHeightProgressMap() {
+        return heightProgressMap;
+    }
+
+    public List<Material> getItemChainList() {
+        return itemChainList;
+    }
+
+    public List<EntityType> getMobChainList() {
+        return mobChainList;
+    }
+
+    public List<Biome> getBiomeChainList() {
+        return biomeChainList;
+    }
+
+    public List<Advancement> getAdvancementChainList() {
+        return advancementChainList;
+    }
+
+    public List<Integer> getHeightChainList() {
+        return heightChainList;
     }
 }

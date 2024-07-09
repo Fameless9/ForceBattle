@@ -13,7 +13,7 @@ public class TeamManager {
 
     public static void registerTeam(Team team) {
         for (Player player : team.getPlayers()) {
-            player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GREEN + "New team created.");
+            player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GREEN + "New team created.");
         }
         teams.add(team);
     }
@@ -22,7 +22,7 @@ public class TeamManager {
         Team team = TeamManager.getTeam(teamId);
         if (team != null) {
             for (Player player : team.getPlayers()) {
-                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Your team has been deleted.");
+                player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Your team has been deleted.");
             }
 
             team.getPlayers().clear();
@@ -34,7 +34,7 @@ public class TeamManager {
         if (team != null) {
 
             for (Player player : team.getPlayers()) {
-                player.sendMessage(ForceBattlePlugin.prefix + ChatColor.GOLD + "Your team has been deleted.");
+                player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "Your team has been deleted.");
             }
 
             team.getPlayers().clear();

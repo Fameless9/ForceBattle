@@ -1,7 +1,7 @@
 package net.fameless.forcebattle.Placeholder;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.fameless.forcebattle.manager.ObjectiveManager;
+import net.fameless.forcebattle.ForceBattlePlugin;
 import net.fameless.forcebattle.util.Format;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class ObjectivePlaceholder extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-        return ObjectiveManager.getObjective(player) != null ? Format.formatName(ObjectiveManager.getObjective(player).toString()) :
+        return ForceBattlePlugin.get().getObjectiveManager().getObjective(player) != null ? Format.formatName(ForceBattlePlugin.get().getObjectiveManager().getObjective(player).toString()) :
                 "Nothing";
     }
 }

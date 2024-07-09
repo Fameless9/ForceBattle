@@ -11,10 +11,8 @@ import net.fameless.forcebattle.command.*;
 import net.fameless.forcebattle.command.tabcompleter.*;
 import net.fameless.forcebattle.listener.GameListener;
 import net.fameless.forcebattle.listener.JoinListener;
-import net.fameless.forcebattle.manager.ChainManager;
-import net.fameless.forcebattle.manager.ObjectiveLists;
+import net.fameless.forcebattle.manager.*;
 import net.fameless.forcebattle.timer.Timer;
-import net.fameless.forcebattle.timer.TimerUI;
 import net.fameless.forcebattle.util.UpdateChecker;
 import org.apache.commons.io.FileUtils;
 import org.bstats.bukkit.Metrics;
@@ -26,58 +24,83 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.List;
 
 public final class ForceBattlePlugin extends JavaPlugin {
 
+    public static final String PREFIX = ChatColor.GOLD.toString() + ChatColor.BOLD + "ForceBattle" + ChatColor.RESET + ChatColor.DARK_GRAY + "» " + ChatColor.RESET;
+    private static NamespacedKey pageKey;
+    private static NamespacedKey playerKey;
     private static ForceBattlePlugin instance;
-    public static NamespacedKey pageKey;
-    public static NamespacedKey playerKey;
-    public static String prefix = ChatColor.GOLD.toString() + ChatColor.BOLD + "ForceBattle" + ChatColor.RESET + ChatColor.DARK_GRAY + "» " + ChatColor.RESET;
 
     private Timer timer;
+    private MenuUI menuUI;
+    private NewWorldCommand newWorldCommand;
+    private ObjectiveLists objectiveLists;
+    private ChainManager chainManager;
+    private ObjectiveManager objectiveManager;
+    private BossbarManager bossbarManager;
+    private PointsManager pointsManager;
+    private NametagManager nametagManager;
 
     @Override
     public void onLoad() {
         instance = this;
         saveDefaultConfig();
-        if (getConfig().getBoolean("is_reset")) {
-            deleteWorld("world");
-            deleteWorld("world_nether");
-            deleteWorld("world_the_end");
-            getConfig().set("is_reset", false);
+        if (getConfig().contains("toDelete")) {
+            List<String> worlds = getConfig().getStringList("toDelete");
+            for (String s : worlds) {
+                File world = new File(Bukkit.getWorldContainer(), s);
+                File nether = new File(Bukkit.getWorldContainer(), s + "_nether");
+                File end = new File(Bukkit.getWorldContainer(), s + "_the_end");
+                try {
+                    if (world.exists() && world.isDirectory()) {
+                        FileUtils.deleteDirectory(world);
+                    }
+                    if (nether.exists() && nether.isDirectory()) {
+                        FileUtils.deleteDirectory(nether);
+                    }
+                    if (end.exists() && end.isDirectory()) {
+                        FileUtils.deleteDirectory(end);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            worlds.clear();
             saveConfig();
         }
     }
 
     @Override
     public void onEnable() {
-        try {
-            ObjectiveLists.initLists();
-        } catch (IOException e) {
-            Bukkit.getLogger().severe("Failed to create files. Shutting down.");
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
+        objectiveLists = new ObjectiveLists(this);
+        objectiveManager = new ObjectiveManager(this);
+        chainManager = new ChainManager();
+        pointsManager = new PointsManager(this);
+        bossbarManager = new BossbarManager();
+        nametagManager = new NametagManager();
+
+        objectiveManager.setChainManager(chainManager);
 
         pageKey = new NamespacedKey(this, "page");
         playerKey = new NamespacedKey(this, "player");
 
-        GameListener.run();
-        ChainManager.updateLists();
-
+        timer = new Timer(this);
         ResultCommand resultCommand = new ResultCommand();
-        PointsUI pointsGUI = new PointsUI();
+        PointsUI pointsUI = new PointsUI(this);
         JokerUI jokerUI = new JokerUI();
-        ResetUI resetUI = new ResetUI();
-        MenuUI menuGUI = new MenuUI();
-        timer = new Timer();
+        ResetUI resetUI = new ResetUI(this);
+        menuUI = new MenuUI(this);
+        newWorldCommand = new NewWorldCommand();
 
         getCommand("team").setExecutor(new TeamCommand());
         getCommand("skip").setExecutor(new SkipObjectiveCommand());
         getCommand("exclude").setExecutor(new ExcludeCommand());
         getCommand("backpack").setExecutor(new BackpackCommand());
-        getCommand("resetworld").setExecutor(new ResetWorldCommand());
-        getCommand("menu").setExecutor(menuGUI);
-        getCommand("points").setExecutor(pointsGUI);
+        getCommand("newworld").setExecutor(newWorldCommand);
+        getCommand("menu").setExecutor(menuUI);
+        getCommand("points").setExecutor(pointsUI);
         getCommand("timer").setExecutor(timer);
         getCommand("reset").setExecutor(resetUI);
         getCommand("joker").setExecutor(jokerUI);
@@ -92,14 +115,15 @@ public final class ForceBattlePlugin extends JavaPlugin {
         getCommand("reset").setTabCompleter(new ResetCommandTabCompleter());
         getCommand("joker").setTabCompleter(new JokerCommandTabCompleter());
 
-        Bukkit.getPluginManager().registerEvents(new GameListener(), this);
-        Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
-        Bukkit.getPluginManager().registerEvents(new TimerUI(), this);
-        Bukkit.getPluginManager().registerEvents(menuGUI, this);
-        Bukkit.getPluginManager().registerEvents(pointsGUI, this);
-        Bukkit.getPluginManager().registerEvents(resetUI, this);
-        Bukkit.getPluginManager().registerEvents(jokerUI, this);
-        Bukkit.getPluginManager().registerEvents(resultCommand, this);
+        getServer().getPluginManager().registerEvents(new GameListener(this), this);
+        getServer().getPluginManager().registerEvents(new JoinListener(this), this);
+        getServer().getPluginManager().registerEvents(newWorldCommand, this);
+        getServer().getPluginManager().registerEvents(timer.getTimerUI(), this);
+        getServer().getPluginManager().registerEvents(menuUI, this);
+        getServer().getPluginManager().registerEvents(pointsUI, this);
+        getServer().getPluginManager().registerEvents(resetUI, this);
+        getServer().getPluginManager().registerEvents(jokerUI, this);
+        getServer().getPluginManager().registerEvents(resultCommand, this);
 
         if (getServer().getPluginManager().isPluginEnabled("placeholderapi")) {
             new ObjectivePlaceholder().register();
@@ -112,27 +136,53 @@ public final class ForceBattlePlugin extends JavaPlugin {
         checker.checkForUpdates();
     }
 
-    private void deleteWorld(String worldName) {
-        try {
-            File worldFile = new File(Bukkit.getWorldContainer(), worldName);
-            FileUtils.deleteDirectory(worldFile);
-
-            worldFile.mkdirs();
-            new File(worldFile, "data").mkdirs();
-            new File(worldFile, "datapacks").mkdirs();
-            new File(worldFile, "playerdata").mkdirs();
-            new File(worldFile, "poi").mkdirs();
-            new File(worldFile, "region").mkdirs();
-        } catch (IOException e) {
-            Bukkit.getLogger().severe("Failed to delete world: " + worldName);
-        }
+    @Override
+    public void onDisable() {
+        getConfig().set("toDelete", newWorldCommand.getToDelete());
+        saveConfig();
     }
 
     public Timer getTimer() {
         return timer;
     }
 
-    public static ForceBattlePlugin getInstance() {
-        return instance;
+    public MenuUI getMenuUI() {
+        return menuUI;
+    }
+
+    public ObjectiveLists getObjectiveLists() {
+        return objectiveLists;
+    }
+
+    public ChainManager getChainManager() {
+        return chainManager;
+    }
+
+    public ObjectiveManager getObjectiveManager() {
+        return objectiveManager;
+    }
+
+    public BossbarManager getBossbarManager() {
+        return bossbarManager;
+    }
+
+    public PointsManager getPointsManager() {
+        return pointsManager;
+    }
+
+    public NametagManager getNametagManager() {
+        return nametagManager;
+    }
+
+    public static ForceBattlePlugin get() {
+        return ForceBattlePlugin.instance;
+    }
+
+    public static NamespacedKey getPageKey() {
+        return pageKey;
+    }
+
+    public static NamespacedKey getPlayerKey() {
+        return playerKey;
     }
 }
