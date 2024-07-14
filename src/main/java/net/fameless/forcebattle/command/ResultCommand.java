@@ -126,7 +126,7 @@ public class ResultCommand implements CommandExecutor, Listener {
             inventory.setItem(0, left);
             inventory.setItem(8, right);
 
-            for (ItemStack itemStack : PageUtil.getPageItems(allObjectives, ForceBattlePlugin.get().getObjectiveManager().getObjectiveTimeMap().get(player.getUniqueId()), page, 52)) {
+            for (ItemStack itemStack : PageUtil.getPageItems(allObjectives, ForceBattlePlugin.get().getObjectiveManager().getObjectiveTimeMap().get(target.getUniqueId()), page, 52)) {
                 inventory.addItem(itemStack);
             }
             player.openInventory(inventory);
