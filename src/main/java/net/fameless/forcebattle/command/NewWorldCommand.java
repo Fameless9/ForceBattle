@@ -95,6 +95,7 @@ public class NewWorldCommand implements CommandExecutor, Listener, InventoryHold
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.teleport(world.getSpawnLocation());
             player.sendMessage(ForceBattlePlugin.PREFIX + ChatColor.GOLD + "A new world has been created and you have been teleported.");
+            player.setRespawnLocation(world.getSpawnLocation(), true);
         }
 
         properties.setProperty("level-name", worldName);

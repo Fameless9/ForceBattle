@@ -18,9 +18,13 @@ import org.bukkit.scoreboard.Team;
 public class NametagManager {
 
     private final ObjectiveManager objectiveManager = ForceBattlePlugin.get().getObjectiveManager();
+    private Scoreboard scoreboard = null;
 
-    public Scoreboard customScoreboard() {
-        return Bukkit.getScoreboardManager().getNewScoreboard();
+    public Scoreboard getCustomScoreboard() {
+        if (scoreboard == null) {
+            scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        }
+        return scoreboard;
     }
 
     public void setupNametag(Player player) {
@@ -32,9 +36,9 @@ public class NametagManager {
     }
 
     private void getNametag(Player player) {
-        Team team = customScoreboard().getTeam(player.getUniqueId().toString());
+        Team team = getCustomScoreboard().getTeam(player.getUniqueId().toString());
         if (team == null) {
-            team = customScoreboard().registerNewTeam(player.getUniqueId().toString());
+            team = getCustomScoreboard().registerNewTeam(player.getUniqueId().toString());
         }
 
         Challenge type = objectiveManager.getChallengeType(player);
@@ -82,19 +86,19 @@ public class NametagManager {
     }
 
     public void newTag(Player player) {
-        Team team = customScoreboard().getTeam(player.getUniqueId().toString());
+        Team team = getCustomScoreboard().getTeam(player.getUniqueId().toString());
         if (team != null) {
             team.addEntry(player.getName());
         } else {
-            team = customScoreboard().registerNewTeam(player.getUniqueId().toString());
+            team = getCustomScoreboard().registerNewTeam(player.getUniqueId().toString());
             team.addEntry(player.getName());
         }
 
-        player.setScoreboard(customScoreboard());
+        player.setScoreboard(getCustomScoreboard());
     }
 
     public void removeTag(Player player) {
-        Team team = customScoreboard().getTeam(player.getUniqueId().toString());
+        Team team = getCustomScoreboard().getTeam(player.getUniqueId().toString());
         if (team != null) {
             team.unregister();
         }
