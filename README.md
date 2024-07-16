@@ -54,3 +54,5 @@ When it comes to the placeholder API, I want to offer a lot more placeholders. F
 -     %objective%
 
 What they do should be self-explanatory, the %points% return the points of a player, the %type% returns the type of objective the player is currently facing and the %objective% returns the objective itself. For more information on what is being returned, have a look at the placeholder classes in the source code: https://github.com/Fameless9/ForceBattle/tree/master/src/main/java/net/fameless/forcebattle/Placeholder
+
+*Building requires [BuildTools](https://www.spigotmc.org/wiki/buildtools/) 1.20.1*
