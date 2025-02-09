@@ -20,7 +20,7 @@ import java.nio.file.StandardCopyOption;
 
 public class PluginUpdater {
 
-    private static final String GITHUB_API_URL = "https://api.github.com/repos/fameless9/releases/latest";
+    private static final String GITHUB_API_URL = "https://api.github.com/repos/fameless9/ForceBattle/releases/latest";
     private static final String JSON_TAG_NAME = "tag_name";
     private static final String JSON_ASSETS = "assets";
     private static final String JSON_BROWSER_DOWNLOAD_URL = "browser_download_url";

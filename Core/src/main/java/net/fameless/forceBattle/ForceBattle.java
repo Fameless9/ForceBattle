@@ -8,6 +8,7 @@ import net.fameless.forceBattle.bossbar.BossbarManager;
 import net.fameless.forceBattle.caption.Caption;
 import net.fameless.forceBattle.caption.Language;
 import net.fameless.forceBattle.command.framework.Command;
+import net.fameless.forceBattle.configuration.PluginUpdater;
 import net.fameless.forceBattle.configuration.SettingsFile;
 import net.fameless.forceBattle.game.ObjectiveManager;
 import net.fameless.forceBattle.game.Timer;
@@ -55,7 +56,7 @@ public class ForceBattle {
 
         Command.init();
         BossbarManager.runTask();
-        // PluginUpdater.checkForUpdate();
+        PluginUpdater.checkForUpdate();
 
         initialized = true;
         logger.info("Successfully initialized ForceBattle.");

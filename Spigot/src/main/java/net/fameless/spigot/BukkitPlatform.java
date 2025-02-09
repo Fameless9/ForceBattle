@@ -77,7 +77,7 @@ public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatf
         getCommand("backpack").setTabCompleter(commandHandler);
         getCommand("joker").setTabCompleter(commandHandler);
 
-        final int SERVICE_ID = 1;
+        final int SERVICE_ID = 20754;
         new Metrics(this, SERVICE_ID);
     }
 
