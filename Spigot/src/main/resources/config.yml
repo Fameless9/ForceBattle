@@ -1,0 +1,123 @@
+game-duration: 5400
+skips: 3
+swaps: 1
+reset-advancements-on-finish: true
+
+### --- Add items/objectives that should be excluded. Restart the server afterwards --- ###
+exclude:
+    items:
+        - WATER
+        - DECORATED_POT
+        - POWDER_SNOW
+        - CHAIN_COMMAND_BLOCK
+        - WATER_CAULDRON
+        - LAVA_CAULDRON
+        - COMMAND_BLOCK_MINECART
+        - COMMAND_BLOCK
+        - POWDER_SNOW_CAULDRON
+        - REPEATING_COMMAND_BLOCK
+        - BEDROCK
+        - AIR
+        - FIRE
+        - SOUL_FIRE
+        - END_PORTAL_FRAME
+        - NETHER_PORTAL
+        - END_PORTAL
+        - CHAINMAIL_HELMET
+        - CHAINMAIL_LEGGINGS
+        - CHAINMAIL_CHESTPLATE
+        - CHAINMAIL_BOOTS
+        - LIGHT
+        - END_GATEWAY
+        - DRAGON_EGG
+        - TALL_SEAGRASS
+        - VOID_AIR
+        - PISTON_HEAD
+        - MOVING_PISTON
+        - WRITTEN_BOOK
+        - DAMAGED_ANVIL
+        - TORCHFLOWER_SEEDS
+        - JIGSAW
+        - TIPPED_ARROW
+        - LAVA
+        - WATER_CAULDRON
+        - STRUCTURE_VOID
+        - BARRIER
+        - DEBUG_STICK
+        - BUNDLE
+        - FARMLAND
+        - STRUCTURE_BLOCK
+        - BUBBLE_COLUMN
+        - CAVE_AIR
+        - KNOWLEDGE_BOOK
+        - DIRT_PATH
+        - REDSTONE_WIRE
+        - FROSTED_ICE
+    mobs:
+        - MINECART_COMMAND
+        - ARMOR_STAND
+        - ENDER_SIGNAL
+        - LLAMA_SPIT
+        - ENDER_PEARL
+        - PRIMED_TNT
+        - PAINTING
+        - EVOKER_FANGS
+        - GLOW_ITEM_FRAME
+        - MINECART_CHEST
+        - ARROW
+        - MINECART_FURNACE
+        - MARKER
+        - MINECART_TNT
+        - ITEM_FRAME
+        - SHULKER_BULLET
+        - ITEM_DISPLAY
+        - MINECART_COMMAND
+        - PRIMED_TNT
+        - MINECART_MOB_SPAWNER
+        - AREA_EFFECT_CLOUD
+        - BOAT
+        - SNOWBALL
+        - DROPPED_ITEM
+        - THROWN_EXP_BOTTLE
+        - BLOCK_DISPLAY
+        - CHEST_BOAT
+        - SMALL_FIREBALL
+        - UNKNOWN
+        - TEXT_DISPLAY
+        - INTERACTION
+        - SPLASH_POTION
+        - FIREBALL
+        - SPECTRAL_ARROW
+        - ENDER_SIGNAL
+        - FISHING_HOOK
+        - FIREWORK
+        - EXPERIENCE_ORB
+        - FALLING_BLOCK
+        - DRAGON_FIREBALL
+        - EGG
+        - LEASH_HITCH
+        - MINECART
+        - LIGHTNING
+        - MINECART_HOPPER
+        - ILLUSIONER
+        - GIANT
+        - WITHER_SKULL
+        - TRIDENT
+        - ENDER_CRYSTAL
+        - SPLASH_POTION
+        - ITEM_FRAME
+        - PLAYER
+    biomes:
+        - THE_VOID
+
+    # default height range: -63 - 320
+    heights:
+    advancements:
+
+    # Most unobtainable items are excluded by default
+    # after changing values, you don't have to restart anything or rejoin. Just use /skip <player> if they have an unwanted objective and new items will not contain excluded items
+    exclude_spawn_eggs: true # unobtainable in survival
+    exclude_music_discs: true # obtainable in survival
+    exclude_banner_patterns: true # obtainable in survival
+    exclude_banners: true # obtainable in survival
+    exclude_armor_templates: true # obtainable in survival

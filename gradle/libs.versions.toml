@@ -1,0 +1,19 @@
+[versions]
+spigot = "1.21.1-R0.1-SNAPSHOT"
+gson = "2.11.0"
+guice = "7.0.0"
+annotations = "26.0.1"
+bstats = "3.0.2"
+adventureTextMinimessage = "4.17.0"
+adventureTextSerializerLegacy = "4.17.0"
+adventureBukkit = "4.3.4"
+
+[libraries]
+spigot = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+guice = { module = "com.google.inject:guice", version.ref = "guice" }
+annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+bstats = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
+adventureTextMinimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventureTextMinimessage" }
+adventureTextSerializerLegacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventureTextSerializerLegacy" }
+adventureBukkit = { module = "net.kyori:adventure-platform-bukkit", version.ref = "adventureBukkit" }

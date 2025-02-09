@@ -1,0 +1,48 @@
+name: ForceBattle-Spigot
+version: '1.0.0'
+main: net.fameless.spigot.BukkitPlatform
+api-version: '1.21'
+prefix: ForceBattle
+authors: [ Fameless9 ]
+description: ForceBattle Plugin
+website: https://github.com/Fameless9
+
+commands:
+    lang:
+        aliases: [ language ]
+    timer:
+    settings:
+        aliases: [ menu ]
+    team:
+    exclude:
+    skip:
+    reset:
+    result:
+    backpack:
+        aliases: [ bp ]
+    displayresults:
+    joker:
+
+permissions:
+    forcebattle.lang:
+        default: op
+    forcebattle.timer:
+        default: op
+    forcebattle.settings:
+        default: op
+    forcebattle.team:
+        default: true
+    forcebattle.exclude:
+        default: op
+    forcebattle.skip:
+        default: op
+    forcebattle.reset:
+        default: op
+    forcebattle.result:
+        default: true
+    forcebattle.backpack:
+        default: true
+    forcebattle.displayresults:
+        default: op
+    forcebattle.joker:
+        default: op
