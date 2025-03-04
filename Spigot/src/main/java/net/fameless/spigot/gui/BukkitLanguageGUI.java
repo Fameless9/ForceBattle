@@ -35,6 +35,26 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
         gui.setItem(
                 1,
                 ItemUtils.buildItem(
+                        Skull.ARROW_LEFT.asItemStack(),
+                        ChatColor.GOLD + "zh_cn",
+                        List.of(ChatColor.GRAY + "点击将语言设置为简体中文"),
+                        null,
+                        null
+                )
+        );
+        gui.setItem(
+                2,
+                ItemUtils.buildItem(
+                        Skull.ARROW_RIGHT.asItemStack(),
+                        ChatColor.GOLD + "zh_tw",
+                        List.of(ChatColor.GRAY + "点击将语言设置为繁体中文"),
+                        null,
+                        null
+                )
+        );
+        gui.setItem(
+                3,
+                ItemUtils.buildItem(
                         Skull.FLAG_GERMANY.asItemStack(),
                         ChatColor.GOLD + "Deutsch",
                         List.of(ChatColor.GRAY + "Klicke, um die Sprache auf deutsch zu stellen"),
@@ -62,6 +82,22 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
                 ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
             }
             case 1 -> {
+                if (Caption.getCurrentLanguage() == Language.SimplifiedChinese) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "成功设置为简体中文!");
+                    return;
+                }
+                Caption.setCurrentLanguage(Language.SimplifiedChinese);
+                ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
+            }
+            case 2 -> {
+                if (Caption.getCurrentLanguage() == Language.TraditionalChinese) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "成功設寘爲緐體中文!");
+                    return;
+                }
+                Caption.setCurrentLanguage(Language.TraditionalChinese);
+                ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
+            }
+            case 3 -> {
                 if (Caption.getCurrentLanguage() == Language.GERMAN) {
                     event.getWhoClicked()
                             .sendMessage(ChatColor.RED + "Die Sprache ist bereits auf Deutsch eingestellt.");

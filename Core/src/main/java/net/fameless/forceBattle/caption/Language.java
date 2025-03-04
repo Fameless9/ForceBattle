@@ -4,6 +4,8 @@ import org.jetbrains.annotations.Nullable;
 
 public enum Language {
     ENGLISH("en", "<prefix><!bold><green>Language has been updated to english."),
+    SimplifiedChinese("zh_cn", "<prefix><!bold><green>语言已更新为简体中文."),
+    TraditionalChinese("zh_tw", "<prefix><!bold><green>語言已更新爲緐體中文."),
     GERMAN("de", "<prefix><!bold><green>Die Sprache wurde auf deutsch gesetzt.");
 
     private final String identifier;
