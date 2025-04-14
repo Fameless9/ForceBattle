@@ -46,7 +46,7 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
                 2,
                 ItemUtils.buildItem(
                         Skull.FLAG_CHINA.asItemStack(),
-                        ChatColor.GOLD + "zh_cn",
+                        ChatColor.GOLD + "简体中文",
                         List.of(ChatColor.GRAY + "点击将语言设置为简体中文"),
                         null,
                         null
@@ -56,7 +56,7 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
                 3,
                 ItemUtils.buildItem(
                         Skull.FLAG_CHINA.asItemStack(),
-                        ChatColor.GOLD + "zh_tw",
+                        ChatColor.GOLD + "繁体中文",
                         List.of(ChatColor.GRAY + "点击将语言设置为繁体中文"),
                         null,
                         null
