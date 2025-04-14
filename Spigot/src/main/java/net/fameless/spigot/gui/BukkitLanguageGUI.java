@@ -35,26 +35,6 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
         gui.setItem(
                 1,
                 ItemUtils.buildItem(
-                        Skull.ARROW_LEFT.asItemStack(),
-                        ChatColor.GOLD + "zh_cn",
-                        List.of(ChatColor.GRAY + "点击将语言设置为简体中文"),
-                        null,
-                        null
-                )
-        );
-        gui.setItem(
-                2,
-                ItemUtils.buildItem(
-                        Skull.ARROW_RIGHT.asItemStack(),
-                        ChatColor.GOLD + "zh_tw",
-                        List.of(ChatColor.GRAY + "点击将语言设置为繁体中文"),
-                        null,
-                        null
-                )
-        );
-        gui.setItem(
-                3,
-                ItemUtils.buildItem(
                         Skull.FLAG_GERMANY.asItemStack(),
                         ChatColor.GOLD + "Deutsch",
                         List.of(ChatColor.GRAY + "Klicke, um die Sprache auf deutsch zu stellen"),
@@ -62,6 +42,27 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
                         null
                 )
         );
+        gui.setItem(
+                2,
+                ItemUtils.buildItem(
+                        Skull.FLAG_CHINA.asItemStack(),
+                        ChatColor.GOLD + "zh_cn",
+                        List.of(ChatColor.GRAY + "点击将语言设置为简体中文"),
+                        null,
+                        null
+                )
+        );
+        gui.setItem(
+                3,
+                ItemUtils.buildItem(
+                        Skull.FLAG_CHINA.asItemStack(),
+                        ChatColor.GOLD + "zh_tw",
+                        List.of(ChatColor.GRAY + "点击将语言设置为繁体中文"),
+                        null,
+                        null
+                )
+        );
+
         return gui;
     }
 
@@ -82,19 +83,19 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
                 ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
             }
             case 1 -> {
-                if (Caption.getCurrentLanguage() == Language.SimplifiedChinese) {
+                if (Caption.getCurrentLanguage() == Language.CHINESE_SIMPLIFIED) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "成功设置为简体中文!");
                     return;
                 }
-                Caption.setCurrentLanguage(Language.SimplifiedChinese);
+                Caption.setCurrentLanguage(Language.CHINESE_SIMPLIFIED);
                 ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
             }
             case 2 -> {
-                if (Caption.getCurrentLanguage() == Language.TraditionalChinese) {
+                if (Caption.getCurrentLanguage() == Language.CHINESE_TRADITIONAL) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "成功設寘爲緐體中文!");
                     return;
                 }
-                Caption.setCurrentLanguage(Language.TraditionalChinese);
+                Caption.setCurrentLanguage(Language.CHINESE_TRADITIONAL);
                 ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
             }
             case 3 -> {

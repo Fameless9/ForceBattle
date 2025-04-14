@@ -63,8 +63,8 @@ public class ForceBattle {
 
     private static void initLanguages() {
         Caption.loadLanguage(Language.ENGLISH, ResourceUtil.readJsonResource("lang_en.json"));
-        Caption.loadLanguage(Language.SimplifiedChinese, ResourceUtil.readJsonResource("lang_zh_cn.json"));
-        Caption.loadLanguage(Language.TraditionalChinese, ResourceUtil.readJsonResource("lang_zh_tw.json"));
+        Caption.loadLanguage(Language.CHINESE_SIMPLIFIED, ResourceUtil.readJsonResource("lang_zh_cn.json"));
+        Caption.loadLanguage(Language.CHINESE_TRADITIONAL, ResourceUtil.readJsonResource("lang_zh_tw.json"));
         Caption.loadLanguage(Language.GERMAN, ResourceUtil.readJsonResource("lang_de.json"));
     }
 
