@@ -71,6 +71,12 @@ public class GameListener implements Listener {
             bukkitPlayer.getPlatformPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSwapItem(BukkitPlatform.get().getConfig().getInt("swaps", 1)));
             bukkitPlayer.setReceivedSwap(true);
         }
+
+        boolean firstStartup = BukkitPlatform.get().getConfig().getBoolean("first-startup", true);
+        if (firstStartup && (event.getPlayer().hasPermission("forcebattle.timer") || event.getPlayer().isOp() ||
+                event.getPlayer().hasPermission("forcebattle.settings"))) {
+            bukkitPlayer.sendMessage(Caption.of("notification.first_startup"));
+        }
     }
 
     private void runItemTask() {

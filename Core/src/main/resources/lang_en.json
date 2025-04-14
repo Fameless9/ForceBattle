@@ -64,6 +64,7 @@
   "notification.skip_by_admin_target" : "<prefix><green>Your objective has been skipped by an admin.",
   "notification.skip_by_admin_player" : "<prefix><green>Successfully skipped the objective of <player>.",
   "notification.battle_over" : "<prefix><green>The battle is over. <gray>/<gold>displayresults <gray>| /<gold>result<gray>.",
+  "notification.first_startup" : "<gray>----\n<prefix><gold>It seems to be the first time you start the plugin.\n<gray>→ Use <green>/menu<gray> to adjust settings and <green>/timer toggle<gray> to start the battle.\n<gray>----",
   "command.no_team_id" : "<prefix><red>Please specify a valid team ID.",
   "command.not_in_a_team" : "<prefix><gray>You are not currently in a team.",
   "command.player_not_in_a_team" : "<prefix><red>This player is not part of your team.",

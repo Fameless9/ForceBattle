@@ -2,6 +2,7 @@ game-duration: 5400
 skips: 3
 swaps: 1
 reset-advancements-on-finish: true
+first-startup: true
 
 ### --- Add items/objectives that should be excluded. Restart the server afterwards --- ###
 exclude:

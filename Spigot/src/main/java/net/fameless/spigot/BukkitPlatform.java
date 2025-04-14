@@ -88,6 +88,8 @@ public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatf
         } catch (IOException e) {
             throw new RuntimeException("Failed to save settings to file." + e);
         }
+        getConfig().set("first-startup", false);
+        saveConfig();
     }
 
     @Override
