@@ -2,6 +2,7 @@ package net.fameless.spigot.game;
 
 import net.fameless.forceBattle.ForceBattle;
 import net.fameless.forceBattle.caption.Caption;
+import net.fameless.forceBattle.configuration.PluginUpdater;
 import net.fameless.forceBattle.configuration.SettingsManager;
 import net.fameless.forceBattle.game.Objective;
 import net.fameless.forceBattle.util.BattleType;
@@ -48,6 +49,7 @@ public class GameListener implements Listener {
 
     private final List<BukkitPlayer> skipCooldown = new ArrayList<>();
     private final List<BukkitPlayer> swapCooldown = new ArrayList<>();
+    private boolean sentUpdateMessage = false;
 
     public GameListener() {
         runItemTask();
@@ -70,6 +72,11 @@ public class GameListener implements Listener {
         if (!bukkitPlayer.hasReceivedSwap()) {
             bukkitPlayer.getPlatformPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSwapItem(BukkitPlatform.get().getConfig().getInt("swaps", 1)));
             bukkitPlayer.setReceivedSwap(true);
+        }
+
+        if (!PluginUpdater.isUpdated && !sentUpdateMessage && event.getPlayer().isOp()) {
+            bukkitPlayer.sendMessage(Caption.of("notification.plugin_outdated"));
+            sentUpdateMessage = true;
         }
 
         boolean firstStartup = BukkitPlatform.get().getConfig().getBoolean("first-startup", true);

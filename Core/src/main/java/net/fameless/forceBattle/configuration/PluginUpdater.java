@@ -29,6 +29,8 @@ public class PluginUpdater {
     private static final String CURRENT_PLUGIN_FILE = ForceBattle.platform().getPluginFile().getAbsolutePath();
     private static final String TEMP_PLUGIN_FILE = PLUGIN_DIRECTORY + "/plugin_temp.jar";
 
+    public static boolean isUpdated = true;
+
     public static void checkForUpdate() {
         try {
             JsonObject releaseData = fetchLatestRelease();
@@ -40,14 +42,15 @@ public class PluginUpdater {
                 return;
             }
 
-            String downloadUrl = findPluginDownloadUrl(releaseData.getAsJsonArray(JSON_ASSETS));
-            if (downloadUrl == null) {
-                ForceBattle.logger().warning("No plugin asset found in the latest release.");
-                return;
-            }
+//            String downloadUrl = findPluginDownloadUrl(releaseData.getAsJsonArray(JSON_ASSETS));
+//            if (downloadUrl == null) {
+//                ForceBattle.logger().warning("No plugin asset found in the latest release.");
+//                return;
+//            }
 
-            ForceBattle.logger().info("New version found: " + latestVersion + ". Updating plugin... | Restart the server afterwards.");
-            downloadAndReplacePlugin(downloadUrl, latestVersion);
+            ForceBattle.logger().info("New version found: " + latestVersion + ". Update the plugin and restart the server.");
+            isUpdated = false;
+//            downloadAndReplacePlugin(downloadUrl, latestVersion);
         } catch (IOException e) {
             ForceBattle.logger().severe("Failed to fetch or update the plugin: " + e.getMessage());
             e.printStackTrace();

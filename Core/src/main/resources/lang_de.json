@@ -65,6 +65,7 @@
   "notification.skip_by_admin_player" : "<prefix><green>Die Aufgabe von <player> wurde erfolgreich übersprungen.",
   "notification.battle_over" : "<prefix><green>Das Battle ist vorbei. <gray>/<gold>displayresults <gray>| /<gold>result<gray>.",
   "notification.first_startup" : "<gray>----\n<prefix><gold>Es scheint das erste Mal zu sein, dass du das Plugin startest.\n<gray>→ Nutze <green>/menu<gray>, um Einstellungen anzupassen und <green>/timer toggle<gray>, um das Battle zu starten.\n<gray>----",
+  "notification.plugin_outdated" : "<prefix><gray>Eine neue Version des Plugins ist verfügbar. Downloade die neue Version von <u><blue><click:open_url:'https://github.com/Fameless9/ForceBattle/releases/latest'>GitHub</click><gray></u>.",
   "command.no_team_id" : "<prefix><red>Bitte gib eine gültige Team ID an.",
   "command.not_in_a_team" : "<prefix><gray>Du bist in keinem Team.",
   "command.player_not_in_a_team" : "<prefix><red>Dieser Spieler ist nicht in deinem Team.",
