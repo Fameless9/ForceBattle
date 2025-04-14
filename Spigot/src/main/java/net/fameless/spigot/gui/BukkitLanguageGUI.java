@@ -42,6 +42,27 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
                         null
                 )
         );
+        gui.setItem(
+                2,
+                ItemUtils.buildItem(
+                        Skull.FLAG_CHINA.asItemStack(),
+                        ChatColor.GOLD + "简体中文",
+                        List.of(ChatColor.GRAY + "点击将语言设置为简体中文"),
+                        null,
+                        null
+                )
+        );
+        gui.setItem(
+                3,
+                ItemUtils.buildItem(
+                        Skull.FLAG_CHINA.asItemStack(),
+                        ChatColor.GOLD + "繁体中文",
+                        List.of(ChatColor.GRAY + "点击将语言设置为繁体中文"),
+                        null,
+                        null
+                )
+        );
+
         return gui;
     }
 
@@ -68,6 +89,22 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
                     return;
                 }
                 Caption.setCurrentLanguage(Language.GERMAN);
+                ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
+            }
+            case 2 -> {
+                if (Caption.getCurrentLanguage() == Language.CHINESE_SIMPLIFIED) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "成功设置为简体中文!");
+                    return;
+                }
+                Caption.setCurrentLanguage(Language.CHINESE_SIMPLIFIED);
+                ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
+            }
+            case 3 -> {
+                if (Caption.getCurrentLanguage() == Language.CHINESE_TRADITIONAL) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "成功設寘爲緐體中文!");
+                    return;
+                }
+                Caption.setCurrentLanguage(Language.CHINESE_TRADITIONAL);
                 ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
             }
         }
