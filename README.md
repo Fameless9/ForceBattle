@@ -1,5 +1,7 @@
 # ForceBattle
 
+[![Build Status](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml)
+
 ### Description
 
 ForceBattle is a multiplayer gamemode for Minecraft spigot and paper servers.
