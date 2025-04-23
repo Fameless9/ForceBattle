@@ -54,7 +54,7 @@ public class BukkitPlayer extends BattlePlayer<Player> {
 
     public static @NotNull BukkitPlayer adapt(Player object) {
         for (BukkitPlayer bukkitPlayer : BUKKIT_PLAYERS) {
-            if (bukkitPlayer.getPlatformPlayer().getUniqueId().equals(object.getUniqueId())) {
+            if (bukkitPlayer.getUniqueId().equals(object.getUniqueId())) {
                 return bukkitPlayer;
             }
         }

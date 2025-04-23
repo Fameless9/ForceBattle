@@ -54,28 +54,20 @@ public class BukkitObjectiveManager implements ObjectiveManager {
 
         Random random = new Random();
         BattleType battleType = availableBattleTypes.get(random.nextInt(availableBattleTypes.size()));
+        String objectiveString;
 
-        if (battleType.equals(BattleType.FORCE_ITEM)) {
-            Material material = getAvailableItems().get(random.nextInt(getAvailableItems().size()));
-            return new Objective(battleType, material.name());
+        switch (battleType) {
+            case FORCE_ITEM -> objectiveString = getAvailableItems().get(random.nextInt(getAvailableItems().size())).name();
+            case FORCE_MOB -> objectiveString = getAvailableMobs().get(random.nextInt(getAvailableMobs().size())).name();
+            case FORCE_BIOME -> objectiveString = getAvailableBiomes().get(random.nextInt(getAvailableBiomes().size())).name();
+            case FORCE_ADVANCEMENT -> objectiveString = getAvailableAdvancements().get(random.nextInt(getAvailableAdvancements().size())).toString();
+            case FORCE_HEIGHT -> objectiveString = String.valueOf(getAvailableHeights().get(random.nextInt(getAvailableHeights().size())));
+            default -> {
+                return null;
+            }
         }
-        if (battleType.equals(BattleType.FORCE_MOB)) {
-            EntityType entityType = getAvailableMobs().get(random.nextInt(getAvailableMobs().size()));
-            return new Objective(battleType, entityType.name());
-        }
-        if (battleType.equals(BattleType.FORCE_BIOME)) {
-            Biome biome = getAvailableBiomes().get(random.nextInt(getAvailableBiomes().size()));
-            return new Objective(battleType, biome.name());
-        }
-        if (battleType.equals(BattleType.FORCE_ADVANCEMENT)) {
-            Advancement advancement = getAvailableAdvancements().get(random.nextInt(getAvailableAdvancements().size()));
-            return new Objective(battleType, advancement.toString());
-        }
-        if (battleType.equals(BattleType.FORCE_HEIGHT)) {
-            Integer height = getAvailableHeights().get(random.nextInt(getAvailableHeights().size()));
-            return new Objective(battleType, String.valueOf(height));
-        }
-        return null;
+
+        return new Objective(battleType, objectiveString);
     }
 
     @Override
