@@ -1,5 +1,5 @@
 name: ForceBattle-Spigot
-version: '1.0.5'
+version: '1.0.7'
 main: net.fameless.spigot.BukkitPlatform
 api-version: '1.21'
 prefix: ForceBattle

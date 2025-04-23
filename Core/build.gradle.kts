@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "net.fameless"
-version = "1.0.5"
+version = "1.0.7"
 description = "Core features implementing the basic logic of ForceBattle"
 
 repositories {
