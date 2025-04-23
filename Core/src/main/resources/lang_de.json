@@ -72,6 +72,7 @@
   "command.no_such_player" : "<prefix><red>Der Spieler konnte nicht gefunden werden.",
   "command.no_such_team" : "<prefix><red>Das Team konnte nicht gefunden werden.",
   "command.not_a_number" : "<prefix><red>Bitte gib eine Zahl an.",
+  "command.negative_number" : "<prefix><red>Die Zahl muss positiv sein.",
   "command.usage" : "<prefix><red>Benutze: <usage>.",
   "command.not_a_player" : "<prefix><red>Nur Spieler können diesen Command ausführen.",
   "command.console_command" : "<prefix><red>Dieser Command muss in der Konsole ausgeführt werden.",

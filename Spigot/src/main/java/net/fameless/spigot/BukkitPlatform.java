@@ -66,6 +66,7 @@ public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatf
         getCommand("backpack").setExecutor(commandHandler);
         getCommand("displayresults").setExecutor(commandHandler);
         getCommand("joker").setExecutor(commandHandler);
+        getCommand("points").setExecutor(commandHandler);
 
         getCommand("lang").setTabCompleter(commandHandler);
         getCommand("result").setTabCompleter(commandHandler);
@@ -76,6 +77,7 @@ public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatf
         getCommand("reset").setTabCompleter(commandHandler);
         getCommand("backpack").setTabCompleter(commandHandler);
         getCommand("joker").setTabCompleter(commandHandler);
+        getCommand("points").setTabCompleter(commandHandler);
 
         final int SERVICE_ID = 20754;
         new Metrics(this, SERVICE_ID);

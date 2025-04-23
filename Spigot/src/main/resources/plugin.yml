@@ -22,6 +22,7 @@ commands:
         aliases: [ bp ]
     displayresults:
     joker:
+    points:
 
 permissions:
     forcebattle.lang:
@@ -45,4 +46,6 @@ permissions:
     forcebattle.displayresults:
         default: op
     forcebattle.joker:
+        default: op
+    forcebattle.points:
         default: op

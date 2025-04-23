@@ -3,6 +3,7 @@ package net.fameless.spigot.player;
 import net.fameless.forceBattle.caption.Caption;
 import net.fameless.forceBattle.command.framework.CallerType;
 import net.fameless.forceBattle.player.BattlePlayer;
+import net.fameless.spigot.BukkitPlatform;
 import net.fameless.spigot.util.BackpackInventoryHolder;
 import net.fameless.spigot.util.BukkitUtil;
 import net.fameless.spigot.util.ItemUtils;
@@ -137,6 +138,19 @@ public class BukkitPlayer extends BattlePlayer<Player> {
             return;
         }
         getPlatformPlayer().getInventory().removeItem(ItemUtils.SpecialItems.getSwapItem(amount));
+    }
+
+    @Override
+    public void handleReset() {
+        if (getPlatformPlayer() == null) return;
+        getPlatformPlayer().setFoodLevel(20);
+        getPlatformPlayer().setHealth(20);
+        getPlatformPlayer().setSaturation(20);
+        getPlatformPlayer().setFireTicks(0);
+        getPlatformPlayer().getInventory().clear();
+
+        addSkip(BukkitPlatform.get().getConfig().getInt("skips"));
+        addSwap(BukkitPlatform.get().getConfig().getInt("swaps"));
     }
 
     @Override

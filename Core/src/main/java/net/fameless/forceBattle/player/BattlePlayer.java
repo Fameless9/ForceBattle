@@ -35,6 +35,7 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
     private int chainProgress = 0;
     private boolean receivedSkip = false;
     private boolean receivedSwap = false;
+    private int points = 0;
 
     public BattlePlayer(UUID uuid) {
         this.uuid = uuid;
@@ -83,8 +84,12 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
         return null;
     }
 
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
     public int getPoints() {
-        return Objective.finishedBy(this).size();
+        return points;
     }
 
     public Objective getObjective() {
@@ -94,6 +99,7 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
     public void setCurrentObjective(Objective newObjective, boolean finishLast) {
         if (finishLast) {
             this.objective.setFinished(this);
+            this.points++;
         }
 
         if (ForceBattle.getTimer().isRunning()) {
@@ -183,7 +189,7 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
             ForceBattle.logger().info("PlayerResetEvent has been denied by an external plugin.");
             return;
         }
-
+        this.points = 0;
         this.chainProgress = 0;
         Objective.finished().forEach(objective -> {
             if (objective.getWhoFinished().equals(this)) {
@@ -193,6 +199,8 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
         if (newObjective) {
             updateObjective(false);
         }
+
+        handleReset();
     }
 
     public void sendMessage(Component message) {
@@ -256,5 +264,8 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
     public abstract void removeSkip(int amount);
 
     public abstract void removeSwap(int amount);
+
+    // Method to handle player reset logic on the platform side - reset hunger, etc.
+    public abstract void handleReset();
 
 }

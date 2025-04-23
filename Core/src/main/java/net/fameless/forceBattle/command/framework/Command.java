@@ -7,6 +7,7 @@ import net.fameless.forceBattle.command.DisplayResults;
 import net.fameless.forceBattle.command.Exclude;
 import net.fameless.forceBattle.command.Joker;
 import net.fameless.forceBattle.command.Language;
+import net.fameless.forceBattle.command.Points;
 import net.fameless.forceBattle.command.Reset;
 import net.fameless.forceBattle.command.Result;
 import net.fameless.forceBattle.command.Settings;
@@ -77,6 +78,7 @@ public abstract class Command {
         new Exclude();
         new Joker();
         new Language();
+        new Points();
         new Reset();
         new Result();
         new Settings();

@@ -72,6 +72,7 @@
   "command.no_such_player" : "<prefix><red>Player couldn't be found.",
   "command.no_such_team" : "<prefix><red>Team couldn't be found.",
   "command.not_a_number" : "<prefix><red>Please specify a valid number.",
+  "command.negative_number" : "<prefix><red>Number must be positive.",
   "command.usage" : "<prefix><red>Usage: <usage>.",
   "command.not_a_player" : "<prefix><red>Only players may use this command.",
   "command.console_command" : "<prefix><red>This command is console-only.",
