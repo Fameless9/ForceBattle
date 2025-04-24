@@ -1,6 +1,10 @@
 package net.fameless.forceBattle.game;
 
+import net.fameless.forceBattle.ForceBattle;
 import net.fameless.forceBattle.caption.Caption;
+import net.fameless.forceBattle.event.EventDispatcher;
+import net.fameless.forceBattle.event.PlayerTeamJoinEvent;
+import net.fameless.forceBattle.event.PlayerTeamLeaveEvent;
 import net.fameless.forceBattle.player.BattlePlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -76,8 +80,14 @@ public class Team {
         this.privateTeam = privateTeam;
     }
 
-    // Should only be used by BattlePlayer#addToTeam(Team team) to post a PlayerTeamJoinEvent and handle it accordingly.
     public void addPlayer(BattlePlayer<?> battlePlayer) {
+        PlayerTeamJoinEvent teamJoinEvent = new PlayerTeamJoinEvent(this, battlePlayer);
+        EventDispatcher.post(teamJoinEvent);
+        if (teamJoinEvent.isCancelled()) {
+            ForceBattle.logger().info("PlayerTeamJoinEvent has been denied by an external plugin.");
+            return;
+        }
+
         players.forEach(teamPlayer -> teamPlayer.sendMessage(Caption.of(
                 "notification.player_joined",
                 TagResolver.resolver("player", Tag.inserting(Component.text(battlePlayer.getName())))
@@ -85,8 +95,14 @@ public class Team {
         players.add(battlePlayer);
     }
 
-    // Should only be used by BattlePlayer#leaveTeam() to post a PlayerTeamLeaveEvent and handle it accordingly.
     public void removePlayer(BattlePlayer<?> battlePlayer) {
+        PlayerTeamLeaveEvent teamLeaveEvent = new PlayerTeamLeaveEvent(this, battlePlayer);
+        EventDispatcher.post(teamLeaveEvent);
+        if (teamLeaveEvent.isCancelled()) {
+            ForceBattle.logger().info("PlayerTeamLeaveEvent has been denied by an external plugin.");
+            return;
+        }
+
         players.remove(battlePlayer);
         players.forEach(teamPlayer -> teamPlayer.sendMessage(Caption.of(
                 "notification.player_left",
@@ -134,7 +150,6 @@ public class Team {
         }
 
         private void accept() {
-            battlePlayer.leaveTeam();
             battlePlayer.addToTeam(team);
         }
 

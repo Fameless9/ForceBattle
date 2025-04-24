@@ -8,8 +8,6 @@ import net.fameless.forceBattle.event.EventDispatcher;
 import net.fameless.forceBattle.event.ObjectiveUpdateEvent;
 import net.fameless.forceBattle.event.PlayerExcludeEvent;
 import net.fameless.forceBattle.event.PlayerResetEvent;
-import net.fameless.forceBattle.event.PlayerTeamJoinEvent;
-import net.fameless.forceBattle.event.PlayerTeamLeaveEvent;
 import net.fameless.forceBattle.game.Objective;
 import net.fameless.forceBattle.game.Team;
 import net.fameless.forceBattle.util.Format;
@@ -155,29 +153,15 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
         this.receivedSwap = receivedSwap;
     }
 
-    public boolean leaveTeam() {
-        if (getTeam() == null) {
-            return false;
+    public void leaveTeam() {
+        if (getTeam() != null) {
+            getTeam().removePlayer(this);
         }
-        PlayerTeamLeaveEvent teamLeaveEvent = new PlayerTeamLeaveEvent(getTeam(), this);
-        EventDispatcher.post(teamLeaveEvent);
-        if (teamLeaveEvent.isCancelled()) {
-            ForceBattle.logger().info("PlayerTeamLeaveEvent has been denied by an external plugin.");
-            return false;
-        }
-        getTeam().removePlayer(this);
-        return true;
     }
 
     public void addToTeam(@NotNull Team team) {
-        PlayerTeamJoinEvent teamJoinEvent = new PlayerTeamJoinEvent(team, this);
-        EventDispatcher.post(teamJoinEvent);
-        if (teamJoinEvent.isCancelled()) {
-            ForceBattle.logger().info("PlayerTeamJoinEvent has been denied by an external plugin.");
-            return;
-        }
-        // Check if PlayerTeamLeaveEvent has been denied
-        if (leaveTeam()) {
+        leaveTeam();
+        if (getTeam() == null) {
             team.addPlayer(this);
         }
     }
@@ -189,6 +173,7 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
             ForceBattle.logger().info("PlayerResetEvent has been denied by an external plugin.");
             return;
         }
+
         this.points = 0;
         this.chainProgress = 0;
         Objective.finished().forEach(objective -> {
@@ -265,7 +250,6 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
 
     public abstract void removeSwap(int amount);
 
-    // Method to handle player reset logic on the platform side - reset hunger, etc.
-    public abstract void handleReset();
+    public abstract void handleReset(); // Method to handle player reset logic on the platform side - reset health, etc.
 
 }
