@@ -50,6 +50,7 @@ public final class Caption {
                 .replace("<chain-mode-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE) ? "active.true" : "active.false"))
                 .replace("<backpacks-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.BACKPACK) ? "active.true" : "active.false"))
                 .replace("<hide-points-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS) ? "active.true" : "active.false"))
+                .replace("<hide-objectives-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES) ? "active.true" : "active.false"))
         ;
         return input;
     }

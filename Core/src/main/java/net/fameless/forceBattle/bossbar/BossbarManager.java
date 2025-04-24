@@ -63,7 +63,7 @@ public class BossbarManager {
                     "bossbar.format",
                     TagResolver.resolver("battletype", Tag.inserting(Component.text(battlePlayer.getObjective().getBattleType().getPrefix()))),
                     TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(battlePlayer.getObjective().getObjectiveString())))),
-                    TagResolver.resolver("pointstype", Tag.inserting(Component.text(isPlayerInTeam ? "Team Points" : "Points"))),
+                    TagResolver.resolver("pointstype", Tag.inserting(Component.text(isPlayerInTeam ? "Team-Points" : "Points"))),
                     TagResolver.resolver("points", Tag.inserting(Component.text(points)))
             );
         } else {

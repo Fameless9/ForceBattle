@@ -41,7 +41,6 @@ public class SettingsManager {
         }
     }
 
-    // Helper method to handle settings update logic
     private static void updateSetting(Setting setting, boolean enabled, boolean skipObjectiveUpdate) {
         if (settingsMap.getOrDefault(setting, false) == enabled) {
             return;
@@ -90,6 +89,10 @@ public class SettingsManager {
         updateSetting(Setting.HIDE_POINTS, enabled, true);
     }
 
+    public static void setHideObjectivesEnabled(boolean enabled) {
+        updateSetting(Setting.HIDE_OBJECTIVES, enabled, true);
+    }
+
     public enum Setting {
         FORCE_ITEM,
         FORCE_MOB,
@@ -98,7 +101,8 @@ public class SettingsManager {
         FORCE_HEIGHT,
         BACKPACK,
         CHAIN_MODE,
-        HIDE_POINTS
+        HIDE_POINTS,
+        HIDE_OBJECTIVES
     }
 
 }

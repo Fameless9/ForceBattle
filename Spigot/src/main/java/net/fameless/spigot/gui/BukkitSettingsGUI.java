@@ -112,6 +112,12 @@ public class BukkitSettingsGUI implements SettingsGUI<Inventory>, Listener, Inve
                         ? "notification.hide_points_enabled"
                         : "notification.hide_points_disabled"));
             }
+            case 16 -> {
+                SettingsManager.setHideObjectivesEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES));
+                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)
+                        ? "notification.hide_objectives_enabled"
+                        : "notification.hide_objectives_disabled"));
+            }
         }
         whoClicked.openInventory(getSettingsGUI());
     }
@@ -188,6 +194,13 @@ public class BukkitSettingsGUI implements SettingsGUI<Inventory>, Listener, Inve
                         .type(Material.IRON_TRAPDOOR)
                         .name(Caption.getAsLegacy("gui.hide_points_name"))
                         .lore(Format.formatLineBreaks(Caption.getAsLegacy("gui.hide_points_lore")))
+                        .build()
+        );
+        inventory.setItem(
+                16, new ItemUtils.ItemBuilder()
+                        .type(Material.DARK_OAK_DOOR)
+                        .name(Caption.getAsLegacy("gui.hide_objectives_name"))
+                        .lore(Format.formatLineBreaks(Caption.getAsLegacy("gui.hide_objectives_lore")))
                         .build()
         );
         return inventory;

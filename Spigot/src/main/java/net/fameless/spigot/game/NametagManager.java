@@ -13,7 +13,6 @@ import net.fameless.spigot.util.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
@@ -30,12 +29,7 @@ public class NametagManager {
     }
 
     public static void runTask() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                BukkitPlayer.BUKKIT_PLAYERS.forEach(NametagManager::updateNametag);
-            }
-        }.runTaskTimer(BukkitPlatform.get(), 0, 3);
+        Bukkit.getScheduler().runTaskTimer(BukkitPlatform.get(), () -> BukkitPlayer.BUKKIT_PLAYERS.forEach(NametagManager::updateNametag), 0, 3);
     }
 
     private static void updateNametag(@NotNull BukkitPlayer bukkitPlayer) {
@@ -83,10 +77,24 @@ public class NametagManager {
             objectiveString = Format.formatName(objective.getObjectiveString());
         }
 
-        suffix.append(" ").append(ChatColor.GRAY).append(objective.getBattleType().getPrefix()).append(ChatColor.DARK_GRAY).append(" » ").append(ChatColor.BLUE).append(
-                objectiveString);
+        if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)) {
+            suffix
+                    .append(" ")
+                    .append(ChatColor.GRAY)
+                    .append(objective.getBattleType().getPrefix())
+                    .append(ChatColor.DARK_GRAY)
+                    .append(" » ")
+                    .append(ChatColor.BLUE)
+                    .append(
+                            objectiveString);
+        }
+
+        if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES) && !SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
+            suffix.append(ChatColor.DARK_GRAY).append(" |");
+        }
+
         if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
-            suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GRAY).append("Points").append(ChatColor.DARK_GRAY).append(" » ")
+            suffix.append(" ").append(ChatColor.GRAY).append("Points").append(ChatColor.DARK_GRAY).append(" » ")
                     .append(ChatColor.BLUE).append(bukkitPlayer.getPoints());
         }
 
