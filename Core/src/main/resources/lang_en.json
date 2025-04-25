@@ -67,7 +67,7 @@
   "notification.swap_success_player" : "<prefix><gray>Your objective has been swapped with <blue><target><gray>.",
   "notification.skip_by_admin_target" : "<prefix><green>Your objective has been skipped by an admin.",
   "notification.skip_by_admin_player" : "<prefix><green>Successfully skipped the objective of <player>.",
-  "notification.battle_over" : "<prefix><green>The battle is over. <gray>/<gold>displayresults <gray>| /<gold>result<gray>.",
+  "notification.battle_over" : "<prefix><green>The battle is over. <gray>/<gold>displayresults <gray>| /<gold>result (player/team)<gray>.",
   "notification.first_startup" : "<gray>----\n<prefix><gold>It seems to be the first time you start the plugin.\n<gray>→ Use <green>/menu<gray> to adjust settings and <green>/timer toggle<gray> to start the battle.\n<gray>----",
   "notification.plugin_outdated" : "<prefix><gray>A new version of the plugin is available. Get it from <u><blue><click:open_url:'https://github.com/Fameless9/ForceBattle/releases/latest'>GitHub</click><gray></u>.",
   "command.no_team_id" : "<prefix><red>Please specify a valid team ID.",

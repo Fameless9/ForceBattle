@@ -67,7 +67,7 @@
   "notification.swap_success_player" : "<prefix><gray>您的目标已与<blue><target>交换",
   "notification.skip_by_admin_target" : "<prefix><green>管理员已跳过您的目标",
   "notification.skip_by_admin_player" : "<prefix><green>已成功跳过<player>的目标",
-  "notification.battle_over" : "<prefix><green>对战已结束 <gray>使用/<gold>displayresults <gray>| /<gold>result查看结果",
+  "notification.battle_over" : "<prefix><green>对战已结束 <gray>使用/<gold>displayresults <gray>| /<gold>result (player/team) 查看结果",
   "notification.first_startup" : "<gray>----\n<prefix><gold>似乎是第一次启动插件。\n→ <gray>使用<green>/菜单<gray>调整设置，使用<green>/计时器切换<gray>开始战斗。\n<gray>----",
   "notification.plugin_outdated" : "<prefix><gray>有可用的新插件版本。请在此下载：<blue><u><click:open_url:'https://github.com/Fameless9/ForceBattle/releases/latest'>GitHub</click></u><gray>。",
   "command.no_team_id" : "<prefix><red>请指定有效的队伍ID",
