@@ -44,18 +44,18 @@ public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatf
 
         Caption.setCurrentLanguage(Language.ofIdentifier(getConfig().getString("lang", "en")));
 
-        ForceBattle.initCore(new BukkitModule());
+        BukkitLanguageGUI languageGUI = new BukkitLanguageGUI();
+        BukkitResultGUI resultGUI = new BukkitResultGUI();
+        BukkitSettingsGUI settingsGUI = new BukkitSettingsGUI();
+
+        ForceBattle.initCore(new BukkitModule(languageGUI, resultGUI, settingsGUI));
 
         NametagManager.runTask();
 
-        BukkitLanguageGUI bukkitLanguageGUI = new BukkitLanguageGUI();
-        BukkitSettingsGUI bukkitSettingsGUI = new BukkitSettingsGUI();
-        BukkitResultGUI bukkitResultGUI = new BukkitResultGUI();
-
         Bukkit.getPluginManager().registerEvents(new GameListener(), this);
-        Bukkit.getPluginManager().registerEvents(bukkitLanguageGUI, this);
-        Bukkit.getPluginManager().registerEvents(bukkitSettingsGUI, this);
-        Bukkit.getPluginManager().registerEvents(bukkitResultGUI, this);
+        Bukkit.getPluginManager().registerEvents(languageGUI, this);
+        Bukkit.getPluginManager().registerEvents(resultGUI, this);
+        Bukkit.getPluginManager().registerEvents(settingsGUI, this);
 
         CommandManager.registerAll(Command.COMMANDS);
         PermissionManager.registerPermissions();

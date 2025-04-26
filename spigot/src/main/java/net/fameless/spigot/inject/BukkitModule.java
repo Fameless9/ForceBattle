@@ -14,13 +14,23 @@ import net.fameless.spigot.gui.BukkitSettingsGUI;
 
 public class BukkitModule extends AbstractModule {
 
+    private final BukkitLanguageGUI languageGUI;
+    private final BukkitResultGUI resultGUI;
+    private final BukkitSettingsGUI settingsGUI;
+
+    public BukkitModule(BukkitLanguageGUI languageGUI, BukkitResultGUI resultGUI, BukkitSettingsGUI settingsGUI) {
+        this.languageGUI = languageGUI;
+        this.resultGUI = resultGUI;
+        this.settingsGUI = settingsGUI;
+    }
+
     @Override
     protected void configure() {
         bind(ForceBattlePlatform.class).toInstance(BukkitPlatform.get());
         bind(ObjectiveManager.class).toInstance(new BukkitObjectiveManager());
-        bind(ResultGUI.class).toInstance(new BukkitResultGUI());
-        bind(LanguageGUI.class).toInstance(new BukkitLanguageGUI());
-        bind(SettingsGUI.class).toInstance(new BukkitSettingsGUI());
+        bind(ResultGUI.class).toInstance(resultGUI);
+        bind(LanguageGUI.class).toInstance(languageGUI);
+        bind(SettingsGUI.class).toInstance(settingsGUI);
     }
 
 }
