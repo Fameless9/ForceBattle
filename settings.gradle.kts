@@ -1,6 +1,6 @@
 rootProject.name = "ForceBattle"
 
-include("Core", "Spigot")
+include("core", "spigot")
 
-project(":Core").name = "forcebattle-core"
-project(":Spigot").name = "forcebattle-spigot"
+project(":core").name = "forcebattle-core"
+project(":spigot").name = "forcebattle-spigot"
