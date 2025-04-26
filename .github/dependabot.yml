@@ -1,0 +1,6 @@
+version: 2
+updates:
+    -   package-ecosystem: "gradle-version-catalog"
+        directory: "/gradle"
+        schedule:
+            interval: "monthly"
