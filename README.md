@@ -1,51 +1,95 @@
 # ForceBattle
 
-[![Build Status](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml)
+[![Build Status](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml)  
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-### Description
+---
 
-ForceBattle is a multiplayer gamemode for Minecraft spigot and paper servers.
-The goal of the game is for every player to collect an item, kill a mob, find
-a biome, finish and advancement or read a height that is given by the plugin.
+## 📖 About
 
-Each completed task awards the player one point. The player with the most points
-wins the game after the time has run out.
+**ForceBattle** is a multiplayer gamemode where players compete to complete randomized objectives and earn points.  
+The player with the most points after the timer ends wins the battle!
 
-### Features
+**Objective types include:**
+- 🔹 Collect an item
+- 🔹 Kill a mob
+- 🔹 Discover a biome
+- 🔹 Complete an advancement
+- 🔹 Reach a certain height
 
-- Commands:
-    - /menu - open the settings menu of the plugin.
-    - /backpack - open the backpack.
-    - /joker - adjust the joker amount (skips, swaps).
-    - /timer - timer commands (toggle, set, duration).
-    - /team - team related commands (create, join, etc.).
-    - /skip - skip a player's objective.
-    - /result - show the results of a player at the end of the game.
-    - /reset - reset the challenge.
-    - /language - set the language of the plugin (english, german).
-    - /displayresults - show the leaderboard at the end of the game.
-    - /exclude - exclude a player from the game.
-- Timer
-- Teams
-- Bossbar
+Objective types can be enabled or disabled individually via the plugin's settings menu.
 
-### Contributing
+---
 
-If you are interested in adding new features or fixing bugs, follow these instructions:
+## ✨ Features
 
-1. Fork the repository.
-2. Create a new branch. Name the branch after the feature you are working on. For example: 'feature/new-feature'.
-3. Make your changes. Make sure to follow the .editorconfig and the general java conventions.
-4. Test your changes. Make sure your changes don't break other features.
-5. Push your changes to your fork and make a pull request describing you feature/fix.
+- Adjustable **battle timer**  
+- **Team system**
+- Integrated **bossbar** progress display
+- Extensive **settings menu** (in-game GUI)
+- Multi-language support (🇬🇧 English, 🇩🇪 German, 🇨🇳 Chinese)
 
-### Building
+### 📋 Commands
 
-To build the plugin from source, you need to have gradle installed. Run the following command to build the plugin:
+| Command | Description |
+|:---|:---|
+| `/backpack` | Open the personal backpack (can be disabled) |
+| `/displayresults` | Show the final leaderboard |
+| `/exclude <player>` | Exclude a player from the battle |
+| `/help` | Display a list of available commands |
+| `/joker <player> <amount>` | Adjust jokers for a player |
+| `/language` | Open the language selection menu |
+| `/points <player> <amount>` | Modify a player's points |
+| `/reset [player]` | Reset the battle or a specific player |
+| `/result <player>` | Show detailed results for a player |
+| `/settings` | Open the plugin's settings menu |
+| `/skip <player>` | Skip a player's current objective (for admins) |
+| `/team` | Manage teams |
+| `/timer` | Control the timer (start, stop, set duration) |
 
-```shell
+---
+
+## 📷 Screenshots
+
+<details>
+<summary>Click to show Screenshots</summary>
+<img src="https://sss.feathermc.com/PM0rK84J.png" width="600">
+<img src="https://sss.feathermc.com/riSvtKJ9.png" width="600">
+<img src="https://sss.feathermc.com/kEXLII1q.png" width="600">
+<img src="https://sss.feathermc.com/5hzkfB7V.png" width="600">
+<img src="https://sss.feathermc.com/GOMuaczz.png" width="600">
+<img src="https://sss.feathermc.com/8jVUlYKp.png" width="600">
+</details>
+
+---
+
+## 🛠️ Building from Source
+
+To build ForceBattle yourself, make sure you have **Gradle** installed.  
+Then clone this repository and run:
+
+```bash
 gradle build
 ```
 
-The plugin jar file will be located in the `build/libs` directory in the Spigot module.
+The compiled `.jar` file will be located under `build/libs` inside the `Spigot` module.
+
+---
+
+## 🤝 Contributing
+
+Want to contribute? Awesome! Here's how you can help:
+
+1. **Fork** this repository.
+2. **Create a new branch** based on your feature or fix.  
+   (Example: `feature/new-feature` or `fix/bug-description`)
+3. **Implement your changes**, following `.editorconfig` and standard Java conventions.
+4. **Test your changes** carefully to ensure nothing breaks.
+5. **Push** to your fork and **open a pull request** with a clear description of what you changed.
+
+---
+
+## 📜 License
+
+This project is licensed under the **GNU GPLv3**.  
+See the [LICENSE](https://www.gnu.org/licenses/gpl-3.0) file for details.
