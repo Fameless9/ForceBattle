@@ -21,7 +21,8 @@ public class PermissionManager {
             Map.entry("forcebattle.backpack", PermissionDefault.TRUE),
             Map.entry("forcebattle.displayresults", PermissionDefault.OP),
             Map.entry("forcebattle.joker", PermissionDefault.OP),
-            Map.entry("forcebattle.points", PermissionDefault.OP)
+            Map.entry("forcebattle.points", PermissionDefault.OP),
+            Map.entry("forcebattle.help", PermissionDefault.TRUE)
     );
 
     public static void registerPermissions() {

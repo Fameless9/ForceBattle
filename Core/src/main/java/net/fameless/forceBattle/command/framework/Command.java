@@ -5,6 +5,7 @@ import net.fameless.forceBattle.caption.Caption;
 import net.fameless.forceBattle.command.Backpack;
 import net.fameless.forceBattle.command.DisplayResults;
 import net.fameless.forceBattle.command.Exclude;
+import net.fameless.forceBattle.command.Help;
 import net.fameless.forceBattle.command.Joker;
 import net.fameless.forceBattle.command.Language;
 import net.fameless.forceBattle.command.Points;
@@ -78,6 +79,7 @@ public abstract class Command {
         new Backpack();
         new DisplayResults();
         new Exclude();
+        new Help();
         new Joker();
         new Language();
         new Points();

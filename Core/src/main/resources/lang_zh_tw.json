@@ -70,6 +70,7 @@
   "notification.battle_over" : "<prefix><green>對戰已結束 <gray>使用/<gold>displayresults <gray>| /<gold>result (player/team) 查看結果",
   "notification.first_startup" : "<gray>----\n<prefix><gold>似乎是第一次啟動外掛。\n<gray>→ 使用<green>/menu<gray>調整設定，<green>/timer toggle<gray>開始戰鬥。\n<gray>----",
   "notification.plugin_outdated" : "<prefix><gray>有可用的新插件版本。請在此下載：<u><blue><click:open_url:'https://github.com/Fameless9/ForceBattle/releases/latest'>GitHub</click><gray></u>。",
+  "command.help_message" : "<gray>--<blue><bold>ForceBattle</bold><gray>--\n<command-list>\n<gray>----",
   "command.no_team_id" : "<prefix><red>請指定有效的隊伍ID",
   "command.not_in_a_team" : "<prefix><gray>您未加入任何隊伍",
   "command.player_not_in_a_team" : "<prefix><red>該玩家不在您的隊伍中",
