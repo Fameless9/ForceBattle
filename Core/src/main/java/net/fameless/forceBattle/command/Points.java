@@ -19,7 +19,8 @@ public class Points extends Command {
                 List.of(),
                 CallerType.NONE,
                 "/points <add|set|remove> <player> <amount>",
-                "forcebattle.points"
+                "forcebattle.points",
+                "Command to add, set or remove points from a player"
         );
     }
 

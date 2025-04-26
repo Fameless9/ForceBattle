@@ -24,7 +24,8 @@ public class Language extends Command {
                 List.of("language"),
                 CallerType.NONE,
                 "/lang <identifier>",
-                "forcebattle.lang"
+                "forcebattle.lang",
+                "Command to change the language of the plugin"
         );
 
         this.languageGUI = ForceBattle.injector().getInstance(LanguageGUI.class);
@@ -50,7 +51,7 @@ public class Language extends Command {
     @Override
     public List<String> tabComplete(CommandCaller caller, String @NotNull [] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("en", "zh_cn","zh_tw","de"), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[0], List.of("en", "zh_cn", "zh_tw", "de"), new ArrayList<>());
         }
         return List.of();
     }

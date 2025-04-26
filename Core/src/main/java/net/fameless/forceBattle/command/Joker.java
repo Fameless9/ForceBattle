@@ -20,7 +20,8 @@ public class Joker extends Command {
                 List.of(),
                 CallerType.NONE,
                 "/joker <add|remove> <player> <jokertype> <amount>",
-                "forcebattle.joker"
+                "forcebattle.joker",
+                "Command to add or remove jokers from a player"
         );
     }
 

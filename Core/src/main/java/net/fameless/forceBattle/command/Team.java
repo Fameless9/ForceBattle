@@ -24,7 +24,8 @@ public class Team extends Command {
                 List.of(),
                 CallerType.PLAYER,
                 "/team <create|join|leave|list|accept|reject> <id>",
-                "forcebattle.team"
+                "forcebattle.team",
+                "Command to manage teams: create, join, etc."
         );
     }
 

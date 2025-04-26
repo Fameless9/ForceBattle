@@ -20,7 +20,8 @@ public class Settings extends Command {
                 List.of("menu"),
                 CallerType.PLAYER,
                 "/settings",
-                "forcebattle.settings"
+                "forcebattle.settings",
+                "Command to open the settings menu"
         );
 
         settingsGUI = ForceBattle.injector().getInstance(SettingsGUI.class);

@@ -22,7 +22,8 @@ public class Reset extends Command {
                 List.of(),
                 CallerType.NONE,
                 "/reset <player>",
-                "forcebattle.reset"
+                "forcebattle.reset",
+                "Command to reset a player's state"
         );
     }
 

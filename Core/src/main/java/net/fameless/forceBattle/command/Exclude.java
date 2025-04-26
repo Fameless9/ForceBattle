@@ -21,7 +21,8 @@ public class Exclude extends Command {
                 List.of(),
                 CallerType.NONE,
                 "/exclude <player>",
-                "forcebattle.exclude"
+                "forcebattle.exclude",
+                "Command to exclude a player from the battle"
         );
     }
 

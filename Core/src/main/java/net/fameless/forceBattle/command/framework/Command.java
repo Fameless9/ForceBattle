@@ -26,22 +26,24 @@ import java.util.Optional;
 
 public abstract class Command {
 
-    private static final List<Command> COMMANDS = new ArrayList<>();
+    public static final List<Command> COMMANDS = new ArrayList<>();
     public final String id;
     public final List<String> aliases;
     public final CallerType requiredType;
     public final String usage;
     public final String permission;
+    public final String description;
 
     public Command(
             String id, List<String> aliases, CallerType requiredType,
-            String usage, String permission
+            String usage, String permission, final String description
     ) {
         this.id = id;
         this.aliases = aliases;
         this.requiredType = requiredType;
         this.usage = usage;
         this.permission = permission;
+        this.description = description;
 
         COMMANDS.add(this);
     }
@@ -72,7 +74,7 @@ public abstract class Command {
         return List.of();
     }
 
-    public static void init() {
+    public static void createInstances() {
         new Backpack();
         new DisplayResults();
         new Exclude();
@@ -135,6 +137,26 @@ public abstract class Command {
             return List.of();
         }
         return tabComplete(caller, args);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    public CallerType getRequiredType() {
+        return requiredType;
+    }
+
+    public String getUsage() {
+        return usage;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     protected abstract void executeCommand(CommandCaller caller, String[] args);

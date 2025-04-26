@@ -19,7 +19,8 @@ public class Backpack extends Command {
                 List.of("bp"),
                 CallerType.PLAYER,
                 "/backpack",
-                "forcebattle.backpack"
+                "forcebattle.backpack",
+                "Command to open the backpack"
         );
     }
 

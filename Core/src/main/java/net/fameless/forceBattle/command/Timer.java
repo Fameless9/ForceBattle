@@ -20,7 +20,8 @@ public class Timer extends Command {
                 List.of(),
                 CallerType.NONE,
                 "/timer <toggle|set|duration> <time>",
-                "forcebattle.timer"
+                "forcebattle.timer",
+                "Command to control the timer: toggle, set, duration"
         );
     }
 

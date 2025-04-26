@@ -26,7 +26,8 @@ public class Result extends Command {
                 List.of(),
                 CallerType.PLAYER,
                 "/result <team|player> <team id|player>",
-                "forcebattle.result"
+                "forcebattle.result",
+                "Command to display the results of a battle"
         );
 
         resultGUI = ForceBattle.injector().getInstance(ResultGUI.class);

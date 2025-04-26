@@ -4,8 +4,10 @@ import net.fameless.forceBattle.ForceBattle;
 import net.fameless.forceBattle.ForceBattlePlatform;
 import net.fameless.forceBattle.caption.Caption;
 import net.fameless.forceBattle.caption.Language;
+import net.fameless.forceBattle.command.framework.Command;
 import net.fameless.forceBattle.configuration.SettingsFile;
-import net.fameless.spigot.command.CommandHandler;
+import net.fameless.spigot.command.CommandManager;
+import net.fameless.spigot.command.PermissionManager;
 import net.fameless.spigot.game.GameListener;
 import net.fameless.spigot.game.NametagManager;
 import net.fameless.spigot.gui.BukkitLanguageGUI;
@@ -53,31 +55,8 @@ public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatf
         Bukkit.getPluginManager().registerEvents(bukkitSettingsGUI, this);
         Bukkit.getPluginManager().registerEvents(bukkitResultGUI, this);
 
-        CommandHandler commandHandler = new CommandHandler();
-
-        getCommand("lang").setExecutor(commandHandler);
-        getCommand("settings").setExecutor(commandHandler);
-        getCommand("result").setExecutor(commandHandler);
-        getCommand("timer").setExecutor(commandHandler);
-        getCommand("team").setExecutor(commandHandler);
-        getCommand("exclude").setExecutor(commandHandler);
-        getCommand("skip").setExecutor(commandHandler);
-        getCommand("reset").setExecutor(commandHandler);
-        getCommand("backpack").setExecutor(commandHandler);
-        getCommand("displayresults").setExecutor(commandHandler);
-        getCommand("joker").setExecutor(commandHandler);
-        getCommand("points").setExecutor(commandHandler);
-
-        getCommand("lang").setTabCompleter(commandHandler);
-        getCommand("result").setTabCompleter(commandHandler);
-        getCommand("timer").setTabCompleter(commandHandler);
-        getCommand("team").setTabCompleter(commandHandler);
-        getCommand("exclude").setTabCompleter(commandHandler);
-        getCommand("skip").setTabCompleter(commandHandler);
-        getCommand("reset").setTabCompleter(commandHandler);
-        getCommand("backpack").setTabCompleter(commandHandler);
-        getCommand("joker").setTabCompleter(commandHandler);
-        getCommand("points").setTabCompleter(commandHandler);
+        CommandManager.registerAll(Command.COMMANDS);
+        PermissionManager.registerPermissions();
 
         final int SERVICE_ID = 20754;
         new Metrics(this, SERVICE_ID);

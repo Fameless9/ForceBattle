@@ -54,7 +54,7 @@ public class ForceBattle {
         }
         timer = new Timer(platform.getGameDuration(), false);
 
-        Command.init();
+        Command.createInstances();
         BossbarManager.runTask();
         PluginUpdater.checkForUpdate();
 

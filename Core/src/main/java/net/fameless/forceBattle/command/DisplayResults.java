@@ -25,7 +25,8 @@ public class DisplayResults extends Command {
                 List.of(),
                 CallerType.NONE,
                 "/displayresults",
-                "forcebattle.displayresults"
+                "forcebattle.displayresults",
+                "Command to display the results of the battle"
         );
     }
 
@@ -56,9 +57,11 @@ public class DisplayResults extends Command {
 
         sortedPointsMap.forEach((battlePlayer, points) -> {
             long place = sortedPointsMap.size() - counter[0];
-            scheduler.schedule(() -> ForceBattle.platform().broadcast(
-                    MiniMessage.miniMessage().deserialize("<gold>" + place + ". <blue>" + battlePlayer.getName() + "<dark_gray>: <gold>" + points)
-            ), counter[0] * delay, TimeUnit.MILLISECONDS);
+            scheduler.schedule(
+                    () -> ForceBattle.platform().broadcast(
+                            MiniMessage.miniMessage().deserialize("<gold>" + place + ". <blue>" + battlePlayer.getName() + "<dark_gray>: <gold>" + points)
+                    ), counter[0] * delay, TimeUnit.MILLISECONDS
+            );
             counter[0]++;
         });
 
