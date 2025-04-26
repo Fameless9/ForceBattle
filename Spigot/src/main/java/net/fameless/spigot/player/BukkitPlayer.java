@@ -16,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.scoreboard.Scoreboard;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,16 +88,22 @@ public class BukkitPlayer extends BattlePlayer<Player> {
 
     @Override
     public Audience getAudience() {
+        if (getPlatformPlayer() == null) {
+            return Audience.empty();
+        }
         return BukkitUtil.BUKKIT_AUDIENCES.player(getPlatformPlayer());
     }
 
     @Override
-    public Player getPlatformPlayer() {
+    public @Nullable Player getPlatformPlayer() {
         return Bukkit.getPlayer(getUniqueId());
     }
 
     @Override
     public boolean hasPermission(@NonNull String permission) {
+        if (getPlatformPlayer() == null) {
+            return false;
+        }
         return getPlatformPlayer().hasPermission(permission);
     }
 
