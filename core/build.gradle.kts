@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    id("java-library")
 }
 
 group = "net.fameless"
@@ -16,6 +16,8 @@ dependencies {
     implementation(libs.guice)
     implementation(libs.adventureTextMinimessage)
     implementation(libs.adventureTextSerializerLegacy)
+    api(libs.slf4j)
+    api(libs.logback)
 }
 
 tasks {

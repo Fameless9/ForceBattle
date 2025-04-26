@@ -1,6 +1,5 @@
 package net.fameless.spigot.command;
 
-import net.fameless.core.ForceBattle;
 import net.fameless.core.command.framework.Command;
 import net.fameless.core.command.framework.CommandCaller;
 import net.fameless.spigot.player.BukkitPlayer;
@@ -13,6 +12,8 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -20,6 +21,7 @@ import java.util.List;
 
 public class CommandManager {
 
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + CommandManager.class.getSimpleName());
     private static final CommandMap COMMAND_MAP = getCommandMap();
 
     public static void registerAll(@NotNull Collection<Command> commands) {
@@ -45,7 +47,7 @@ public class CommandManager {
         bukkitCommand.setPermission(command.getPermission());
 
         COMMAND_MAP.register(command.getId(), bukkitCommand);
-        ForceBattle.logger().fine("Registered command: " + command.getId());
+        logger.info("Registered command: {}", command.getId());
     }
 
     private static @NotNull CommandMap getCommandMap() {

@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import net.fameless.core.ForceBattle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,6 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 public class PluginUpdater {
+
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + PluginUpdater.class.getSimpleName());
 
     private static final String GITHUB_API_URL = "https://api.github.com/repos/fameless9/ForceBattle/releases/latest";
     private static final String JSON_TAG_NAME = "tag_name";
@@ -38,7 +42,7 @@ public class PluginUpdater {
             String currentVersion = ForceBattle.platform().getPluginVersion();
 
             if (latestVersion.equals(currentVersion)) {
-                ForceBattle.logger().info("Plugin is already up-to-date.");
+                logger.info("Plugin is already up-to-date.");
                 return;
             }
 
@@ -48,12 +52,11 @@ public class PluginUpdater {
 //                return;
 //            }
 
-            ForceBattle.logger().info("New version found: " + latestVersion + ". Update the plugin and restart the server.");
+            logger.info("New version found: {}. Update the plugin and restart the server.", latestVersion);
             isUpdated = false;
 //            downloadAndReplacePlugin(downloadUrl, latestVersion);
         } catch (IOException e) {
-            ForceBattle.logger().severe("Failed to fetch or update the plugin: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Failed to fetch or update the plugin: {}", e.getMessage());
         }
     }
 
@@ -98,7 +101,7 @@ public class PluginUpdater {
         ForceBattle.platform().shutDown();
         Files.move(tempFile.toPath(), currentFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-        ForceBattle.logger().info("Plugin updated successfully to version " + latestVersion + ".");
+        logger.info("Plugin updated successfully to version {}.", latestVersion);
     }
 
 }

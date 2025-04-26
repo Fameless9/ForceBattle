@@ -1,7 +1,7 @@
 package net.fameless.core.event;
 
-import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Language;
+import net.fameless.core.util.EventLogger;
 
 public class LanguageChangeEvent implements CancellableEvent {
 
@@ -18,7 +18,7 @@ public class LanguageChangeEvent implements CancellableEvent {
 
     public void setNewLanguage(Language newLanguage) {
         if (newLanguage != this.newLanguage) {
-            ForceBattle.logger().info("LanguageChangeEvent: value newLanguage has been changed.");
+            EventLogger.LOGGER.info("LanguageChangeEvent: value newLanguage has been changed to {}.", newLanguage.name());
             this.newLanguage = newLanguage;
         }
     }

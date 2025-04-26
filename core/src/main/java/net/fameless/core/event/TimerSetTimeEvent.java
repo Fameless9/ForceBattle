@@ -1,6 +1,6 @@
 package net.fameless.core.event;
 
-import net.fameless.core.ForceBattle;
+import net.fameless.core.util.EventLogger;
 
 public class TimerSetTimeEvent implements CancellableEvent {
 
@@ -17,7 +17,7 @@ public class TimerSetTimeEvent implements CancellableEvent {
 
     public void setNewTime(int newTime) {
         if (newTime != this.newTime) {
-            ForceBattle.logger().info("TimerSetTimeEvent: value newTime has been changed.");
+            EventLogger.LOGGER.info("TimerSetTimeEvent: value newTime has been changed to {}.", newTime);
             this.newTime = newTime;
         }
     }

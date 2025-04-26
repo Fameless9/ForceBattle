@@ -7,6 +7,8 @@ bstats = "3.0.2"
 adventureTextMinimessage = "4.17.0"
 adventureTextSerializerLegacy = "4.17.0"
 adventureBukkit = "4.3.4"
+slf4j = "2.0.16"
+logback = "1.5.18"
 
 [libraries]
 spigot = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
@@ -17,3 +19,5 @@ bstats = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 adventureTextMinimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventureTextMinimessage" }
 adventureTextSerializerLegacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventureTextSerializerLegacy" }
 adventureBukkit = { module = "net.kyori:adventure-platform-bukkit", version.ref = "adventureBukkit" }
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }

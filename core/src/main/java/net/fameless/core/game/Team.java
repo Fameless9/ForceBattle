@@ -1,6 +1,5 @@
 package net.fameless.core.game;
 
-import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
 import net.fameless.core.event.EventDispatcher;
 import net.fameless.core.event.PlayerTeamJoinEvent;
@@ -9,6 +8,8 @@ import net.fameless.core.player.BattlePlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 public class Team {
 
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + Team.class.getSimpleName());
     public static final List<Team> teams = new ArrayList<>();
 
     private final List<BattlePlayer<?>> players;
@@ -84,7 +86,7 @@ public class Team {
         PlayerTeamJoinEvent teamJoinEvent = new PlayerTeamJoinEvent(this, battlePlayer);
         EventDispatcher.post(teamJoinEvent);
         if (teamJoinEvent.isCancelled()) {
-            ForceBattle.logger().info("PlayerTeamJoinEvent has been denied by an external plugin.");
+            logger.info("PlayerTeamJoinEvent has been denied by an external plugin.");
             return;
         }
 
@@ -99,7 +101,7 @@ public class Team {
         PlayerTeamLeaveEvent teamLeaveEvent = new PlayerTeamLeaveEvent(this, battlePlayer);
         EventDispatcher.post(teamLeaveEvent);
         if (teamLeaveEvent.isCancelled()) {
-            ForceBattle.logger().info("PlayerTeamLeaveEvent has been denied by an external plugin.");
+            logger.info("PlayerTeamLeaveEvent has been denied by an external plugin.");
             return;
         }
 

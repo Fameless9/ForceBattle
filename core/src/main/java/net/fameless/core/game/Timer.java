@@ -10,10 +10,14 @@ import net.fameless.core.event.TimerStartTimeChangeEvent;
 import net.fameless.core.player.BattlePlayer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.TimerTask;
 
 public class Timer {
+
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + Timer.class.getSimpleName());
 
     private int startTime;
     private int time;
@@ -79,7 +83,7 @@ public class Timer {
         TimerStartTimeChangeEvent startTimeChangeEvent = new TimerStartTimeChangeEvent(newStartTime);
         EventDispatcher.post(startTimeChangeEvent);
         if (startTimeChangeEvent.isCancelled()) {
-            ForceBattle.logger().info("TimerStartTimeChangeEvent has been denied by an external plugin.");
+            logger.info("TimerStartTimeChangeEvent has been denied by an external plugin.");
             return;
         }
         this.startTime = startTimeChangeEvent.getNewStartTime();
@@ -93,7 +97,7 @@ public class Timer {
         TimerSetTimeEvent setTimeEvent = new TimerSetTimeEvent(newTime);
         EventDispatcher.post(setTimeEvent);
         if (setTimeEvent.isCancelled()) {
-            ForceBattle.logger().info("TimerSetTimeEvent has been denied by an external plugin.");
+            logger.info("TimerSetTimeEvent has been denied by an external plugin.");
             return;
         }
         this.time = setTimeEvent.getNewTime();
@@ -108,7 +112,7 @@ public class Timer {
             TimerStartEvent startEvent = new TimerStartEvent(this.time);
             EventDispatcher.post(startEvent);
             if (startEvent.isCancelled()) {
-                ForceBattle.logger().info("TimerStartEvent has been denied by an external plugin.");
+                logger.info("TimerStartEvent has been denied by an external plugin.");
                 return;
             }
             this.time = startEvent.getStartTime();
@@ -118,7 +122,7 @@ public class Timer {
             TimerPauseEvent pauseEvent = new TimerPauseEvent(this.time);
             EventDispatcher.post(pauseEvent);
             if (pauseEvent.isCancelled()) {
-                ForceBattle.logger().info("TimerPauseEvent has been denied by an external plugin.");
+                logger.info("TimerPauseEvent has been denied by an external plugin.");
                 return;
             }
             this.time = pauseEvent.getPauseTime();

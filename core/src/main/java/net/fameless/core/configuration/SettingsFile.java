@@ -4,9 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
 import net.fameless.core.caption.Language;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -15,6 +16,7 @@ import java.io.IOException;
 
 public class SettingsFile {
 
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + SettingsFile.class.getSimpleName());
     private static final Gson GSON = new GsonBuilder()
             .disableHtmlEscaping()
             .setPrettyPrinting()
@@ -38,7 +40,7 @@ public class SettingsFile {
                     Language language = Language.valueOf(settingsObject.get("language").getAsString());
                     Caption.setCurrentLanguage(language);
                 } catch (IllegalArgumentException e) {
-                    ForceBattle.logger().warning("Failed to load language from Settings file. No such language.");
+                    logger.warn("Failed to load language from Settings file. No such language.");
                 }
             }
         }

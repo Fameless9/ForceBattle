@@ -1,8 +1,8 @@
 package net.fameless.core.event;
 
-import net.fameless.core.ForceBattle;
 import net.fameless.core.game.Objective;
 import net.fameless.core.player.BattlePlayer;
+import net.fameless.core.util.EventLogger;
 
 public class ObjectiveUpdateEvent implements CancellableEvent {
 
@@ -25,7 +25,7 @@ public class ObjectiveUpdateEvent implements CancellableEvent {
 
     public void setNewObjective(Objective newObjective) {
         if (newObjective != this.newObjective) {
-            ForceBattle.logger().info("ObjectiveUpdateEvent: value newObjective has been changed.");
+            EventLogger.LOGGER.info("ObjectiveUpdateEvent: value newObjective has been changed to {}.", newObjective.getObjectiveString());
             this.newObjective = newObjective;
         }
     }

@@ -1,6 +1,6 @@
 package net.fameless.core.event;
 
-import net.fameless.core.ForceBattle;
+import net.fameless.core.util.EventLogger;
 
 public class TimerStartTimeChangeEvent {
 
@@ -17,7 +17,7 @@ public class TimerStartTimeChangeEvent {
 
     public void setNewStartTime(int newStartTime) {
         if (newStartTime != this.newStartTime) {
-            ForceBattle.logger().info("TimerStartTimeChangeEvent: value newStartTime has been changed.");
+            EventLogger.LOGGER.info("TimerStartTimeChangeEvent: value newStartTime has been changed to {}.", newStartTime);
             this.newStartTime = newStartTime;
         }
     }

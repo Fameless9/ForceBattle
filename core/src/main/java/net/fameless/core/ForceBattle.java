@@ -13,20 +13,22 @@ import net.fameless.core.configuration.SettingsFile;
 import net.fameless.core.game.ObjectiveManager;
 import net.fameless.core.game.Timer;
 import net.fameless.core.util.ResourceUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public class ForceBattle {
 
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + ForceBattle.class.getSimpleName());
     private static boolean initialized = false;
     private static ForceBattlePlatform platform;
-    private static Logger logger;
     private static Timer timer;
     private static ObjectiveManager objectiveManager;
 
     private static Injector injector;
+
 
     private ForceBattle() {
     }
@@ -42,7 +44,6 @@ public class ForceBattle {
         );
 
         platform = injector.getInstance(ForceBattlePlatform.class);
-        logger = platform.getLogger();
 
         initLanguages();
 
@@ -59,7 +60,7 @@ public class ForceBattle {
         PluginUpdater.checkForUpdate();
 
         initialized = true;
-        logger.info("Successfully initialized ForceBattle.");
+        logger.info("Successfully initialized ForceBattle-Core.");
     }
 
     private static void initLanguages() {
@@ -75,10 +76,6 @@ public class ForceBattle {
 
     public static ForceBattlePlatform platform() {
         return platform;
-    }
-
-    public static Logger logger() {
-        return logger;
     }
 
     public static Timer getTimer() {

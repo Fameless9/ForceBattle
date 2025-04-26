@@ -13,11 +13,14 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
 public final class Caption {
 
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + Caption.class.getSimpleName());
     private static final HashMap<Language, JsonObject> languageJsonObjectHashMap = new HashMap<>();
     private static Language currentLanguage = Language.ENGLISH;
 
@@ -76,7 +79,7 @@ public final class Caption {
             LanguageChangeEvent languageChangeEvent = new LanguageChangeEvent(newLanguage);
             EventDispatcher.post(languageChangeEvent);
             if (languageChangeEvent.isCancelled()) {
-                ForceBattle.logger().info("LanguageChangeEvent has been denied by an external plugin.");
+                logger.info("LanguageChangeEvent has been denied by an external plugin.");
                 return;
             }
             Caption.currentLanguage = newLanguage;

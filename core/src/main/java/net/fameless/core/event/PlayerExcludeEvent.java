@@ -1,7 +1,7 @@
 package net.fameless.core.event;
 
-import net.fameless.core.ForceBattle;
 import net.fameless.core.player.BattlePlayer;
+import net.fameless.core.util.EventLogger;
 
 public class PlayerExcludeEvent implements CancellableEvent {
 
@@ -24,7 +24,7 @@ public class PlayerExcludeEvent implements CancellableEvent {
 
     public void setNewExcluded(boolean newExcluded) {
         if (newExcluded != this.newExcluded) {
-            ForceBattle.logger().info("PlayerExcludeEvent: value newExcluded has been changed.");
+            EventLogger.LOGGER.info("PlayerExcludeEvent: value newExcluded has been changed to {}.", newExcluded);
             this.newExcluded = newExcluded;
         }
     }

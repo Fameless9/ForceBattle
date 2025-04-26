@@ -17,6 +17,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,8 @@ import java.util.UUID;
 public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
 
     public static final List<BattlePlayer<?>> BATTLE_PLAYERS = new ArrayList<>();
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + BattlePlayer.class.getSimpleName());
+
     private final UUID uuid;
     protected String name;
     private Objective objective;
@@ -131,7 +135,7 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
         PlayerExcludeEvent excludeEvent = new PlayerExcludeEvent(this, excluded);
         EventDispatcher.post(excludeEvent);
         if (excludeEvent.isCancelled()) {
-            ForceBattle.logger().info("PlayerExcludeEvent has been denied by an external plugin.");
+            logger.info("PlayerExcludeEvent has been denied by an external plugin.");
             return;
         }
         this.excluded = excludeEvent.isNewExcluded();
@@ -170,7 +174,7 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
         PlayerResetEvent resetEvent = new PlayerResetEvent(this);
         EventDispatcher.post(resetEvent);
         if (resetEvent.isCancelled()) {
-            ForceBattle.logger().info("PlayerResetEvent has been denied by an external plugin.");
+            logger.info("PlayerResetEvent has been denied by an external plugin.");
             return;
         }
 
@@ -205,7 +209,7 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
         ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
         EventDispatcher.post(updateEvent);
         if (updateEvent.isCancelled()) {
-            ForceBattle.logger().info("ObjectiveUpdateEvent has been denied by an external plugin.");
+            logger.info("ObjectiveUpdateEvent has been denied by an external plugin.");
             return;
         }
         setCurrentObjective(updateEvent.getNewObjective(), finishLast);

@@ -1,6 +1,5 @@
 package net.fameless.core.command.framework;
 
-import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
 import net.fameless.core.command.Backpack;
 import net.fameless.core.command.DisplayResults;
@@ -20,6 +19,8 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ public abstract class Command {
     public final String usage;
     public final String permission;
     public final String description;
+
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + Command.class.getSimpleName());
 
     public Command(
             String id, List<String> aliases, CallerType requiredType,
@@ -62,7 +65,7 @@ public abstract class Command {
         @NotNull Optional<Command> commandOptional = getCommandById(commandId);
         commandOptional.ifPresentOrElse(
                 command -> command.execute(caller, args),
-                () -> ForceBattle.platform().getLogger().severe("Error while trying to execute command: " + commandId + ". Command not registered.")
+                () -> logger.error("Error while trying to execute command: {}. Command not registered.", commandId)
         );
     }
 
@@ -71,7 +74,7 @@ public abstract class Command {
         if (commandOptional.isPresent()) {
             return commandOptional.get().getTabCompletions(caller, args);
         }
-        ForceBattle.platform().getLogger().severe("Error while trying to get tab-completions for command: " + commandId + ". Command not registered.");
+        logger.error("Error while trying to get tab-completions for command: {}. Command not registered.", commandId);
         return List.of();
     }
 

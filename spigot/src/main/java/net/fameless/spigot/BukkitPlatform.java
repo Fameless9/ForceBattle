@@ -20,13 +20,15 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatform {
 
+    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + BukkitPlatform.class.getSimpleName());
     private static BukkitPlatform instance;
 
     public static BukkitPlatform get() {
@@ -60,6 +62,8 @@ public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatf
 
         final int SERVICE_ID = 20754;
         new Metrics(this, SERVICE_ID);
+
+        logger.info("Successfully initialized ForceBattle-Spigot.");
     }
 
     @Override
@@ -81,11 +85,6 @@ public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatf
     @Override
     public @NotNull File getPluginFile() {
         return getFile();
-    }
-
-    @Override
-    public @NotNull Logger getLogger() {
-        return super.getLogger();
     }
 
     @Override
