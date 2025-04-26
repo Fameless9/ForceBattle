@@ -22,7 +22,7 @@ dependencies {
 }
 
 group = "net.fameless"
-version = "1.0.7"
+version = "1.0.9"
 description = "ForceBattle Spigot implementation"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -34,7 +34,7 @@ tasks {
     shadowJar {
         archiveBaseName.set("ForceBattle-Spigot")
         archiveClassifier.set("")
-        archiveVersion.set("1.0.7")
+        archiveVersion.set("1.0.9")
 
         relocate("org.bstats", "net.fameless.libs.bstats")
     }
