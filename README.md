@@ -1,6 +1,7 @@
 # ForceBattle
 
 [![Build Status](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ### Description
 
