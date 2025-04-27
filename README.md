@@ -1,7 +1,9 @@
 # ForceBattle
 
-[![Build Status](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml)  
+[![Build Status](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/Fameless9/ForceBattle/actions/workflows/gradle.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Code Quality](https://www.codefactor.io/repository/github/fameless9/forcebattle/badge)](https://www.codefactor.io/repository/github/fameless9/forcebattle)
+[![Spigot Downloads](https://pluginbadges.glitch.me/api/v1/dl/Spigot%20Downloads-limegreen.svg?spigot=1-21-x-force-battle-item-mob-biome-advancement-height.112328&github=Fameless9%2FForceBattle&style=flat)](https://www.spigotmc.org/resources/1-21-x-force-battle-item-mob-biome-advancement-height.112328/)
 
 ---
 
