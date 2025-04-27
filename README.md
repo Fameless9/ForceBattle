@@ -23,7 +23,8 @@ Objective types can be enabled or disabled individually via the plugin's setting
 
 ## ✨ Features
 
-- Adjustable **battle timer**  
+- Adjustable **battle timer**
+- **Chain Mode** - each player has to complete the same chain of objectives
 - **Team system**
 - Integrated **bossbar** progress display
 - Extensive **settings menu** (in-game GUI)
