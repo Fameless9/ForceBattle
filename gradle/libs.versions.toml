@@ -1,5 +1,5 @@
 [versions]
-spigot = "1.21.1-R0.1-SNAPSHOT"
+spigot = "1.21.4-R0.1-SNAPSHOT"
 gson = "2.11.0"
 guice = "7.0.0"
 annotations = "26.0.1"
