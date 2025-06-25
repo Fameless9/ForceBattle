@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.fameless"
-version = "1.0.9"
+version = "1.0.10"
 description = "ForceBattle"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
