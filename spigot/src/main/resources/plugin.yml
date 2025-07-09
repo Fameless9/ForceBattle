@@ -6,3 +6,21 @@ prefix: ForceBattle
 authors: [ Fameless9 ]
 description: ForceBattle Plugin
 website: https://github.com/Fameless9
+
+commands:
+    backpack:
+        aliases: [ bp ]
+    displayresults:
+    exclude:
+    help:
+    joker:
+    language:
+        aliases: [ lang ]
+    points:
+    reset:
+    result:
+    settings:
+        aliases: [ menu ]
+    skip:
+    team:
+    timer:

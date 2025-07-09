@@ -6,7 +6,7 @@ import net.fameless.core.caption.Caption;
 import net.fameless.core.caption.Language;
 import net.fameless.core.command.framework.Command;
 import net.fameless.core.configuration.SettingsFile;
-import net.fameless.spigot.command.CommandManager;
+import net.fameless.spigot.command.CommandHandler;
 import net.fameless.spigot.command.PermissionManager;
 import net.fameless.spigot.game.GameListener;
 import net.fameless.spigot.game.NametagManager;
@@ -57,7 +57,7 @@ public final class BukkitPlatform extends JavaPlugin implements ForceBattlePlatf
         Bukkit.getPluginManager().registerEvents(resultGUI, this);
         Bukkit.getPluginManager().registerEvents(settingsGUI, this);
 
-        CommandManager.registerAll(Command.COMMANDS);
+        CommandHandler.registerAll(Command.COMMANDS);
         PermissionManager.registerPermissions();
 
         final int SERVICE_ID = 20754;

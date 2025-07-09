@@ -20,8 +20,8 @@ public class Language extends Command {
 
     public Language() {
         super(
-                "lang",
-                List.of("language"),
+                "language",
+                List.of("lang"),
                 CallerType.NONE,
                 "/lang <identifier>",
                 "forcebattle.lang",
