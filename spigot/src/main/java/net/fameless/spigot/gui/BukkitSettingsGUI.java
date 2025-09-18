@@ -65,7 +65,7 @@ public class BukkitSettingsGUI implements SettingsGUI<Inventory>, Listener, Inve
                         ? "notification.force_biome_enabled"
                         : "notification.force_biome_disabled"));
             }
-            case 3 -> {
+            case 9 -> {
                 if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_ADVANCEMENT, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT))) {
                     break;
                 }
@@ -74,7 +74,7 @@ public class BukkitSettingsGUI implements SettingsGUI<Inventory>, Listener, Inve
                         ? "notification.force_advancement_enabled"
                         : "notification.force_advancement_disabled"));
             }
-            case 4 -> {
+            case 10 -> {
                 if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_HEIGHT, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT))) {
                     break;
                 }
@@ -82,6 +82,24 @@ public class BukkitSettingsGUI implements SettingsGUI<Inventory>, Listener, Inve
                 ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)
                         ? "notification.force_height_enabled"
                         : "notification.force_height_disabled"));
+            }
+            case 11 -> {
+                if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_COORDS, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS))) {
+                    break;
+                }
+                SettingsManager.setForceCoordsEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS));
+                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)
+                        ? "notification.force_coords_enabled"
+                        : "notification.force_coords_disabled"));
+            }
+            case 18 -> {
+                if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_STRUCTURE, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE))) {
+                    break;
+                }
+                SettingsManager.setForceStructureEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE));
+                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)
+                        ? "notification.force_structure_enabled"
+                        : "notification.force_structure_disabled"));
             }
             case 6 -> {
                 SettingsManager.setChainModeEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE));
@@ -156,17 +174,31 @@ public class BukkitSettingsGUI implements SettingsGUI<Inventory>, Listener, Inve
                         .build()
         );
         inventory.setItem(
-                3, new ItemUtils.ItemBuilder()
+                9, new ItemUtils.ItemBuilder()
                         .type(Material.BREWING_STAND)
                         .name(Caption.getAsLegacy("gui.force_advancement_name"))
                         .lore(Format.formatLineBreaks(Caption.getAsLegacy("gui.force_advancement_lore")))
                         .build()
         );
         inventory.setItem(
-                4, new ItemUtils.ItemBuilder()
+                10, new ItemUtils.ItemBuilder()
                         .type(Material.SCAFFOLDING)
                         .name(Caption.getAsLegacy("gui.force_height_name"))
                         .lore(Format.formatLineBreaks(Caption.getAsLegacy("gui.force_height_lore")))
+                        .build()
+        );
+        inventory.setItem(
+                11, new ItemUtils.ItemBuilder()
+                        .type(Material.FILLED_MAP)
+                        .name(Caption.getAsLegacy("gui.force_coords_name"))
+                        .lore(Format.formatLineBreaks(Caption.getAsLegacy("gui.force_coords_lore")))
+                        .build()
+        );
+        inventory.setItem(
+                18, new ItemUtils.ItemBuilder()
+                        .type(Material.STRUCTURE_BLOCK)
+                        .name(Caption.getAsLegacy("gui.force_structure_name"))
+                        .lore(Format.formatLineBreaks(Caption.getAsLegacy("gui.force_structure_lore")))
                         .build()
         );
         inventory.setItem(

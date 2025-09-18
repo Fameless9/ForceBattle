@@ -50,6 +50,8 @@ public final class Caption {
                 .replace("<force-biome-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME) ? "active.true" : "active.false"))
                 .replace("<force-advancement-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT) ? "active.true" : "active.false"))
                 .replace("<force-height-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT) ? "active.true" : "active.false"))
+                .replace("<force-coords-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS) ? "active.true" : "active.false"))
+                .replace("<force-structure-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE) ? "active.true" : "active.false"))
                 .replace("<chain-mode-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE) ? "active.true" : "active.false"))
                 .replace("<backpacks-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.BACKPACK) ? "active.true" : "active.false"))
                 .replace("<hide-points-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS) ? "active.true" : "active.false"))

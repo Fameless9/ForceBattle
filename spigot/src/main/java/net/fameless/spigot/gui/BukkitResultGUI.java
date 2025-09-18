@@ -5,6 +5,7 @@ import net.fameless.core.game.Objective;
 import net.fameless.core.game.Team;
 import net.fameless.core.gui.ResultGUI;
 import net.fameless.core.player.BattlePlayer;
+import net.fameless.core.util.Coords;
 import net.fameless.core.util.Format;
 import net.fameless.spigot.BukkitPlatform;
 import net.fameless.spigot.player.BukkitPlayer;
@@ -26,6 +27,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.generator.structure.Structure;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -343,6 +345,12 @@ public class BukkitResultGUI implements Listener, InventoryHolder, ResultGUI<Inv
             }
             if (objectiveObject instanceof Integer) {
                 return Material.SCAFFOLDING;
+            }
+            if (objectiveObject instanceof Coords) {
+                return Material.DIAMOND_BOOTS;
+            }
+            if (objectiveObject instanceof Structure) {
+                return Material.STRUCTURE_BLOCK;
             }
             throw new RuntimeException("Corrupt/Invalid objective type: " + objective.getObjectiveString() + ". battleType: " + objective.getBattleType());
         }

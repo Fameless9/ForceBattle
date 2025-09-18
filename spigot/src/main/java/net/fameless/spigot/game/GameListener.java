@@ -6,6 +6,7 @@ import net.fameless.core.configuration.PluginUpdater;
 import net.fameless.core.configuration.SettingsManager;
 import net.fameless.core.game.Objective;
 import net.fameless.core.util.BattleType;
+import net.fameless.core.util.Coords;
 import net.fameless.core.util.Format;
 import net.fameless.spigot.BukkitPlatform;
 import net.fameless.spigot.player.BukkitPlayer;
@@ -17,8 +18,10 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.advancement.Advancement;
@@ -33,12 +36,18 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.generator.structure.GeneratedStructure;
+import org.bukkit.generator.structure.Structure;
+import org.bukkit.generator.structure.StructurePiece;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +64,8 @@ public class GameListener implements Listener {
         runBiomeTask();
         runAdvancementTask();
         runHeightTask();
+        runCoordsTask();
+        runStructureTask();
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -249,6 +260,109 @@ public class GameListener implements Listener {
                                         BukkitPlatform.get()
                                 );
                                 bukkitPlayer.updateObjective(true);
+                            }
+                        }
+                    }
+                }, 0, 3
+        );
+    }
+
+    private void runCoordsTask() {
+        Bukkit.getScheduler().runTaskTimer(
+                BukkitPlatform.get(), () -> {
+                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) return;
+                    if (!ForceBattle.getTimer().isRunning()) return;
+
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        BukkitPlayer bukkitPlayer = BukkitPlayer.adapt(player);
+                        if (bukkitPlayer.isExcluded()) continue;
+
+                        String objectiveString = bukkitPlayer.getObjective().getObjectiveString();
+
+                        if (BukkitUtil.convertObjective(BattleType.FORCE_COORDS, objectiveString) instanceof Coords coords) {
+                            int targetX = coords.x();
+                            int targetZ = coords.z();
+
+                            double distance = player.getLocation().distance(
+                                    new Location(player.getWorld(), targetX, player.getLocation().getY(), targetZ)
+                            );
+
+                            if (distance <= 2.0) {
+                                bukkitPlayer.sendMessage(Caption.of(
+                                        "notification.objective_finished",
+                                        TagResolver.resolver("objective", Tag.inserting(Component.text(targetX + ", " + targetZ)))
+                                ));
+                                Toast.display(
+                                        player,
+                                        Material.COMPASS,
+                                        ChatColor.BLUE + Format.formatName(objectiveString),
+                                        Toast.Style.GOAL,
+                                        BukkitPlatform.get()
+                                );
+                                bukkitPlayer.updateObjective(true);
+                            }
+                        }
+                    }
+                }, 0, 3
+        );
+    }
+
+    private void runStructureTask() {
+        Bukkit.getScheduler().runTaskTimer(
+                BukkitPlatform.get(), () -> {
+                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) return;
+                    if (!ForceBattle.getTimer().isRunning()) return;
+
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        BukkitPlayer bukkitPlayer = BukkitPlayer.adapt(player);
+                        if (bukkitPlayer.isExcluded()) continue;
+
+                        String objectiveString = bukkitPlayer.getObjective().getObjectiveString();
+
+                        if (BukkitUtil.convertObjective(BattleType.FORCE_STRUCTURE, objectiveString)
+                                instanceof net.fameless.spigot.util.Structure structEnum) {
+
+                            Registry<Structure> structureRegistry = Bukkit.getRegistry(Structure.class);
+
+                            Structure bukkitStruct = structureRegistry.get(structEnum.getKey());
+
+                            if (bukkitStruct == null) continue;
+
+                            StructureSearchResult result = player.getWorld()
+                                    .locateNearestStructure(player.getLocation(), bukkitStruct, 10, false);
+
+                            if (result != null) {
+                                Location structLoc = result.getLocation();
+
+                                GeneratedStructure generatedStructure = structLoc.getChunk().getStructures(bukkitStruct).stream().findFirst().get();
+                                Collection<StructurePiece> structurePieces = generatedStructure.getPieces();
+
+                                Location playerLocation = player.getLocation();
+                                double playerX = playerLocation.getX();
+                                double playerY = playerLocation.getY();
+                                double playerZ = playerLocation.getZ();
+
+                                for (StructurePiece piece : structurePieces) {
+                                    BoundingBox box = piece.getBoundingBox();
+                                    if (playerX <= box.getMaxX() && playerX >= box.getMinX() &&
+                                            playerY <= box.getMaxY() && playerY >= box.getMinY() &&
+                                            playerZ <= box.getMaxZ() && playerZ >= box.getMinZ()) {
+
+                                        bukkitPlayer.sendMessage(Caption.of(
+                                                "notification.objective_finished",
+                                                TagResolver.resolver("objective", Tag.inserting(Component.text(structEnum.getName())))
+                                        ));
+                                        Toast.display(
+                                                player,
+                                                Material.STRUCTURE_BLOCK,
+                                                ChatColor.BLUE + structEnum.getName(),
+                                                Toast.Style.GOAL,
+                                                BukkitPlatform.get()
+                                        );
+                                        bukkitPlayer.updateObjective(true);
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }

@@ -76,6 +76,14 @@ public class SettingsManager {
         updateSetting(Setting.FORCE_HEIGHT, enabled, false);
     }
 
+    public static void setForceCoordsEnabled(boolean enabled) {
+        updateSetting(Setting.FORCE_COORDS, enabled, false);
+    }
+
+    public static void setForceStructureEnabled(boolean enabled) {
+        updateSetting(Setting.FORCE_STRUCTURE, enabled, false);
+    }
+
     // Miscellaneous Settings
     public static void setChainModeEnabled(boolean enabled) {
         updateSetting(Setting.CHAIN_MODE, enabled, false);
@@ -99,6 +107,8 @@ public class SettingsManager {
         FORCE_BIOME,
         FORCE_ADVANCEMENT,
         FORCE_HEIGHT,
+        FORCE_COORDS,
+        FORCE_STRUCTURE,
         BACKPACK,
         CHAIN_MODE,
         HIDE_POINTS,

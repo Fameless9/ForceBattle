@@ -103,7 +103,7 @@ public class NametagManager {
             suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GRAY).append("Team").append(ChatColor.DARK_GRAY).append(" » ")
                     .append(ChatColor.BLUE).append(playerTeam.getId());
         }
-        String formattedSuffix = String.valueOf(suffix).trim();
+        String formattedSuffix = suffix.toString();
         team.setSuffix(formattedSuffix);
     }
 

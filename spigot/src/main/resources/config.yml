@@ -24,19 +24,13 @@ exclude:
         - END_PORTAL_FRAME
         - NETHER_PORTAL
         - END_PORTAL
-        - CHAINMAIL_HELMET
-        - CHAINMAIL_LEGGINGS
-        - CHAINMAIL_CHESTPLATE
-        - CHAINMAIL_BOOTS
         - LIGHT
         - END_GATEWAY
-        - DRAGON_EGG
         - TALL_SEAGRASS
         - VOID_AIR
         - PISTON_HEAD
         - MOVING_PISTON
         - WRITTEN_BOOK
-        - DAMAGED_ANVIL
         - TORCHFLOWER_SEEDS
         - JIGSAW
         - TIPPED_ARROW
@@ -45,7 +39,6 @@ exclude:
         - STRUCTURE_VOID
         - BARRIER
         - DEBUG_STICK
-        - BUNDLE
         - FARMLAND
         - STRUCTURE_BLOCK
         - BUBBLE_COLUMN
@@ -54,6 +47,20 @@ exclude:
         - DIRT_PATH
         - REDSTONE_WIRE
         - FROSTED_ICE
+        - REINFORCED_DEEPSLATE
+        - BUDDING_AMETHYST
+        - CHORUS_PLANT
+        - INFESTED_CHISELED_STONE_BRICKS
+        - INFESTED_CRACKED_STONE_BRICKS
+        - INFESTED_COBBLESTONE
+        - INFESTED_DEEPSLATE
+        - INFESTED_MOSSY_STONE_BRICKS
+        - INFESTED_STONE
+        - INFESTED_STONE_BRICKS
+        - MOB_SPAWNER
+        - LEASH_KNOT
+        - PLAYER_HEAD
+        - LINGERING_POTION
     mobs:
         - MINECART_COMMAND
         - ARMOR_STAND
@@ -105,9 +112,7 @@ exclude:
         - WITHER_SKULL
         - TRIDENT
         - ENDER_CRYSTAL
-        - SPLASH_POTION
         - ITEM_FRAME
-        - PLAYER
     biomes:
         - THE_VOID
 
@@ -122,3 +127,4 @@ exclude:
     exclude_banner_patterns: true # obtainable in survival
     exclude_banners: true # obtainable in survival
     exclude_armor_templates: true # obtainable in survival
+    exclude_pottery_sherds: true # obtainable in survival

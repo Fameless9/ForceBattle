@@ -1,6 +1,7 @@
 package net.fameless.core.game;
 
 import net.fameless.core.player.BattlePlayer;
+import net.fameless.core.util.Coords;
 
 import java.util.List;
 
@@ -17,6 +18,10 @@ public interface ObjectiveManager {
     List<?> getAvailableAdvancements();
 
     List<?> getAvailableHeights();
+
+    List<?> getAvailableStructures();
+
+    Coords getRandomLocation(BattlePlayer<?> battlePlayer);
 
     List<String> getChainList();
 
