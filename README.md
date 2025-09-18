@@ -40,7 +40,7 @@ Objective types can be enabled or disabled individually via the plugin's setting
 | Command                     | Description                                                |
 |:----------------------------|:-----------------------------------------------------------|
 | `/backpack <player>`        | Opens the personal or teammates backpack (can be disabled) |
-| `/displayresults`           | Show the final leaderboard                                 |
+| `/displayresults`           | Show the final leaderboard (player, team)                  |
 | `/exclude <player>`         | Exclude a player from the battle                           |
 | `/help`                     | Display a list of available commands                       |
 | `/joker <player> <amount>`  | Adjust jokers for a player                                 |
