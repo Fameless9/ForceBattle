@@ -100,7 +100,7 @@ public class DisplayResults extends Command {
             }
             case "team" -> {
                 sortedTeamPointsMap.forEach((team, points) -> {
-                    long place = sortedPlayerPointsMap.size() - counter[0];
+                    long place = sortedTeamPointsMap.size() - counter[0];
 
                     String players = team.getPlayers().stream()
                             .sorted(Comparator.comparingInt((BattlePlayer<?> p) -> p.getPoints()).reversed())

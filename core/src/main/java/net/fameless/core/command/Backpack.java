@@ -44,8 +44,8 @@ public class Backpack extends Command {
         if (args.length > 0 && !args[0].isEmpty()) {
             Optional<BattlePlayer<?>> targetOpt = BattlePlayer.of(args[0]);
 
-            if (senderOpt.isPresent() && targetOpt.isPresent()
-                    && senderOpt.get().getTeam() == targetOpt.get().getTeam()) {
+            if (senderOpt.isPresent() && targetOpt.isPresent() && senderOpt.get().getTeam() != null && targetOpt.get().getTeam() != null &&
+                    senderOpt.get().getTeam() == targetOpt.get().getTeam()) {
                 targetOpt.get().openBackpack(senderOpt.get());
                 return;
             }

@@ -61,11 +61,14 @@ exclude:
         - LEASH_KNOT
         - PLAYER_HEAD
         - LINGERING_POTION
+        - SPLASH_POTION
+        - POTION
+        - OMINOUS_TRIAL_SPAWNER
     mobs:
         - MINECART_COMMAND
         - ARMOR_STAND
         - ENDER_SIGNAL
-        - LLAMA_SPIT
+        - LAMA_SPIT
         - ENDER_PEARL
         - PRIMED_TNT
         - PAINTING
@@ -98,6 +101,7 @@ exclude:
         - SPECTRAL_ARROW
         - ENDER_SIGNAL
         - FISHING_HOOK
+        - FISHING_BOBBER
         - FIREWORK
         - EXPERIENCE_ORB
         - FALLING_BLOCK
@@ -113,6 +117,8 @@ exclude:
         - TRIDENT
         - ENDER_CRYSTAL
         - ITEM_FRAME
+        - TNT
+        - LIGHTNING_BOLT
     biomes:
         - THE_VOID
 

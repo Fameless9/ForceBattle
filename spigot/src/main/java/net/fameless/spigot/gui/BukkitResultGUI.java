@@ -14,6 +14,7 @@ import net.fameless.spigot.util.BukkitUtil;
 import net.fameless.spigot.util.InventoryUtils;
 import net.fameless.spigot.util.ItemData;
 import net.fameless.spigot.util.ItemUtils;
+import net.fameless.spigot.util.Structure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -27,7 +28,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.generator.structure.Structure;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -276,8 +276,8 @@ public class BukkitResultGUI implements Listener, InventoryHolder, ResultGUI<Inv
             );
         }
 
-        public static BukkitResultGUI.@Nullable ResultType getGUITypeFromItemStack(ItemStack stack) {
-            for (BukkitResultGUI.ResultType type : BukkitResultGUI.ResultType.values()) {
+        public static @Nullable ResultType getGUITypeFromItemStack(ItemStack stack) {
+            for (ResultType type : ResultType.values()) {
                 if (ItemUtils.hasData(stack, type.getKey())) {
                     return type;
                 }
