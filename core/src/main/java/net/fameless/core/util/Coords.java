@@ -3,6 +3,7 @@ package net.fameless.core.util;
 import javax.annotation.Nullable;
 
 public record Coords(int x, @Nullable Integer y, int z) {
+
     @Override
     public String toString() {
         return x + "," + y + "," + z;
@@ -19,4 +20,5 @@ public record Coords(int x, @Nullable Integer y, int z) {
                 Integer.parseInt(parts[2].trim())
         );
     }
+
 }

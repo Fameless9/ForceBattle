@@ -38,12 +38,11 @@ public class Timer extends Command {
         net.fameless.core.game.Timer timer = ForceBattle.getTimer();
         switch (args[0]) {
             case "toggle" -> {
-                if (timer.isRunning()) {
-                    timer.pause();
-                    caller.sendMessage(Caption.of("command.timer_paused"));
-                } else {
-                    timer.start();
-                    caller.sendMessage(Caption.of("command.timer_started"));
+                try {
+                    timer.setRunning(!timer.isRunning());
+                } catch (IllegalStateException e) {
+                    caller.sendMessage(Caption.of("notification.no_objectives_available"));
+                    return;
                 }
                 return;
             }

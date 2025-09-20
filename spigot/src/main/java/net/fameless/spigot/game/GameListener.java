@@ -2,6 +2,7 @@ package net.fameless.spigot.game;
 
 import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.game.Objective;
 import net.fameless.core.util.BattleType;
 import net.fameless.core.util.Coords;
@@ -70,16 +71,18 @@ public class GameListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         BukkitPlayer bukkitPlayer = BukkitPlayer.adapt(event.getPlayer());
+        Player platformPlayer = bukkitPlayer.getPlatformPlayer();
+        if (platformPlayer == null) return;
         if (bukkitPlayer.getObjective() == null) {
             bukkitPlayer.updateObjective(false);
         }
 
         if (!bukkitPlayer.hasReceivedSkip()) {
-            bukkitPlayer.getPlatformPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSkipItem(BukkitPlatform.get().getConfig().getInt("skips", 3)));
+            platformPlayer.getInventory().addItem(ItemUtils.SpecialItems.getSkipItem(PluginConfig.get().getInt("skips", 3)));
             bukkitPlayer.setReceivedSkip(true);
         }
         if (!bukkitPlayer.hasReceivedSwap()) {
-            bukkitPlayer.getPlatformPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSwapItem(BukkitPlatform.get().getConfig().getInt("swaps", 1)));
+            platformPlayer.getInventory().addItem(ItemUtils.SpecialItems.getSwapItem(PluginConfig.get().getInt("swaps", 1)));
             bukkitPlayer.setReceivedSwap(true);
         }
 
@@ -88,7 +91,7 @@ public class GameListener implements Listener {
             sentUpdateMessage = true;
         }
 
-        boolean firstStartup = BukkitPlatform.get().getConfig().getBoolean("first-startup", true);
+        boolean firstStartup = PluginConfig.get().getBoolean("first-startup", true);
         if (firstStartup && (event.getPlayer().hasPermission("forcebattle.timer") || event.getPlayer().isOp() ||
                 event.getPlayer().hasPermission("forcebattle.settings"))) {
             bukkitPlayer.sendMessage(Caption.of("notification.first_startup"));
@@ -217,7 +220,7 @@ public class GameListener implements Listener {
                                         "notification.objective_finished",
                                         TagResolver.resolver("objective", Tag.inserting(Component.text(advancement.getName())))
                                 ));
-                                if (BukkitPlatform.get().getConfig().getBoolean("reset-advancements-on-finish", true)) {resetAdvancements(player);}
+                                if (PluginConfig.get().getBoolean("settings.reset-advancements-on-finish", true)) {resetAdvancements(player);}
 
                                 Toast.display(
                                         player,
@@ -269,7 +272,7 @@ public class GameListener implements Listener {
     private void runCoordsTask() {
         Bukkit.getScheduler().runTaskTimer(
                 BukkitPlatform.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) return;
+                    if (!BattleType.FORCE_COORDS.isEnabled()) return;
                     if (!ForceBattle.getTimer().isRunning()) return;
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
@@ -309,7 +312,7 @@ public class GameListener implements Listener {
     private void runStructureTask() {
         Bukkit.getScheduler().runTaskTimer(
                 BukkitPlatform.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) return;
+                    if (!BattleType.FORCE_STRUCTURE.isEnabled()) return;
                     if (!ForceBattle.getTimer().isRunning()) return;
 
                     for (Player player : Bukkit.getOnlinePlayers()) {

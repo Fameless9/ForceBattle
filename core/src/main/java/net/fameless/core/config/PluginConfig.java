@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 
 public class PluginConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("BungeeAFK/" + PluginConfig.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger("ForceBattle/" + PluginConfig.class.getSimpleName());
     public static Yaml YAML;
     private static YamlConfig config;
 
@@ -49,6 +49,7 @@ public class PluginConfig {
     }
 
     public static void shutdown() {
+        get().set("first-startup", false);
         saveNow();
     }
 

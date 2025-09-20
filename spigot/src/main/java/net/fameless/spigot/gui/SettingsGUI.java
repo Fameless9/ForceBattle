@@ -35,7 +35,7 @@ public class SettingsGUI implements Listener, InventoryHolder {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(@NotNull InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof BukkitSettingsGUI)) {
+        if (!(event.getInventory().getHolder() instanceof SettingsGUI)) {
             return;
         }
         if (!(event.getWhoClicked() instanceof Player player)) {
@@ -45,77 +45,58 @@ public class SettingsGUI implements Listener, InventoryHolder {
         BukkitPlayer whoClicked = BukkitPlayer.adapt(player);
         switch (event.getSlot()) {
             case 0 -> {
-                if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_ITEM, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM))) {
-                    break;
-                }
-                SettingsManager.setForceItemEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)
+                BattleType.FORCE_ITEM.setEnabled(!BattleType.FORCE_ITEM.isEnabled());
+                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_ITEM.isEnabled()
                         ? "notification.force_item_enabled"
                         : "notification.force_item_disabled"));
             }
             case 1 -> {
-                if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_MOB, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB))) {
-                    break;
-                }
-                SettingsManager.setForceMobEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)
+                BattleType.FORCE_MOB.setEnabled(!BattleType.FORCE_MOB.isEnabled());
+                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_MOB.isEnabled()
                         ? "notification.force_mob_enabled"
                         : "notification.force_mob_disabled"));
             }
             case 2 -> {
-                if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_BIOME, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME))) {
-                    break;
-                }
-                SettingsManager.setForceBiomeEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)
+                BattleType.FORCE_BIOME.setEnabled(!BattleType.FORCE_BIOME.isEnabled());
+                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_BIOME.isEnabled()
                         ? "notification.force_biome_enabled"
                         : "notification.force_biome_disabled"));
             }
             case 9 -> {
-                if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_ADVANCEMENT, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT))) {
-                    break;
-                }
-                SettingsManager.setForceAdvancementEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)
+                BattleType.FORCE_ADVANCEMENT.setEnabled(!BattleType.FORCE_ADVANCEMENT.isEnabled());
+                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_ADVANCEMENT.isEnabled()
                         ? "notification.force_advancement_enabled"
                         : "notification.force_advancement_disabled"));
             }
             case 10 -> {
-                if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_HEIGHT, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT))) {
-                    break;
-                }
-                SettingsManager.setForceHeightEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)
+                BattleType.FORCE_HEIGHT.setEnabled(!BattleType.FORCE_HEIGHT.isEnabled());
+                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_HEIGHT.isEnabled()
                         ? "notification.force_height_enabled"
                         : "notification.force_height_disabled"));
             }
             case 11 -> {
-                if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_COORDS, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS))) {
-                    break;
-                }
-                SettingsManager.setForceCoordsEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)
+                BattleType.FORCE_COORDS.setEnabled(!BattleType.FORCE_COORDS.isEnabled());
+                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_COORDS.isEnabled()
                         ? "notification.force_coords_enabled"
                         : "notification.force_coords_disabled"));
             }
             case 18 -> {
-                if (!canToggle(whoClicked, SettingsManager.Setting.FORCE_STRUCTURE, !SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE))) {
-                    break;
-                }
-                SettingsManager.setForceStructureEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)
+                BattleType.FORCE_STRUCTURE.setEnabled(!BattleType.FORCE_STRUCTURE.isEnabled());
+                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_STRUCTURE.isEnabled()
                         ? "notification.force_structure_enabled"
                         : "notification.force_structure_disabled"));
             }
             case 6 -> {
-                SettingsManager.setChainModeEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)
+                boolean newEnabled = !PluginConfig.get().getBoolean("settings.enable-chain-mode", false);
+                PluginConfig.get().set("settings.enable-chain-mode", newEnabled);
+                ForceBattle.platform().broadcast(Caption.of(newEnabled
                         ? "notification.chain_mode_enabled"
                         : "notification.chain_mode_disabled"));
             }
             case 7 -> {
-                SettingsManager.setBackpackEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.BACKPACK));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.BACKPACK)
+                boolean newEnabled = !PluginConfig.get().getBoolean("settings.enable-backpacks", false);
+                PluginConfig.get().set("settings.enable-backpacks", newEnabled);
+                ForceBattle.platform().broadcast(Caption.of(newEnabled
                         ? "notification.backpack_enabled"
                         : "notification.backpack_disabled"));
             }
@@ -123,22 +104,22 @@ public class SettingsGUI implements Listener, InventoryHolder {
                 ForceBattle.getTimer().setRunning(false);
                 ForceBattle.getTimer().setTime(ForceBattle.getTimer().getStartTime());
                 BukkitPlayer.BUKKIT_PLAYERS.forEach(bukkitPlayer -> {
-                    bukkitPlayer.reset(true);
                     bukkitPlayer.teleport(bukkitPlayer.getWorld().getSpawnLocation());
                     bukkitPlayer.getInventory().clear();
-                    bukkitPlayer.getInventory().addItem(ItemUtils.SpecialItems.getSkipItem(BukkitPlatform.get().getConfig().getInt("skips", 3)));
-                    bukkitPlayer.getInventory().addItem(ItemUtils.SpecialItems.getSwapItem(BukkitPlatform.get().getConfig().getInt("swaps", 1)));
+                    bukkitPlayer.reset(true);
                 });
             }
             case 15 -> {
-                SettingsManager.setHidePointsEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)
+                boolean newEnabled = !PluginConfig.get().getBoolean("settings.hide-points", false);
+                PluginConfig.get().set("settings.hide-points", newEnabled);
+                ForceBattle.platform().broadcast(Caption.of(newEnabled
                         ? "notification.hide_points_enabled"
                         : "notification.hide_points_disabled"));
             }
             case 16 -> {
-                SettingsManager.setHideObjectivesEnabled(!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES));
-                ForceBattle.platform().broadcast(Caption.of(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)
+                boolean newEnabled = !PluginConfig.get().getBoolean("settings.hide-objectives", false);
+                PluginConfig.get().set("settings.hide-objectives", newEnabled);
+                ForceBattle.platform().broadcast(Caption.of(newEnabled
                         ? "notification.hide_objectives_enabled"
                         : "notification.hide_objectives_disabled"));
             }
@@ -233,88 +214,6 @@ public class SettingsGUI implements Listener, InventoryHolder {
                         .build()
         );
         return inventory;
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onInventoryClick(@NotNull InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof SettingsGUI)) {
-            return;
-        }
-        if (!(event.getWhoClicked() instanceof Player player)) {
-            return;
-        }
-        event.setCancelled(true);
-        BukkitPlayer whoClicked = BukkitPlayer.adapt(player);
-        switch (event.getSlot()) {
-            case 0 -> {
-                BattleType.FORCE_ITEM.setEnabled(!BattleType.FORCE_ITEM.isEnabled());
-                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_ITEM.isEnabled()
-                        ? "notification.force_item_enabled"
-                        : "notification.force_item_disabled"));
-            }
-            case 1 -> {
-                BattleType.FORCE_MOB.setEnabled(!BattleType.FORCE_MOB.isEnabled());
-                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_MOB.isEnabled()
-                        ? "notification.force_mob_enabled"
-                        : "notification.force_mob_disabled"));
-            }
-            case 2 -> {
-                BattleType.FORCE_BIOME.setEnabled(!BattleType.FORCE_BIOME.isEnabled());
-                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_BIOME.isEnabled()
-                        ? "notification.force_biome_enabled"
-                        : "notification.force_biome_disabled"));
-            }
-            case 3 -> {
-                BattleType.FORCE_ADVANCEMENT.setEnabled(!BattleType.FORCE_ADVANCEMENT.isEnabled());
-                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_ADVANCEMENT.isEnabled()
-                        ? "notification.force_advancement_enabled"
-                        : "notification.force_advancement_disabled"));
-            }
-            case 4 -> {
-                BattleType.FORCE_HEIGHT.setEnabled(!BattleType.FORCE_HEIGHT.isEnabled());
-                ForceBattle.platform().broadcast(Caption.of(BattleType.FORCE_HEIGHT.isEnabled()
-                        ? "notification.force_height_enabled"
-                        : "notification.force_height_disabled"));
-            }
-            case 6 -> {
-                boolean newEnabled = !PluginConfig.get().getBoolean("settings.enable-chain-mode", false);
-                PluginConfig.get().set("settings.enable-chain-mode", newEnabled);
-                ForceBattle.platform().broadcast(Caption.of(newEnabled
-                        ? "notification.chain_mode_enabled"
-                        : "notification.chain_mode_disabled"));
-            }
-            case 7 -> {
-                boolean newEnabled = !PluginConfig.get().getBoolean("settings.enable-backpacks", false);
-                PluginConfig.get().set("settings.enable-backpacks", newEnabled);
-                ForceBattle.platform().broadcast(Caption.of(newEnabled
-                        ? "notification.backpack_enabled"
-                        : "notification.backpack_disabled"));
-            }
-            case 8 -> {
-                ForceBattle.getTimer().setRunning(false);
-                ForceBattle.getTimer().setTime(ForceBattle.getTimer().getStartTime());
-                BukkitPlayer.BUKKIT_PLAYERS.forEach(bukkitPlayer -> {
-                    bukkitPlayer.teleport(bukkitPlayer.getWorld().getSpawnLocation());
-                    bukkitPlayer.getInventory().clear();
-                    bukkitPlayer.reset(true);
-                });
-            }
-            case 15 -> {
-                boolean newEnabled = !PluginConfig.get().getBoolean("settings.hide-points", false);
-                PluginConfig.get().set("settings.hide-points", newEnabled);
-                ForceBattle.platform().broadcast(Caption.of(newEnabled
-                        ? "notification.hide_points_enabled"
-                        : "notification.hide_points_disabled"));
-            }
-            case 16 -> {
-                boolean newEnabled = !PluginConfig.get().getBoolean("settings.hide-objectives", false);
-                PluginConfig.get().set("settings.hide-objectives", newEnabled);
-                ForceBattle.platform().broadcast(Caption.of(newEnabled
-                        ? "notification.hide_objectives_enabled"
-                        : "notification.hide_objectives_disabled"));
-            }
-        }
-        whoClicked.openInventory(getSettingsGUI());
     }
 
     @Override

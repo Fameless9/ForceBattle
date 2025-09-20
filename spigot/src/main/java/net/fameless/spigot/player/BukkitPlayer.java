@@ -2,8 +2,8 @@ package net.fameless.spigot.player;
 
 import net.fameless.core.caption.Caption;
 import net.fameless.core.command.framework.CallerType;
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.player.BattlePlayer;
-import net.fameless.spigot.BukkitPlatform;
 import net.fameless.spigot.util.BackpackInventoryHolder;
 import net.fameless.spigot.util.BukkitUtil;
 import net.fameless.spigot.util.ItemUtils;
@@ -35,8 +35,12 @@ public class BukkitPlayer extends BattlePlayer<Player> {
     public BukkitPlayer(@NotNull Player player) {
         super(player.getUniqueId());
         this.name = player.getName();
-        BACKPACK_INVENTORY = Bukkit.createInventory(new BackpackInventoryHolder(), 27, Caption.getAsLegacy("gui.backpack_title",
-                TagResolver.resolver("player", Tag.inserting(Component.text(player.getName())))));
+        BACKPACK_INVENTORY = Bukkit.createInventory(
+                new BackpackInventoryHolder(), 27, Caption.getAsLegacy(
+                        "gui.backpack_title",
+                        TagResolver.resolver("player", Tag.inserting(Component.text(player.getName())))
+                )
+        );
         BUKKIT_PLAYERS.add(this);
     }
 
@@ -160,8 +164,8 @@ public class BukkitPlayer extends BattlePlayer<Player> {
         getPlatformPlayer().setFireTicks(0);
         getPlatformPlayer().getInventory().clear();
 
-        addSkip(BukkitPlatform.get().getConfig().getInt("settings.skips", 3));
-        addSwap(BukkitPlatform.get().getConfig().getInt("settings.swaps", 1));
+        addSkip(PluginConfig.get().getInt("settings.skips", 3));
+        addSwap(PluginConfig.get().getInt("settings.swaps", 1));
     }
 
     @Override

@@ -6,7 +6,6 @@ import net.fameless.core.game.ObjectiveManager;
 import net.fameless.core.player.BattlePlayer;
 import net.fameless.core.util.BattleType;
 import net.fameless.core.util.Coords;
-import net.fameless.spigot.BukkitPlatform;
 import net.fameless.spigot.player.BukkitPlayer;
 import net.fameless.spigot.util.Advancement;
 import net.fameless.spigot.util.BukkitUtil;
@@ -15,8 +14,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
-import org.jetbrains.annotations.NotNull;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,16 +53,16 @@ public class BukkitObjectiveManager extends ObjectiveManager {
 
         String objectiveString;
         switch (battleType) {
-            case FORCE_ITEM -> objectiveString = getAvailableItems().get(random.nextInt(getAvailableItems().size())).name();
-            case FORCE_MOB -> objectiveString = getAvailableMobs().get(random.nextInt(getAvailableMobs().size())).name();
-            case FORCE_BIOME -> objectiveString = getAvailableBiomes().get(random.nextInt(getAvailableBiomes().size())).name();
-            case FORCE_ADVANCEMENT -> objectiveString = getAvailableAdvancements().get(random.nextInt(getAvailableAdvancements().size())).toString();
+            case FORCE_ITEM -> objectiveString = getAvailableItems().get(random.nextInt(getAvailableItems().size()));
+            case FORCE_MOB -> objectiveString = getAvailableMobs().get(random.nextInt(getAvailableMobs().size()));
+            case FORCE_BIOME -> objectiveString = getAvailableBiomes().get(random.nextInt(getAvailableBiomes().size()));
+            case FORCE_ADVANCEMENT -> objectiveString = getAvailableAdvancements().get(random.nextInt(getAvailableAdvancements().size()));
             case FORCE_HEIGHT -> objectiveString = String.valueOf(getAvailableHeights().get(random.nextInt(getAvailableHeights().size())));
             case FORCE_COORDS -> {
                 Coords coords = getRandomLocation(battlePlayer);
                 objectiveString = coords.x() + "," + coords.z();
             }
-            case FORCE_STRUCTURE -> objectiveString = getAvailableStructures().get(random.nextInt(getAvailableStructures().size())).toString();
+            case FORCE_STRUCTURE -> objectiveString = getAvailableStructures().get(random.nextInt(getAvailableStructures().size()));
 
             default -> {
                 return null;
@@ -81,6 +80,8 @@ public class BukkitObjectiveManager extends ObjectiveManager {
             case FORCE_BIOME -> getAvailableBiomes();
             case FORCE_ADVANCEMENT -> getAvailableAdvancements();
             case FORCE_HEIGHT -> getAvailableHeights();
+            case FORCE_COORDS -> new ArrayList<>();
+            case FORCE_STRUCTURE -> getAvailableStructures();
         };
     }
 
@@ -92,7 +93,6 @@ public class BukkitObjectiveManager extends ObjectiveManager {
         boolean excludeBannerPatterns = PluginConfig.get().getBoolean("modes.force-item.exclude-banner-patterns", true);
         boolean excludeBanners = PluginConfig.get().getBoolean("modes.force-item.exclude-banners", true);
         boolean excludeArmorTemplates = PluginConfig.get().getBoolean("modes.force-item.exclude-armor-templates", true);
-        boolean excludePotterySherds = PluginConfig.get().getBoolean("modes.force-item.exclude-pottery-sherds", false);
 
         return Arrays.stream(Material.values())
                 .filter(Material::isItem)
@@ -147,7 +147,7 @@ public class BukkitObjectiveManager extends ObjectiveManager {
 
     @Override
     public List<String> getAvailableHeights() {
-        List<String> excludedHeights = BukkitPlatform.get().getConfig().getStringList("exclude.heights");
+        List<String> excludedHeights = PluginConfig.get().getStringList("modes.force-height.excluded");
 
         List<String> availableHeights = new ArrayList<>();
         for (int i = -63; i < 321; i++) {
@@ -161,10 +161,10 @@ public class BukkitObjectiveManager extends ObjectiveManager {
     }
 
     @Override
-    public Coords getRandomLocation(BattlePlayer<?> battlePlayer) {
+    public Coords getRandomLocation(@NotNull BattlePlayer<?> battlePlayer) {
         Optional<BukkitPlayer> bukkitPlayer = BukkitPlayer.adapt(battlePlayer.getUniqueId());
         Player player = bukkitPlayer.get().getPlatformPlayer();
-        int maxDistance = 2000;
+        int maxDistance = PluginConfig.get().getInt("modes.force-coords.max-distance", 1000);
 
         int offsetX = ThreadLocalRandom.current().nextInt(-maxDistance, maxDistance + 1);
         int offsetZ = ThreadLocalRandom.current().nextInt(-maxDistance, maxDistance + 1);
@@ -180,17 +180,16 @@ public class BukkitObjectiveManager extends ObjectiveManager {
     }
 
     @Override
-    public List<Structure> getAvailableStructures() {
-        List<Structure> availableStructures = new ArrayList<>();
-
-        List<String> structuresToExclude = BukkitPlatform.get().getConfig().getStringList("exclude.structures");
+    public List<String> getAvailableStructures() {
+        List<String> availableStructures = new ArrayList<>();
+        List<String> structuresToExclude = PluginConfig.get().getStringList("mode.force-structure.excluded");
 
         for (Structure structure : Structure.values()) {
             if (structuresToExclude.contains(structure.getKey())) {
                 continue;
             }
 
-            availableStructures.add(structure);
+            availableStructures.add(structure.name());
         }
         return availableStructures;
     }

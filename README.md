@@ -22,7 +22,6 @@ The player with the most points after the timer ends wins the battle!
 - 🔹 Reach a certain coordinate
 - 🔹 Discover a certain structure
 
-
 Objective types can be enabled or disabled individually via the plugin's settings menu.
 
 ---

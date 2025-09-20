@@ -98,8 +98,6 @@
   "command.timer_running" : "<prefix><red>This command may only be used while timer is paused.",
   "command.not_hit_zero" : "<prefix><red>The challenge is not yet over.",
   "command.invalid_joker_type" : "<prefix><red>Invalid joker type. Available types: 'skip', 'swap'.",
-  "command.timer_started" : "<prefix><green>The timer has been started.",
-  "command.timer_paused" : "<prefix><yellow>The timer has been paused.",
   "command.timer_set" : "<prefix><blue>The timer has been set to <time>.",
   "command.invalid_battle_type" : "<prefix><red>Invalid battle type. Available types: 'force_item', 'force_mob'. 'force_biome', 'force_advancement', 'force_height'.",
   "command.main" : "<prefix><green>Running ForceBattle Version <bold><version></bold>.",
