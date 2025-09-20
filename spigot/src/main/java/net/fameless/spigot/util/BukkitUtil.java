@@ -1,6 +1,7 @@
 package net.fameless.spigot.util;
 
 import net.fameless.core.util.BattleType;
+import net.fameless.core.util.Coords;
 import net.fameless.spigot.BukkitPlatform;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Material;
@@ -27,6 +28,8 @@ public final class BukkitUtil {
         PARSERS.put(BattleType.FORCE_BIOME, BukkitUtil::tryBiome);
         PARSERS.put(BattleType.FORCE_ADVANCEMENT, BukkitUtil::tryAdvancement);
         PARSERS.put(BattleType.FORCE_HEIGHT, BukkitUtil::tryHeight);
+        PARSERS.put(BattleType.FORCE_COORDS, BukkitUtil::tryCoords);
+        PARSERS.put(BattleType.FORCE_STRUCTURE, BukkitUtil::tryStructure);
     }
 
     public static @Nullable Object convertObjective(@NotNull BattleType battleType, String objective) {
@@ -83,4 +86,31 @@ public final class BukkitUtil {
         }
     }
 
+    @Contract(pure = true)
+    private static @Nullable @Unmodifiable Object tryCoords(String value) {
+        try {
+            String[] parts = value.split(",");
+            if (parts.length == 2) {
+                int x = Integer.parseInt(parts[0].trim());
+                int z = Integer.parseInt(parts[1].trim());
+                return new Coords(x, null, z);
+            } else if (parts.length == 3) {
+                int x = Integer.parseInt(parts[0].trim());
+                int y = Integer.parseInt(parts[1].trim());
+                int z = Integer.parseInt(parts[2].trim());
+                return new Coords(x, y, z);
+            }
+            return null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private static @Nullable Object tryStructure(String value) {
+        try {
+            return Structure.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 }

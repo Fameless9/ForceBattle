@@ -5,17 +5,24 @@ import net.fameless.core.game.Objective;
 import net.fameless.core.game.ObjectiveManager;
 import net.fameless.core.player.BattlePlayer;
 import net.fameless.core.util.BattleType;
+import net.fameless.core.util.Coords;
 import net.fameless.spigot.BukkitPlatform;
+import net.fameless.spigot.player.BukkitPlayer;
 import net.fameless.spigot.util.Advancement;
 import net.fameless.spigot.util.BukkitUtil;
+import net.fameless.spigot.util.Structure;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BukkitObjectiveManager implements ObjectiveManager {
 
@@ -51,6 +58,12 @@ public class BukkitObjectiveManager implements ObjectiveManager {
         if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) {
             availableBattleTypes.add(BattleType.FORCE_HEIGHT);
         }
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) {
+            availableBattleTypes.add(BattleType.FORCE_COORDS);
+        }
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) {
+            availableBattleTypes.add(BattleType.FORCE_STRUCTURE);
+        }
 
         Random random = new Random();
         BattleType battleType = availableBattleTypes.get(random.nextInt(availableBattleTypes.size()));
@@ -62,6 +75,12 @@ public class BukkitObjectiveManager implements ObjectiveManager {
             case FORCE_BIOME -> objectiveString = getAvailableBiomes().get(random.nextInt(getAvailableBiomes().size())).name();
             case FORCE_ADVANCEMENT -> objectiveString = getAvailableAdvancements().get(random.nextInt(getAvailableAdvancements().size())).toString();
             case FORCE_HEIGHT -> objectiveString = String.valueOf(getAvailableHeights().get(random.nextInt(getAvailableHeights().size())));
+            case FORCE_COORDS -> {
+                Coords coords = getRandomLocation(battlePlayer);
+                objectiveString = coords.x() + "," + coords.z();
+            }
+            case FORCE_STRUCTURE -> objectiveString = getAvailableStructures().get(random.nextInt(getAvailableStructures().size())).toString();
+
             default -> {
                 return null;
             }
@@ -75,11 +94,12 @@ public class BukkitObjectiveManager implements ObjectiveManager {
         List<Material> availableItems = new ArrayList<>();
 
         List<String> itemsToExclude = BukkitPlatform.get().getConfig().getStringList("exclude.items");
-        boolean excludeSpawnEggs = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-spawn-eggs", true);
-        boolean excludeMusicDiscs = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-music-discs", false);
-        boolean excludeBannerPatterns = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-banner-patterns", true);
-        boolean excludeBanners = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-banners", true);
-        boolean excludeArmorTemplates = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-armor-templates", false);
+        boolean excludeSpawnEggs = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude_spawn_eggs", true);
+        boolean excludeMusicDiscs = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude_music_discs", false);
+        boolean excludeBannerPatterns = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude_banner_patterns", true);
+        boolean excludeBanners = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude_banners", true);
+        boolean excludeArmorTemplates = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude_armor_templates", false);
+        boolean excludePotteryShreds = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude_pottery_sherds", false);
 
         for (Material material : Material.values()) {
             if (!material.isItem()) {
@@ -101,6 +121,9 @@ public class BukkitObjectiveManager implements ObjectiveManager {
                 continue;
             }
             if (excludeArmorTemplates && material.name().endsWith("TEMPLATE")) {
+                continue;
+            }
+            if (excludePotteryShreds && material.name().endsWith("POTTERY_SHERD")) {
                 continue;
             }
             if (material.name().endsWith("CANDLE_CAKE")) {
@@ -196,6 +219,41 @@ public class BukkitObjectiveManager implements ObjectiveManager {
     }
 
     @Override
+    public Coords getRandomLocation(BattlePlayer<?> battlePlayer) {
+        Optional<BukkitPlayer> bukkitPlayer = BukkitPlayer.adapt(battlePlayer.getUniqueId());
+        Player player = bukkitPlayer.get().getPlatformPlayer();
+        int maxDistance = 2000;
+
+        int offsetX = ThreadLocalRandom.current().nextInt(-maxDistance, maxDistance + 1);
+        int offsetZ = ThreadLocalRandom.current().nextInt(-maxDistance, maxDistance + 1);
+
+        Location base = player.getLocation();
+
+        int x = (int) base.getX() + offsetX;
+        int z = (int) base.getZ() + offsetZ;
+
+        int y = player.getWorld().getHighestBlockYAt(x, z);
+
+        return new Coords(x, y, z);
+    }
+
+    @Override
+    public List<Structure> getAvailableStructures() {
+        List<Structure> availableStructures = new ArrayList<>();
+
+        List<String> structuresToExclude = BukkitPlatform.get().getConfig().getStringList("exclude.structures");
+
+        for (Structure structure : Structure.values()) {
+            if (structuresToExclude.contains(structure.getKey())) {
+                continue;
+            }
+
+            availableStructures.add(structure);
+        }
+        return availableStructures;
+    }
+
+    @Override
     public List<String> getChainList() {
         if (chainList.isEmpty()) {
             updateChainList();
@@ -230,6 +288,16 @@ public class BukkitObjectiveManager implements ObjectiveManager {
             List<String> heightStringList = new ArrayList<>();
             getAvailableHeights().forEach(height -> heightStringList.add(String.valueOf(height)));
             chainList.addAll(heightStringList);
+        }
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) {
+            List<String> coordStringList = new ArrayList<>();
+            getAvailableHeights().forEach(coord -> coordStringList.add(String.valueOf(coord)));
+            chainList.addAll(coordStringList);
+        }
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) {
+            List<String> structureStringList = new ArrayList<>();
+            getAvailableStructures().forEach(structure -> structureStringList.add(structure.name()));
+            chainList.addAll(structureStringList);
         }
         Collections.shuffle(chainList);
     }

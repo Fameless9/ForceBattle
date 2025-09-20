@@ -5,6 +5,7 @@ import net.fameless.core.game.Objective;
 import net.fameless.core.game.Team;
 import net.fameless.core.gui.ResultGUI;
 import net.fameless.core.player.BattlePlayer;
+import net.fameless.core.util.Coords;
 import net.fameless.core.util.Format;
 import net.fameless.spigot.BukkitPlatform;
 import net.fameless.spigot.player.BukkitPlayer;
@@ -13,6 +14,7 @@ import net.fameless.spigot.util.BukkitUtil;
 import net.fameless.spigot.util.InventoryUtils;
 import net.fameless.spigot.util.ItemData;
 import net.fameless.spigot.util.ItemUtils;
+import net.fameless.spigot.util.Structure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -274,8 +276,8 @@ public class BukkitResultGUI implements Listener, InventoryHolder, ResultGUI<Inv
             );
         }
 
-        public static BukkitResultGUI.@Nullable ResultType getGUITypeFromItemStack(ItemStack stack) {
-            for (BukkitResultGUI.ResultType type : BukkitResultGUI.ResultType.values()) {
+        public static @Nullable ResultType getGUITypeFromItemStack(ItemStack stack) {
+            for (ResultType type : ResultType.values()) {
                 if (ItemUtils.hasData(stack, type.getKey())) {
                     return type;
                 }
@@ -343,6 +345,12 @@ public class BukkitResultGUI implements Listener, InventoryHolder, ResultGUI<Inv
             }
             if (objectiveObject instanceof Integer) {
                 return Material.SCAFFOLDING;
+            }
+            if (objectiveObject instanceof Coords) {
+                return Material.DIAMOND_BOOTS;
+            }
+            if (objectiveObject instanceof Structure) {
+                return Material.STRUCTURE_BLOCK;
             }
             throw new RuntimeException("Corrupt/Invalid objective type: " + objective.getObjectiveString() + ". battleType: " + objective.getBattleType());
         }

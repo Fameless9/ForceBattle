@@ -9,7 +9,9 @@ public enum BattleType {
     FORCE_MOB("Mob", "Mob"),
     FORCE_BIOME("Biome", "Biom"),
     FORCE_ADVANCEMENT("Advancement", "Advancement"),
-    FORCE_HEIGHT("Height", "Höhe");
+    FORCE_HEIGHT("Height", "Höhe"),
+    FORCE_COORDS("Coords", "Koordinaten"),
+    FORCE_STRUCTURE("Structure", "Struktur");
 
     private final String englishPrefix;
     private final String germanPrefix;

@@ -1,5 +1,6 @@
 package net.fameless.core.command;
 
+import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
 import net.fameless.core.command.framework.CallerType;
 import net.fameless.core.command.framework.Command;
@@ -43,6 +44,10 @@ public class Team extends Command {
         BattlePlayer<?> battlePlayer = battlePlayerOpt.get();
         switch (args[0]) {
             case "create" -> {
+                if (ForceBattle.getTimer().isRunning()) {
+                    caller.sendMessage(Caption.of("error.game_already_started"));
+                    return;
+                }
                 battlePlayer.leaveTeam();
                 net.fameless.core.game.Team team = new net.fameless.core.game.Team(List.of(battlePlayer));
                 caller.sendMessage(Caption.of(
@@ -53,6 +58,10 @@ public class Team extends Command {
             case "join" -> {
                 if (args.length < 2) {
                     caller.sendMessage(Caption.of("command.no_team_id"));
+                    return;
+                }
+                if (ForceBattle.getTimer().isRunning()) {
+                    caller.sendMessage(Caption.of("error.game_already_started"));
                     return;
                 }
 
@@ -70,7 +79,13 @@ public class Team extends Command {
                         () -> caller.sendMessage(Caption.of("command.no_team_id"))
                 );
             }
-            case "leave" -> battlePlayer.leaveTeam();
+            case "leave" -> {
+                if (ForceBattle.getTimer().isRunning()) {
+                    caller.sendMessage(Caption.of("error.game_already_started"));
+                    return;
+                }
+                battlePlayer.leaveTeam();
+            }
             case "accept" -> {
                 net.fameless.core.game.Team team = battlePlayer.getTeam();
                 if (team == null) {
@@ -82,6 +97,10 @@ public class Team extends Command {
                 }
             }
             case "reject" -> {
+                if (ForceBattle.getTimer().isRunning()) {
+                    caller.sendMessage(Caption.of("error.game_already_started"));
+                    return;
+                }
                 net.fameless.core.game.Team team = battlePlayer.getTeam();
                 if (team == null) {
                     caller.sendMessage(Caption.of("command.not_in_a_team"));

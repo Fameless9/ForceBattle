@@ -5,7 +5,11 @@ import net.fameless.core.caption.Caption;
 import net.fameless.core.command.framework.CallerType;
 import net.fameless.core.command.framework.Command;
 import net.fameless.core.command.framework.CommandCaller;
+import net.fameless.core.util.Format;
 import net.fameless.core.util.StringUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +23,7 @@ public class Timer extends Command {
                 "timer",
                 List.of(),
                 CallerType.NONE,
-                "/timer <toggle|set|duration> <time>",
+                "/timer <toggle|set|duration> <time in s>",
                 "forcebattle.timer",
                 "Command to control the timer: toggle, set, duration"
         );
@@ -36,8 +40,10 @@ public class Timer extends Command {
             case "toggle" -> {
                 if (timer.isRunning()) {
                     timer.pause();
+                    caller.sendMessage(Caption.of("command.timer_paused"));
                 } else {
                     timer.start();
+                    caller.sendMessage(Caption.of("command.timer_started"));
                 }
                 return;
             }
@@ -51,6 +57,7 @@ public class Timer extends Command {
                     return;
                 }
                 timer.setTime(newTime);
+                caller.sendMessage(Caption.of("command.timer_set", TagResolver.resolver("time", Tag.inserting(Component.text(Format.formatTime(newTime))))));
                 return;
             }
             case "duration" -> {
@@ -87,5 +94,4 @@ public class Timer extends Command {
         }
         return List.of();
     }
-
 }

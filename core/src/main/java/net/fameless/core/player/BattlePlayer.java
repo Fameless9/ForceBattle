@@ -204,6 +204,10 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
         openInventory(getBackpack());
     }
 
+    public void openBackpack(BattlePlayer<?> viewer) {
+        viewer.openInventory(getBackpack());
+    }
+
     public void updateObjective(boolean finishLast) {
         Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
         ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
