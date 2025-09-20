@@ -11,15 +11,12 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
 
 public class CommandHandler implements CommandExecutor, TabCompleter {
 
-    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + CommandHandler.class.getSimpleName());
     private static final CommandHandler handler = new CommandHandler();
 
     public static void registerAll(@NotNull Collection<net.fameless.core.command.framework.Command> commands) {
@@ -28,7 +25,6 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
     public static void register(@NotNull net.fameless.core.command.framework.Command command) {
         BukkitPlatform.get().getCommand(command.getId()).setExecutor(handler);
-        logger.info("Registered command: {}", command.getId());
     }
 
     private static @NotNull CommandCaller createCaller(CommandSender sender) {

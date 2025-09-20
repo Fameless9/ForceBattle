@@ -1,9 +1,6 @@
 package net.fameless.core.game;
 
 import net.fameless.core.caption.Caption;
-import net.fameless.core.event.EventDispatcher;
-import net.fameless.core.event.PlayerTeamJoinEvent;
-import net.fameless.core.event.PlayerTeamLeaveEvent;
 import net.fameless.core.player.BattlePlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -83,13 +80,6 @@ public class Team {
     }
 
     public void addPlayer(BattlePlayer<?> battlePlayer) {
-        PlayerTeamJoinEvent teamJoinEvent = new PlayerTeamJoinEvent(this, battlePlayer);
-        EventDispatcher.post(teamJoinEvent);
-        if (teamJoinEvent.isCancelled()) {
-            logger.info("PlayerTeamJoinEvent has been denied by an external plugin.");
-            return;
-        }
-
         players.forEach(teamPlayer -> teamPlayer.sendMessage(Caption.of(
                 "notification.player_joined",
                 TagResolver.resolver("player", Tag.inserting(Component.text(battlePlayer.getName())))
@@ -98,13 +88,6 @@ public class Team {
     }
 
     public void removePlayer(BattlePlayer<?> battlePlayer) {
-        PlayerTeamLeaveEvent teamLeaveEvent = new PlayerTeamLeaveEvent(this, battlePlayer);
-        EventDispatcher.post(teamLeaveEvent);
-        if (teamLeaveEvent.isCancelled()) {
-            logger.info("PlayerTeamLeaveEvent has been denied by an external plugin.");
-            return;
-        }
-
         players.remove(battlePlayer);
         players.forEach(teamPlayer -> teamPlayer.sendMessage(Caption.of(
                 "notification.player_left",

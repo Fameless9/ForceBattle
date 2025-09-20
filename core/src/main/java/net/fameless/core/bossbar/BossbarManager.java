@@ -2,7 +2,7 @@ package net.fameless.core.bossbar;
 
 import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
-import net.fameless.core.configuration.SettingsManager;
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.player.BattlePlayer;
 import net.fameless.core.util.Format;
 import net.kyori.adventure.bossbar.BossBar;
@@ -48,10 +48,13 @@ public class BossbarManager {
 
     private static @NotNull Component getBossbarTitle(BattlePlayer<?> battlePlayer) {
         if (ForceBattle.getTimer().isRunning()) {
+            if (battlePlayer.getObjective() == null) {
+                return Caption.of("bossbar.no_objective");
+            }
             boolean isPlayerInTeam = battlePlayer.getTeam() != null;
             int points = isPlayerInTeam ? battlePlayer.getTeam().getPoints() : battlePlayer.getPoints();
 
-            if (SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
+            if (PluginConfig.get().getBoolean("settings.hide-points", false)) {
                 return Caption.of(
                         "bossbar.format_hide_points",
                         TagResolver.resolver("battletype", Tag.inserting(Component.text(battlePlayer.getObjective().getBattleType().getPrefix()))),

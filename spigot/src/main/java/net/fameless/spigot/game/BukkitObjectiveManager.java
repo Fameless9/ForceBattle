@@ -1,6 +1,6 @@
 package net.fameless.spigot.game;
 
-import net.fameless.core.configuration.SettingsManager;
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.game.Objective;
 import net.fameless.core.game.ObjectiveManager;
 import net.fameless.core.player.BattlePlayer;
@@ -11,19 +11,26 @@ import net.fameless.spigot.util.BukkitUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class BukkitObjectiveManager implements ObjectiveManager {
+public class BukkitObjectiveManager extends ObjectiveManager {
 
-    private final List<String> chainList = new ArrayList<>();
+    private final Random random = new Random();
 
     @Override
     public Objective getNewObjective(BattlePlayer<?> battlePlayer) {
-        if (SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)) {
+        if (!BattleType.isAnyEnabled()) {
+            return null;
+        }
+        if (PluginConfig.get().getBoolean("settings.enable-chain-mode", false)) {
+            if (getChainList().isEmpty()) {
+                return null;
+            }
             int progress = battlePlayer.getChainProgress();
             String objective;
             try {
@@ -35,33 +42,16 @@ public class BukkitObjectiveManager implements ObjectiveManager {
             return new Objective(BukkitUtil.getBattleType(objective), objective);
         }
 
-        List<BattleType> availableBattleTypes = new ArrayList<>();
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) {
-            availableBattleTypes.add(BattleType.FORCE_ITEM);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) {
-            availableBattleTypes.add(BattleType.FORCE_MOB);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) {
-            availableBattleTypes.add(BattleType.FORCE_BIOME);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) {
-            availableBattleTypes.add(BattleType.FORCE_ADVANCEMENT);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) {
-            availableBattleTypes.add(BattleType.FORCE_HEIGHT);
-        }
-
-        Random random = new Random();
+        List<BattleType> availableBattleTypes = BattleType.getEnabledBattleTypes();
         BattleType battleType = availableBattleTypes.get(random.nextInt(availableBattleTypes.size()));
-        String objectiveString;
 
+        String objectiveString;
         switch (battleType) {
-            case FORCE_ITEM -> objectiveString = getAvailableItems().get(random.nextInt(getAvailableItems().size())).name();
-            case FORCE_MOB -> objectiveString = getAvailableMobs().get(random.nextInt(getAvailableMobs().size())).name();
-            case FORCE_BIOME -> objectiveString = getAvailableBiomes().get(random.nextInt(getAvailableBiomes().size())).name();
-            case FORCE_ADVANCEMENT -> objectiveString = getAvailableAdvancements().get(random.nextInt(getAvailableAdvancements().size())).toString();
-            case FORCE_HEIGHT -> objectiveString = String.valueOf(getAvailableHeights().get(random.nextInt(getAvailableHeights().size())));
+            case FORCE_ITEM -> objectiveString = getAvailableItems().get(random.nextInt(getAvailableItems().size()));
+            case FORCE_MOB -> objectiveString = getAvailableMobs().get(random.nextInt(getAvailableMobs().size()));
+            case FORCE_BIOME -> objectiveString = getAvailableBiomes().get(random.nextInt(getAvailableBiomes().size()));
+            case FORCE_ADVANCEMENT -> objectiveString = getAvailableAdvancements().get(random.nextInt(getAvailableAdvancements().size()));
+            case FORCE_HEIGHT -> objectiveString = getAvailableHeights().get(random.nextInt(getAvailableHeights().size()));
             default -> {
                 return null;
             }
@@ -71,126 +61,87 @@ public class BukkitObjectiveManager implements ObjectiveManager {
     }
 
     @Override
-    public List<Material> getAvailableItems() {
-        List<Material> availableItems = new ArrayList<>();
-
-        List<String> itemsToExclude = BukkitPlatform.get().getConfig().getStringList("exclude.items");
-        boolean excludeSpawnEggs = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-spawn-eggs", true);
-        boolean excludeMusicDiscs = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-music-discs", false);
-        boolean excludeBannerPatterns = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-banner-patterns", true);
-        boolean excludeBanners = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-banners", true);
-        boolean excludeArmorTemplates = BukkitPlatform.get().getConfig().getBoolean("exclude.exclude-armor-templates", false);
-
-        for (Material material : Material.values()) {
-            if (!material.isItem()) {
-                continue;
-            }
-            if (itemsToExclude.contains(material.name())) {
-                continue;
-            }
-            if (excludeSpawnEggs && material.name().endsWith("SPAWN_EGG")) {
-                continue;
-            }
-            if (excludeMusicDiscs && material.name().contains("DISC")) {
-                continue;
-            }
-            if (excludeBannerPatterns && material.name().endsWith("BANNER_PATTERN")) {
-                continue;
-            }
-            if (excludeBanners && material.name().endsWith("BANNER")) {
-                continue;
-            }
-            if (excludeArmorTemplates && material.name().endsWith("TEMPLATE")) {
-                continue;
-            }
-            if (material.name().endsWith("CANDLE_CAKE")) {
-                continue;
-            }
-            if (material.name().startsWith("POTTED")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("TORCH")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("SIGN")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("HEAD")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("CORAL")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("BANNER")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("SKULL")) {
-                continue;
-            }
-            if (material.name().endsWith("STEM")) {
-                continue;
-            }
-            availableItems.add(material);
-        }
-        return availableItems;
+    public List<String> getAvailableObjectives(final @NotNull BattleType battleType) {
+        return switch (battleType) {
+            case FORCE_ITEM -> getAvailableItems();
+            case FORCE_MOB -> getAvailableMobs();
+            case FORCE_BIOME -> getAvailableBiomes();
+            case FORCE_ADVANCEMENT -> getAvailableAdvancements();
+            case FORCE_HEIGHT -> getAvailableHeights();
+        };
     }
 
     @Override
-    public List<EntityType> getAvailableMobs() {
-        List<EntityType> availableMobs = new ArrayList<>();
+    public List<String> getAvailableItems() {
+        List<String> excludedItems = PluginConfig.get().getStringList("modes.force-item.excluded");
+        boolean excludeSpawnEggs = PluginConfig.get().getBoolean("modes.force-item.exclude-spawn-eggs", true);
+        boolean excludeMusicDiscs = PluginConfig.get().getBoolean("modes.force-item.exclude-music-discs", true);
+        boolean excludeBannerPatterns = PluginConfig.get().getBoolean("modes.force-item.exclude-banner-patterns", true);
+        boolean excludeBanners = PluginConfig.get().getBoolean("modes.force-item.exclude-banners", true);
+        boolean excludeArmorTemplates = PluginConfig.get().getBoolean("modes.force-item.exclude-armor-templates", true);
 
-        List<String> mobsToExclude = BukkitPlatform.get().getConfig().getStringList("exclude.mobs");
-
-        for (EntityType entity : EntityType.values()) {
-            if (mobsToExclude.contains(entity.name())) {
-                continue;
-            }
-            availableMobs.add(entity);
-        }
-        return availableMobs;
+        return Arrays.stream(Material.values())
+                .filter(Material::isItem)
+                .map(Enum::name)
+                .filter(name -> !excludedItems.contains(name))
+                .filter(name -> !(excludeSpawnEggs && name.endsWith("SPAWN_EGG")))
+                .filter(name -> !(excludeMusicDiscs && name.contains("DISC")))
+                .filter(name -> !(excludeBannerPatterns && name.endsWith("BANNER_PATTERN")))
+                .filter(name -> !(excludeBanners && name.endsWith("BANNER")))
+                .filter(name -> !(excludeArmorTemplates && name.endsWith("TEMPLATE")))
+                .filter(name -> !name.endsWith("CANDLE_CAKE"))
+                .filter(name -> !name.startsWith("POTTED"))
+                .filter(name -> !name.contains("WALL") || !(name.contains("TORCH") ||
+                        name.contains("SIGN") ||
+                        name.contains("HEAD") ||
+                        name.contains("CORAL") ||
+                        name.contains("BANNER") ||
+                        name.contains("SKULL")))
+                .filter(name -> !name.endsWith("STEM"))
+                .toList();
     }
 
     @Override
-    public List<Biome> getAvailableBiomes() {
-        List<Biome> availableBiomes = new ArrayList<>();
+    public List<String> getAvailableMobs() {
+        List<String> excludedMobs = PluginConfig.get().getStringList("modes.force-mob.excluded");
 
-        List<String> biomesToExclude = BukkitPlatform.get().getConfig().getStringList("exclude.biomes");
-
-        for (Biome biome : Biome.values()) {
-            if (biomesToExclude.contains(biome.name())) {
-                continue;
-            }
-            availableBiomes.add(biome);
-        }
-        return availableBiomes;
+        return Arrays.stream(EntityType.values())
+                .map(Enum::name)
+                .filter(entityType -> !excludedMobs.contains(entityType))
+                .toList();
     }
 
     @Override
-    public List<Advancement> getAvailableAdvancements() {
-        List<Advancement> availableAdvancements = new ArrayList<>();
+    public List<String> getAvailableBiomes() {
+        List<String> excludedBiomes = PluginConfig.get().getStringList("modes.force-biome.excluded");
 
-        List<String> advancementsToExclude = BukkitPlatform.get().getConfig().getStringList("exclude.advancements");
-
-        for (Advancement advancement : Advancement.values()) {
-            if (advancementsToExclude.contains(advancement.name())) {
-                continue;
-            }
-            availableAdvancements.add(advancement);
-        }
-        return availableAdvancements;
+        return Arrays.stream(Biome.values())
+                .map(biome -> biome.name())
+                .filter(biome -> !excludedBiomes.contains(biome))
+                .toList();
     }
 
     @Override
-    public List<Integer> getAvailableHeights() {
-        List<Integer> availableHeights = new ArrayList<>();
+    public List<String> getAvailableAdvancements() {
+        List<String> excludedAdvancements = PluginConfig.get().getStringList("modes.force-advancement.excluded");
 
-        List<String> heightsToExclude = BukkitPlatform.get().getConfig().getStringList("exclude.heights");
+        return Arrays.stream(Advancement.values())
+                .map(Advancement::name)
+                .filter(advancement -> !excludedAdvancements.contains(advancement))
+                .toList();
+    }
 
+    @Override
+    public List<String> getAvailableHeights() {
+        List<String> excludedHeights = BukkitPlatform.get().getConfig().getStringList("exclude.heights");
+
+        List<String> availableHeights = new ArrayList<>();
         for (int i = -63; i < 321; i++) {
-            if (heightsToExclude.contains(String.valueOf(i))) {
+            String iString = String.valueOf(i);
+            if (excludedHeights.contains(iString)) {
                 continue;
             }
-            availableHeights.add(i);
+            availableHeights.add(iString);
         }
         return availableHeights;
     }
@@ -201,37 +152,6 @@ public class BukkitObjectiveManager implements ObjectiveManager {
             updateChainList();
         }
         return chainList;
-    }
-
-    @Override
-    public void updateChainList() {
-        chainList.clear();
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) {
-            List<String> itemStringList = new ArrayList<>();
-            getAvailableItems().forEach(material -> itemStringList.add(material.name()));
-            chainList.addAll(itemStringList);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) {
-            List<String> mobStringList = new ArrayList<>();
-            getAvailableMobs().forEach(entityType -> mobStringList.add(entityType.name()));
-            chainList.addAll(mobStringList);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) {
-            List<String> biomeStringList = new ArrayList<>();
-            getAvailableBiomes().forEach(biome -> biomeStringList.add(biome.name()));
-            chainList.addAll(biomeStringList);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) {
-            List<String> advancementStringList = new ArrayList<>();
-            getAvailableAdvancements().forEach(advancement -> advancementStringList.add(advancement.name()));
-            chainList.addAll(advancementStringList);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) {
-            List<String> heightStringList = new ArrayList<>();
-            getAvailableHeights().forEach(height -> heightStringList.add(String.valueOf(height)));
-            chainList.addAll(heightStringList);
-        }
-        Collections.shuffle(chainList);
     }
 
 }

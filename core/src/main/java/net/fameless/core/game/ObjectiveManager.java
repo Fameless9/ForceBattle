@@ -1,25 +1,51 @@
 package net.fameless.core.game;
 
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.player.BattlePlayer;
+import net.fameless.core.util.BattleType;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public interface ObjectiveManager {
+public abstract class ObjectiveManager {
 
-    Objective getNewObjective(BattlePlayer<?> battlePlayer);
+    protected final List<String> chainList = new ArrayList<>();
 
-    List<?> getAvailableItems();
+    public void updateChainList() {
+        chainList.clear();
+        if (PluginConfig.get().getBoolean("modes.force-item.enabled", true)) {
+            chainList.addAll(getAvailableItems());
+        }
+        if (PluginConfig.get().getBoolean("modes.force-mob.enabled", false)) {
+            chainList.addAll(getAvailableMobs());
+        }
+        if (PluginConfig.get().getBoolean("modes.force-biome.enabled", false)) {
+            chainList.addAll(getAvailableBiomes());
+        }
+        if (PluginConfig.get().getBoolean("modes.force-advancement.enabled", false)) {
+            chainList.addAll(getAvailableAdvancements());
+        }
+        if (PluginConfig.get().getBoolean("modes.force-height.enabled", false)) {
+            chainList.addAll(getAvailableHeights());
+        }
+        Collections.shuffle(chainList);
+    }
 
-    List<?> getAvailableMobs();
+    public abstract Objective getNewObjective(BattlePlayer<?> battlePlayer);
 
-    List<?> getAvailableBiomes();
+    public abstract List<String> getAvailableObjectives(BattleType battleType);
 
-    List<?> getAvailableAdvancements();
+    public abstract List<String> getAvailableItems();
 
-    List<?> getAvailableHeights();
+    public abstract List<String> getAvailableMobs();
 
-    List<String> getChainList();
+    public abstract List<String> getAvailableBiomes();
 
-    void updateChainList();
+    public abstract List<String> getAvailableAdvancements();
+
+    public abstract List<String> getAvailableHeights();
+
+    public abstract List<String> getChainList();
 
 }

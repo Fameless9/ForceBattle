@@ -2,11 +2,10 @@ package net.fameless.spigot.game;
 
 import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
-import net.fameless.core.configuration.PluginUpdater;
-import net.fameless.core.configuration.SettingsManager;
 import net.fameless.core.game.Objective;
 import net.fameless.core.util.BattleType;
 import net.fameless.core.util.Format;
+import net.fameless.core.util.PluginUpdater;
 import net.fameless.spigot.BukkitPlatform;
 import net.fameless.spigot.player.BukkitPlayer;
 import net.fameless.spigot.util.BukkitUtil;
@@ -88,7 +87,7 @@ public class GameListener implements Listener {
     private void runItemTask() {
         Bukkit.getScheduler().runTaskTimer(
                 BukkitPlatform.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) return;
+                    if (!BattleType.FORCE_ITEM.isEnabled()) return;
                     if (!ForceBattle.getTimer().isRunning()) return;
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
@@ -119,7 +118,7 @@ public class GameListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent damageEvent) {
-        if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) return;
+        if (!BattleType.FORCE_MOB.isEnabled()) return;
         if (!ForceBattle.getTimer().isRunning()) return;
         if (!(damageEvent.getDamager() instanceof Player player)) return;
 
@@ -161,7 +160,7 @@ public class GameListener implements Listener {
     private void runBiomeTask() {
         Bukkit.getScheduler().runTaskTimer(
                 BukkitPlatform.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) return;
+                    if (!BattleType.FORCE_BIOME.isEnabled()) return;
                     if (!ForceBattle.getTimer().isRunning()) return;
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
@@ -193,7 +192,7 @@ public class GameListener implements Listener {
     private void runAdvancementTask() {
         Bukkit.getScheduler().runTaskTimer(
                 BukkitPlatform.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) return;
+                    if (!BattleType.FORCE_ADVANCEMENT.isEnabled()) return;
                     if (!ForceBattle.getTimer().isRunning()) return;
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
@@ -227,7 +226,7 @@ public class GameListener implements Listener {
     private void runHeightTask() {
         Bukkit.getScheduler().runTaskTimer(
                 BukkitPlatform.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) return;
+                    if (!BattleType.FORCE_HEIGHT.isEnabled()) return;
                     if (!ForceBattle.getTimer().isRunning()) return;
 
                     for (Player player : Bukkit.getOnlinePlayers()) {

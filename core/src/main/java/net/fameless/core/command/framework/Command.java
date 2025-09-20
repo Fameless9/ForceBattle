@@ -4,6 +4,7 @@ import net.fameless.core.caption.Caption;
 import net.fameless.core.command.Backpack;
 import net.fameless.core.command.DisplayResults;
 import net.fameless.core.command.Exclude;
+import net.fameless.core.command.ExcludeObjective;
 import net.fameless.core.command.Help;
 import net.fameless.core.command.Joker;
 import net.fameless.core.command.Language;
@@ -17,26 +18,35 @@ import net.fameless.core.command.Timer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public abstract class Command {
 
-    public static final List<Command> COMMANDS = new ArrayList<>();
-    public final String id;
-    public final List<String> aliases;
-    public final CallerType requiredType;
-    public final String usage;
-    public final String permission;
-    public final String description;
+    protected static final List<Command> COMMANDS = new ArrayList<>();
+    protected final String id;
+    protected final List<String> aliases;
+    protected final CallerType requiredType;
+    protected final String usage;
+    protected final String permission;
+    protected final String description;
+    protected final List<BiConsumer<CommandCaller, String[]>> onExecuteConsumers = new ArrayList<>();
 
     private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + Command.class.getSimpleName());
+
+    @Contract(pure = true)
+    public static @UnmodifiableView @NotNull List<Command> getCommands() {
+        return List.copyOf(COMMANDS);
+    }
 
     public Command(
             String id, List<String> aliases, CallerType requiredType,
@@ -52,7 +62,7 @@ public abstract class Command {
         COMMANDS.add(this);
     }
 
-    public static @NotNull Optional<Command> getCommandById(String commandId) {
+    public static @NotNull Optional<Command> forId(String commandId) {
         for (Command command : COMMANDS) {
             if (command.matches(commandId)) {
                 return Optional.of(command);
@@ -62,7 +72,7 @@ public abstract class Command {
     }
 
     public static void execute(String commandId, CommandCaller caller, String[] args) {
-        @NotNull Optional<Command> commandOptional = getCommandById(commandId);
+        @NotNull Optional<Command> commandOptional = forId(commandId);
         commandOptional.ifPresentOrElse(
                 command -> command.execute(caller, args),
                 () -> logger.error("Error while trying to execute command: {}. Command not registered.", commandId)
@@ -70,7 +80,7 @@ public abstract class Command {
     }
 
     public static @NotNull @Unmodifiable List<String> tabComplete(String commandId, CommandCaller caller, String[] args) {
-        @NotNull Optional<Command> commandOptional = getCommandById(commandId);
+        @NotNull Optional<Command> commandOptional = forId(commandId);
         if (commandOptional.isPresent()) {
             return commandOptional.get().getTabCompletions(caller, args);
         }
@@ -78,10 +88,11 @@ public abstract class Command {
         return List.of();
     }
 
-    public static void createInstances() {
+    public static void init() {
         new Backpack();
         new DisplayResults();
         new Exclude();
+        new ExcludeObjective();
         new Help();
         new Joker();
         new Language();
@@ -134,6 +145,7 @@ public abstract class Command {
         if (cannotExecute(caller, true)) {
             return;
         }
+        onExecuteConsumers.forEach(consumer -> consumer.accept(caller, args));
         executeCommand(caller, args);
     }
 
@@ -162,6 +174,18 @@ public abstract class Command {
 
     public String getDescription() {
         return description;
+    }
+
+    public void onExecute(BiConsumer<CommandCaller, String[]> consumer) {
+        onExecuteConsumers.add(consumer);
+    }
+
+    public List<BiConsumer<CommandCaller, String[]>> getOnExecuteConsumers() {
+        return List.copyOf(onExecuteConsumers);
+    }
+
+    public void unregisterOnExecute(BiConsumer<CommandCaller, String[]> consumer) {
+        onExecuteConsumers.remove(consumer);
     }
 
     protected abstract void executeCommand(CommandCaller caller, String[] args);

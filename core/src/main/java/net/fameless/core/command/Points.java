@@ -30,6 +30,7 @@ public class Points extends Command {
             sendUsage(caller);
             return;
         }
+        if (args[0].equalsIgnoreCase("gui")) return;
 
         String action = args[0];
         BattlePlayer<?> target = BattlePlayer.of(args[1]).orElse(null);

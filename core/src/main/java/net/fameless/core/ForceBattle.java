@@ -8,16 +8,12 @@ import net.fameless.core.bossbar.BossbarManager;
 import net.fameless.core.caption.Caption;
 import net.fameless.core.caption.Language;
 import net.fameless.core.command.framework.Command;
-import net.fameless.core.configuration.PluginUpdater;
-import net.fameless.core.configuration.SettingsFile;
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.game.ObjectiveManager;
 import net.fameless.core.game.Timer;
-import net.fameless.core.util.ResourceUtil;
+import net.fameless.core.util.PluginUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
 
 public class ForceBattle {
 
@@ -27,51 +23,37 @@ public class ForceBattle {
     private static Timer timer;
     private static ObjectiveManager objectiveManager;
 
-    private static Injector injector;
-
-
     private ForceBattle() {
+        throw new UnsupportedOperationException("ForceBattle cannot be instantiated.");
     }
 
     public static synchronized void initCore(AbstractModule platformModule) {
         if (initialized) {
             throw new RuntimeException("You may not create another instance of ForceBattle Core.");
         }
+        logger.info("Initializing ForceBattle Core...");
+        PluginConfig.init();
 
-        injector = Guice.createInjector(
+        Injector injector = Guice.createInjector(
                 Stage.PRODUCTION,
                 platformModule
         );
 
         platform = injector.getInstance(ForceBattlePlatform.class);
 
-        initLanguages();
+        Caption.loadDefaultLanguages();
+        Caption.setCurrentLanguage(Language.ofIdentifier(PluginConfig.get().getString("lang", "en")));
 
         objectiveManager = injector.getInstance(ObjectiveManager.class);
-        try {
-            SettingsFile.loadSettingsFromFile(new File(platform.getDataDirectory(), "data/settings.json"));
-        } catch (IOException e) {
-            throw new RuntimeException("settings.json File not found" + e);
-        }
-        timer = new Timer(platform.getGameDuration(), false);
+        timer = new Timer(PluginConfig.get().getInt("settings.game-duration", 5400), false);
 
-        Command.createInstances();
+        Command.init();
         BossbarManager.runTask();
-        PluginUpdater.checkForUpdate();
+        PluginUpdater.runTask();
+
+        PluginConfig.get().set("first-startup", false);
 
         initialized = true;
-        logger.info("Successfully initialized ForceBattle-Core.");
-    }
-
-    private static void initLanguages() {
-        Caption.loadLanguage(Language.ENGLISH, ResourceUtil.readJsonResource("en_US.json"));
-        Caption.loadLanguage(Language.CHINESE_SIMPLIFIED, ResourceUtil.readJsonResource("zh_CN.json"));
-        Caption.loadLanguage(Language.CHINESE_TRADITIONAL, ResourceUtil.readJsonResource("zh_TW.json"));
-        Caption.loadLanguage(Language.GERMAN, ResourceUtil.readJsonResource("de_DE.json"));
-    }
-
-    public static Injector injector() {
-        return injector;
     }
 
     public static ForceBattlePlatform platform() {

@@ -9,6 +9,7 @@ adventureTextSerializerLegacy = "4.17.0"
 adventureBukkit = "4.3.4"
 slf4j = "2.0.16"
 logback = "1.5.18"
+snakeYaml = "2.4"
 
 [libraries]
 spigot = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
@@ -21,3 +22,4 @@ adventureTextSerializerLegacy = { module = "net.kyori:adventure-text-serializer-
 adventureBukkit = { module = "net.kyori:adventure-platform-bukkit", version.ref = "adventureBukkit" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+snakeYaml = { module = "org.yaml:snakeyaml", version.ref = "snakeYaml" }

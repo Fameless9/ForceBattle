@@ -1,9 +1,10 @@
 package net.fameless.spigot.gui;
 
+import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
+import net.fameless.core.command.framework.Command;
 import net.fameless.core.game.Objective;
 import net.fameless.core.game.Team;
-import net.fameless.core.gui.ResultGUI;
 import net.fameless.core.player.BattlePlayer;
 import net.fameless.core.util.Format;
 import net.fameless.spigot.BukkitPlatform;
@@ -40,30 +41,74 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static net.fameless.spigot.gui.BukkitResultGUI.ResultCommandUtils.combineTeamObjectives;
-import static net.fameless.spigot.gui.BukkitResultGUI.ResultCommandUtils.getGUITypeFromItemStack;
-import static net.fameless.spigot.gui.BukkitResultGUI.ResultCommandUtils.getInvTemplate;
-import static net.fameless.spigot.gui.BukkitResultGUI.ResultCommandUtils.getPageItems;
-import static net.fameless.spigot.gui.BukkitResultGUI.ResultCommandUtils.getPageLeftItemStack;
-import static net.fameless.spigot.gui.BukkitResultGUI.ResultCommandUtils.getPageRightItemStack;
-import static net.fameless.spigot.gui.BukkitResultGUI.ResultCommandUtils.isPageLeftItemStack;
-import static net.fameless.spigot.gui.BukkitResultGUI.ResultCommandUtils.isPageRightItemStack;
+import static net.fameless.spigot.gui.ResultGUI.ResultCommandUtils.combineTeamObjectives;
+import static net.fameless.spigot.gui.ResultGUI.ResultCommandUtils.getGUITypeFromItemStack;
+import static net.fameless.spigot.gui.ResultGUI.ResultCommandUtils.getInvTemplate;
+import static net.fameless.spigot.gui.ResultGUI.ResultCommandUtils.getPageItems;
+import static net.fameless.spigot.gui.ResultGUI.ResultCommandUtils.getPageLeftItemStack;
+import static net.fameless.spigot.gui.ResultGUI.ResultCommandUtils.getPageRightItemStack;
+import static net.fameless.spigot.gui.ResultGUI.ResultCommandUtils.isPageLeftItemStack;
+import static net.fameless.spigot.gui.ResultGUI.ResultCommandUtils.isPageRightItemStack;
 
-public class BukkitResultGUI implements Listener, InventoryHolder, ResultGUI<Inventory> {
+public class ResultGUI implements Listener, InventoryHolder {
 
-    public static BukkitResultGUI holderInstance;
+    public static ResultGUI holderInstance;
 
     private final int SPACES_ON_PAGE = 45;
     private final HashMap<BattlePlayer<?>, Integer> playerPageCache = new HashMap<>();
     private final NamespacedKey DATA_KEY = new NamespacedKey(BukkitPlatform.get(), "resultData");
 
-    public BukkitResultGUI() {
+    public ResultGUI() {
         holderInstance = this;
+
+        Command.forId("result")
+                .ifPresent(command -> command.onExecute(
+                        (caller, args) -> {
+                            if (ForceBattle.getTimer().isRunning()) {
+                                caller.sendMessage(Caption.of("command.timer_running"));
+                                return;
+                            }
+                            if (!(caller instanceof BukkitPlayer whoOpens)) {
+                                return;
+                            }
+                            if (args.length == 0) {
+                                whoOpens.openInventory(getResultGUI(whoOpens, 1));
+                                return;
+                            }
+                            if (args.length < 2) {
+                                command.sendUsage(caller);
+                                return;
+                            }
+                            switch (args[0]) {
+                                case "player" -> {
+                                    @NotNull Optional<BattlePlayer<?>> targetOpt = BattlePlayer.of(args[1]);
+                                    targetOpt.ifPresentOrElse(
+                                            target -> whoOpens.openInventory(getResultGUI(whoOpens, target, 1)),
+                                            () -> caller.sendMessage(Caption.of("command.no_such_player"))
+                                    );
+                                }
+                                case "team" -> {
+                                    int teamId;
+                                    try {
+                                        teamId = Integer.parseInt(args[1]);
+                                    } catch (NumberFormatException e) {
+                                        caller.sendMessage(Caption.of("command.not_a_number"));
+                                        return;
+                                    }
+                                    Optional<Team> targetTeamOpt = Team.ofId(teamId);
+                                    targetTeamOpt.ifPresentOrElse(
+                                            team -> whoOpens.openInventory(getResultGUI(whoOpens, team, 1)),
+                                            () -> caller.sendMessage(Caption.of("command.no_such_team"))
+                                    );
+                                }
+                            }
+                        }
+                ));
     }
 
     @EventHandler(ignoreCancelled = true)
     public void handleInteraction(@NotNull InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof BukkitResultGUI)) {
+        if (!(event.getInventory().getHolder() instanceof ResultGUI)) {
             return;
         }
         if (event.getCurrentItem() == null) {
@@ -139,7 +184,6 @@ public class BukkitResultGUI implements Listener, InventoryHolder, ResultGUI<Inv
         }
     }
 
-    @Override
     public @NotNull Inventory getResultGUI(BattlePlayer<?> whoOpens, @NotNull Team team, int page) {
         playerPageCache.put(whoOpens, page);
         Inventory inventory = getInvTemplate(Caption.getAsLegacy(
@@ -165,7 +209,6 @@ public class BukkitResultGUI implements Listener, InventoryHolder, ResultGUI<Inv
         return inventory;
     }
 
-    @Override
     public @NotNull Inventory getResultGUI(BattlePlayer<?> whoOpens, @NotNull BattlePlayer<?> target, int page) {
         playerPageCache.put(whoOpens, page);
         Inventory inventory = getInvTemplate(Caption.getAsLegacy(
@@ -191,7 +234,6 @@ public class BukkitResultGUI implements Listener, InventoryHolder, ResultGUI<Inv
         return inventory;
     }
 
-    @Override
     public @NotNull Inventory getResultGUI(BattlePlayer<?> whoOpens, int page) {
         playerPageCache.put(whoOpens, page);
         Inventory inventory = getInvTemplate(Caption.getAsLegacy(ResultType.ALL.getTitleKey()));
@@ -274,8 +316,8 @@ public class BukkitResultGUI implements Listener, InventoryHolder, ResultGUI<Inv
             );
         }
 
-        public static BukkitResultGUI.@Nullable ResultType getGUITypeFromItemStack(ItemStack stack) {
-            for (BukkitResultGUI.ResultType type : BukkitResultGUI.ResultType.values()) {
+        public static @Nullable ResultType getGUITypeFromItemStack(ItemStack stack) {
+            for (ResultGUI.ResultType type : ResultGUI.ResultType.values()) {
                 if (ItemUtils.hasData(stack, type.getKey())) {
                     return type;
                 }

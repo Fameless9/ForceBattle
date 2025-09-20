@@ -4,12 +4,11 @@ import net.fameless.core.caption.Caption;
 import net.fameless.core.command.framework.CallerType;
 import net.fameless.core.command.framework.Command;
 import net.fameless.core.command.framework.CommandCaller;
-import net.fameless.core.configuration.SettingsManager;
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.player.BattlePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Backpack extends Command {
 
@@ -25,13 +24,12 @@ public class Backpack extends Command {
     }
 
     @Override
-    public void executeCommand(CommandCaller caller, String[] args) {
-        @NotNull Optional<BattlePlayer<?>> battlePlayerOpt = BattlePlayer.of(caller.getName());
-        if (!SettingsManager.isEnabled(SettingsManager.Setting.BACKPACK)) {
+    public void executeCommand(@NotNull CommandCaller caller, String[] args) {
+        if (!PluginConfig.get().getBoolean("settings.enable-backpacks", false)) {
             caller.sendMessage(Caption.of("error.backpacks_disabled"));
             return;
         }
-        battlePlayerOpt.ifPresent(BattlePlayer::openBackpack);
+        ((BattlePlayer<?>) caller).openBackpack();
     }
 
     @Override

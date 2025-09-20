@@ -3,11 +3,7 @@ package net.fameless.core.player;
 import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
 import net.fameless.core.command.framework.CommandCaller;
-import net.fameless.core.configuration.SettingsManager;
-import net.fameless.core.event.EventDispatcher;
-import net.fameless.core.event.ObjectiveUpdateEvent;
-import net.fameless.core.event.PlayerExcludeEvent;
-import net.fameless.core.event.PlayerResetEvent;
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.game.Objective;
 import net.fameless.core.game.Team;
 import net.fameless.core.util.Format;
@@ -104,12 +100,14 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
             this.points++;
         }
 
-        if (ForceBattle.getTimer().isRunning()) {
-            sendMessage(Caption.of(
-                    "notification.next_objective",
-                    TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(newObjective.getObjectiveString())))),
-                    TagResolver.resolver("objective_type", Tag.inserting(Component.text(newObjective.getBattleType().getPrefix())))
-            ));
+        if (newObjective != null) {
+            if (ForceBattle.getTimer().isRunning()) {
+                sendMessage(Caption.of(
+                        "notification.next_objective",
+                        TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(newObjective.getObjectiveString())))),
+                        TagResolver.resolver("objective_type", Tag.inserting(Component.text(newObjective.getBattleType().getPrefix())))
+                ));
+            }
         }
 
         this.objective = newObjective;
@@ -132,13 +130,7 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
     }
 
     public void setExcluded(boolean excluded) {
-        PlayerExcludeEvent excludeEvent = new PlayerExcludeEvent(this, excluded);
-        EventDispatcher.post(excludeEvent);
-        if (excludeEvent.isCancelled()) {
-            logger.info("PlayerExcludeEvent has been denied by an external plugin.");
-            return;
-        }
-        this.excluded = excludeEvent.isNewExcluded();
+        this.excluded = excluded;
     }
 
     public boolean hasReceivedSkip() {
@@ -171,13 +163,6 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
     }
 
     public void reset(boolean newObjective) {
-        PlayerResetEvent resetEvent = new PlayerResetEvent(this);
-        EventDispatcher.post(resetEvent);
-        if (resetEvent.isCancelled()) {
-            logger.info("PlayerResetEvent has been denied by an external plugin.");
-            return;
-        }
-
         this.points = 0;
         this.chainProgress = 0;
         Objective.finished().forEach(objective -> {
@@ -206,14 +191,8 @@ public abstract class BattlePlayer<PlatformPlayer> implements CommandCaller {
 
     public void updateObjective(boolean finishLast) {
         Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
-        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
-        EventDispatcher.post(updateEvent);
-        if (updateEvent.isCancelled()) {
-            logger.info("ObjectiveUpdateEvent has been denied by an external plugin.");
-            return;
-        }
-        setCurrentObjective(updateEvent.getNewObjective(), finishLast);
-        if (SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)) {
+        setCurrentObjective(newObjective, finishLast);
+        if (PluginConfig.get().getBoolean("settings.enable-chain-mode", false)) {
             increaseChainProgress();
         }
     }

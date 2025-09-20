@@ -2,7 +2,7 @@ package net.fameless.spigot.game;
 
 import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
-import net.fameless.core.configuration.SettingsManager;
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.game.Objective;
 import net.fameless.core.util.BattleType;
 import net.fameless.core.util.Format;
@@ -71,37 +71,41 @@ public class NametagManager {
 
         String objectiveString;
         Objective objective = bukkitPlayer.getObjective();
-        if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objective.getObjectiveString()) instanceof Advancement advancement) {
-            objectiveString = advancement.name;
+        if (objective == null) {
+            suffix.append(Caption.getAsLegacy("bossbar.no_objective"));
         } else {
-            objectiveString = Format.formatName(objective.getObjectiveString());
-        }
+            if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objective.getObjectiveString()) instanceof Advancement advancement) {
+                objectiveString = advancement.name;
+            } else {
+                objectiveString = Format.formatName(objective.getObjectiveString());
+            }
 
-        if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)) {
-            suffix
-                    .append(" ")
-                    .append(ChatColor.GRAY)
-                    .append(objective.getBattleType().getPrefix())
-                    .append(ChatColor.DARK_GRAY)
-                    .append(" » ")
-                    .append(ChatColor.BLUE)
-                    .append(
-                            objectiveString);
-        }
+            if (!PluginConfig.get().getBoolean("settings.hide-objectives", false)) {
+                suffix
+                        .append(" ")
+                        .append(ChatColor.GRAY)
+                        .append(objective.getBattleType().getPrefix())
+                        .append(ChatColor.DARK_GRAY)
+                        .append(" » ")
+                        .append(ChatColor.BLUE)
+                        .append(
+                                objectiveString);
+            }
 
-        if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES) && !SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
-            suffix.append(ChatColor.DARK_GRAY).append(" |");
-        }
+            if (!PluginConfig.get().getBoolean("settings.hide-objectives", false) && !PluginConfig.get().getBoolean("settings.hide-points", false)) {
+                suffix.append(ChatColor.DARK_GRAY).append(" |");
+            }
 
-        if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
-            suffix.append(" ").append(ChatColor.GRAY).append("Points").append(ChatColor.DARK_GRAY).append(" » ")
-                    .append(ChatColor.BLUE).append(bukkitPlayer.getPoints());
-        }
+            if (!PluginConfig.get().getBoolean("settings.hide-points", false)) {
+                suffix.append(" ").append(ChatColor.GRAY).append("Points").append(ChatColor.DARK_GRAY).append(" » ")
+                        .append(ChatColor.BLUE).append(bukkitPlayer.getPoints());
+            }
 
-        net.fameless.core.game.Team playerTeam = bukkitPlayer.getTeam();
-        if (playerTeam != null) {
-            suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GRAY).append("Team").append(ChatColor.DARK_GRAY).append(" » ")
-                    .append(ChatColor.BLUE).append(playerTeam.getId());
+            net.fameless.core.game.Team playerTeam = bukkitPlayer.getTeam();
+            if (playerTeam != null) {
+                suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GRAY).append("Team").append(ChatColor.DARK_GRAY).append(" » ")
+                        .append(ChatColor.BLUE).append(playerTeam.getId());
+            }
         }
         String formattedSuffix = String.valueOf(suffix).trim();
         team.setSuffix(formattedSuffix);

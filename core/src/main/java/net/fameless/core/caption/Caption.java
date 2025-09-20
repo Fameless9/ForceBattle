@@ -1,11 +1,14 @@
 package net.fameless.core.caption;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fameless.core.ForceBattle;
-import net.fameless.core.configuration.SettingsManager;
-import net.fameless.core.event.EventDispatcher;
-import net.fameless.core.event.LanguageChangeEvent;
+import net.fameless.core.config.PluginConfig;
 import net.fameless.core.util.Format;
+import net.fameless.core.util.PluginPaths;
+import net.fameless.core.util.ResourceUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -16,15 +19,24 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 public final class Caption {
 
     private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + Caption.class.getSimpleName());
     private static final HashMap<Language, JsonObject> languageJsonObjectHashMap = new HashMap<>();
     private static Language currentLanguage = Language.ENGLISH;
+    private static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .disableHtmlEscaping()
+            .create();
 
     private Caption() {
+        throw new UnsupportedOperationException("This class cannot be instantiated.");
     }
 
     public static @NotNull Component of(String key, TagResolver... replacements) {
@@ -45,21 +57,50 @@ public final class Caption {
     private static @NotNull String replaceDefaults(String input) {
         input = input.replace("<prefix>", getString("prefix"))
                 .replace("<time>", Format.formatTime(ForceBattle.getTimer().getTime()))
-                .replace("<force-item-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM) ? "active.true" : "active.false"))
-                .replace("<force-mob-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB) ? "active.true" : "active.false"))
-                .replace("<force-biome-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME) ? "active.true" : "active.false"))
-                .replace("<force-advancement-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT) ? "active.true" : "active.false"))
-                .replace("<force-height-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT) ? "active.true" : "active.false"))
-                .replace("<chain-mode-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE) ? "active.true" : "active.false"))
-                .replace("<backpacks-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.BACKPACK) ? "active.true" : "active.false"))
-                .replace("<hide-points-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS) ? "active.true" : "active.false"))
-                .replace("<hide-objectives-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES) ? "active.true" : "active.false"))
+                .replace("<force-item-active>", getString(PluginConfig.get().getBoolean("modes.force-item.enabled", true) ? "active.true" : "active.false"))
+                .replace("<force-mob-active>", getString(PluginConfig.get().getBoolean("modes.force-mob.enabled", false) ? "active.true" : "active.false"))
+                .replace("<force-biome-active>", getString(PluginConfig.get().getBoolean("modes.force-biome.enabled", false) ? "active.true" : "active.false"))
+                .replace("<force-advancement-active>", getString(PluginConfig.get().getBoolean("modes.force-biome.enabled", false) ? "active.true" : "active.false"))
+                .replace("<force-height-active>", getString(PluginConfig.get().getBoolean("modes.force-height.enabled", false) ? "active.true" : "active.false"))
+                .replace("<chain-mode-active>", getString(PluginConfig.get().getBoolean("settings.enable-chain-mode", false) ? "active.true" : "active.false"))
+                .replace("<backpacks-active>", getString(PluginConfig.get().getBoolean("settings.enable-backpacks", false) ? "active.true" : "active.false"))
+                .replace("<hide-points-active>", getString(PluginConfig.get().getBoolean("settings.hide-points", false) ? "active.true" : "active.false"))
+                .replace("<hide-objectives-active>", getString(PluginConfig.get().getBoolean("settings.hide-objectives", false) ? "active.true" : "active.false"))
         ;
         return input;
     }
 
     public static void loadLanguage(Language language, JsonObject jsonObject) {
         languageJsonObjectHashMap.put(language, jsonObject);
+    }
+
+    public static void loadDefaultLanguages() {
+        logger.info("Loading default languages...");
+        for (Language language : Language.values()) {
+            File langFile = PluginPaths.getLangFile(language);
+
+            if (!langFile.exists()) {
+                ResourceUtil.extractResourceIfMissing("lang_" + language.getIdentifier() + ".json", langFile);
+            }
+
+            JsonObject jsonObject;
+            try (FileReader reader = new FileReader(langFile)) {
+                jsonObject = GSON.fromJson(reader, JsonObject.class);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to load language file: " + langFile.getPath(), e);
+            }
+
+            JsonObject defaultJsonObject = ResourceUtil.readJsonResource("lang_" + language.getIdentifier() + ".json");
+            for (Map.Entry<String, JsonElement> entry : defaultJsonObject.entrySet()) {
+                String key = entry.getKey();
+                if (!jsonObject.has(key)) {
+                    jsonObject.add(key, entry.getValue());
+                    logger.warn("Missing key '{}' in language '{}', adding default value.", key, language.getIdentifier());
+                }
+            }
+
+            loadLanguage(language, jsonObject);
+        }
     }
 
     private static String getString(String key) {
@@ -76,12 +117,6 @@ public final class Caption {
 
     public static void setCurrentLanguage(Language newLanguage) {
         if (newLanguage != getCurrentLanguage()) {
-            LanguageChangeEvent languageChangeEvent = new LanguageChangeEvent(newLanguage);
-            EventDispatcher.post(languageChangeEvent);
-            if (languageChangeEvent.isCancelled()) {
-                logger.info("LanguageChangeEvent has been denied by an external plugin.");
-                return;
-            }
             Caption.currentLanguage = newLanguage;
         }
     }

@@ -30,6 +30,11 @@
   "gui.hide_points_lore" : " <br><gray>Click to toggle Hide Points.<br><br><blue>Current Status<dark_gray>: <hide-points-active>",
   "gui.hide_objectives_name" : "<blue>Hide Objectives",
   "gui.hide_objectives_lore" : "<br><gray>Click to toggle Hide Objectives.<br><br><blue>Current Status<dark_gray>: <hide-objectives-active>",
+  "gui.points_title" : "Adjust Points of <target>",
+  "gui.points_add_item_name" : "<green>Add One Point",
+  "gui.points_add_item_lore" : "<gray>Click to add one point to <target>'s points.\n\n<gray>Current Points<dark_gray>: <blue><points>",
+  "gui.points_remove_item_name" : "<red>Remove One Point",
+  "gui.points_remove_item_lore" : "<gray>Click to remove one point from <target>'s points.<br><br><gray>Current Points<dark_gray>: <blue><points>",
   "notification.hide_points_enabled" : "<prefix><blue>Hide Points <gray>has been <green>enabled<gray>!",
   "notification.hide_points_disabled" : "<prefix><blue>Hide Points <gray>has been <blue>disabled<gray>!",
   "notification.hide_objectives_enabled" : "<prefix><blue>Hide Objectives <gray>has been <green>enabled<gray>!",
@@ -70,6 +75,7 @@
   "notification.battle_over" : "<prefix><green>The battle is over. <gray>/<gold>displayresults <gray>| /<gold>result (player/team)<gray>.",
   "notification.first_startup" : "<gray>----\n<prefix><gold>It seems to be the first time you start the plugin.\n<gray>→ Use <green>/menu<gray> to adjust settings and <green>/timer toggle<gray> to start the battle.\n<gray>----",
   "notification.plugin_outdated" : "<prefix><gray>A new version of the plugin is available. Get it from <u><blue><click:open_url:'https://github.com/Fameless9/ForceBattle/releases/latest'>GitHub</click><gray></u>.",
+  "notification.no_objectives_available" : "<prefix><red>No objectives available. Please choose at least one battle.",
   "command.help_message" : "<gray>--<blue><bold>ForceBattle</bold><gray>--\n<command-list>\n<gray>----",
   "command.no_team_id" : "<prefix><red>Please specify a valid team ID.",
   "command.not_in_a_team" : "<prefix><gray>You are not currently in a team.",
@@ -84,6 +90,8 @@
   "command.timer_running" : "<prefix><red>This command may only be used while timer is paused.",
   "command.not_hit_zero" : "<prefix><red>The challenge is not yet over.",
   "command.invalid_joker_type" : "<prefix><red>Invalid joker type. Available types: 'skip', 'swap'.",
+  "command.invalid_battle_type" : "<prefix><red>Invalid battle type. Available types: 'force_item', 'force_mob'. 'force_biome', 'force_advancement', 'force_height'.",
+  "command.main" : "<prefix><green>Running ForceBattle Version <bold><version></bold>.",
   "error.no_challenge_selected" : "<prefix><red>You need to select at least 1 Challenge.",
   "error.backpacks_disabled" : "<prefix><red>Backpacks are disabled.",
   "error.no_caller_type" : "<prefix><red>Report an issue in case you see this message.",
@@ -92,6 +100,7 @@
   "item.skip_item_lore" : "<gray>Click to skip your current objective.",
   "item.swap_item_name" : "<red>Swap",
   "item.swap_item_lore" : "<gray>Click to swap your objective with another player.",
-  "bossbar.format" : "<gray><battletype><dark_gray>: <blue><objective> <dark_gray>| <gray><pointstype><dark_gray>: <blue><points>",
-  "bossbar.format_hide_points" : "<gray><battletype><dark_gray>: <blue><objective>"
+  "bossbar.format" : "<blue><objective> <gray>(<battletype>) <dark_gray>| <blue><points>",
+  "bossbar.format_hide_points" : "<blue><objective> <gray>(<battletype>)",
+  "bossbar.no_objective" : "<gray><bold>No objective available"
 }

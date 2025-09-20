@@ -2,12 +2,8 @@ package net.fameless.core.game;
 
 import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
-import net.fameless.core.event.EventDispatcher;
-import net.fameless.core.event.TimerPauseEvent;
-import net.fameless.core.event.TimerSetTimeEvent;
-import net.fameless.core.event.TimerStartEvent;
-import net.fameless.core.event.TimerStartTimeChangeEvent;
 import net.fameless.core.player.BattlePlayer;
+import net.fameless.core.util.BattleType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.slf4j.Logger;
@@ -27,7 +23,14 @@ public class Timer {
     public Timer(int time, boolean running) {
         this.startTime = time;
         this.time = time;
-        this.running = running;
+
+        try {
+            setRunning(running);
+        } catch (IllegalStateException e) {
+            logger.error("Failed to set running state for Timer: {}", e.getMessage());
+            this.running = false;
+        }
+
         runTimerTask();
         runActionbarTask();
     }
@@ -36,6 +39,10 @@ public class Timer {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                if (running && !BattleType.isAnyEnabled()) {
+                    running = false;
+                    ForceBattle.platform().broadcast(Caption.of("notification.no_objectives_available"));
+                }
                 BattlePlayer.getOnlinePlayers().forEach(
                         forceBattlePlayer -> forceBattlePlayer.sendActionbar(Caption.of(running ? "timer.running" : "timer.paused")));
             }
@@ -80,13 +87,7 @@ public class Timer {
     }
 
     public void setStartTime(int newStartTime) {
-        TimerStartTimeChangeEvent startTimeChangeEvent = new TimerStartTimeChangeEvent(newStartTime);
-        EventDispatcher.post(startTimeChangeEvent);
-        if (startTimeChangeEvent.isCancelled()) {
-            logger.info("TimerStartTimeChangeEvent has been denied by an external plugin.");
-            return;
-        }
-        this.startTime = startTimeChangeEvent.getNewStartTime();
+        this.startTime = newStartTime;
     }
 
     public int getTime() {
@@ -94,52 +95,28 @@ public class Timer {
     }
 
     public void setTime(int newTime) {
-        TimerSetTimeEvent setTimeEvent = new TimerSetTimeEvent(newTime);
-        EventDispatcher.post(setTimeEvent);
-        if (setTimeEvent.isCancelled()) {
-            logger.info("TimerSetTimeEvent has been denied by an external plugin.");
-            return;
-        }
-        this.time = setTimeEvent.getNewTime();
+        this.time = newTime;
     }
 
     public boolean isRunning() {
         return running;
     }
 
-    public void setRunning(boolean running) {
+    public void setRunning(boolean running) throws IllegalStateException {
         if (running) {
-            TimerStartEvent startEvent = new TimerStartEvent(this.time);
-            EventDispatcher.post(startEvent);
-            if (startEvent.isCancelled()) {
-                logger.info("TimerStartEvent has been denied by an external plugin.");
-                return;
+            if (!BattleType.isAnyEnabled()) {
+                throw new IllegalStateException("Cannot start the timer when no objectives are available.");
             }
-            this.time = startEvent.getStartTime();
+            this.time = startTime;
             this.hitZero = false;
             this.running = true;
         } else {
-            TimerPauseEvent pauseEvent = new TimerPauseEvent(this.time);
-            EventDispatcher.post(pauseEvent);
-            if (pauseEvent.isCancelled()) {
-                logger.info("TimerPauseEvent has been denied by an external plugin.");
-                return;
-            }
-            this.time = pauseEvent.getPauseTime();
             this.running = false;
         }
     }
 
     public boolean hasHitZero() {
         return hitZero;
-    }
-
-    public void start() {
-        running = true;
-    }
-
-    public void pause() {
-        running = false;
     }
 
 }

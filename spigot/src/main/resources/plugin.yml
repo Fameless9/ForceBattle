@@ -12,6 +12,7 @@ commands:
         aliases: [ bp ]
     displayresults:
     exclude:
+    excludeobjective:
     help:
     joker:
     language:
@@ -24,3 +25,5 @@ commands:
     skip:
     team:
     timer:
+    forcebattle:
+        aliases: [ fb ]

@@ -3,6 +3,7 @@ package net.fameless.spigot.gui;
 import net.fameless.core.ForceBattle;
 import net.fameless.core.caption.Caption;
 import net.fameless.core.caption.Language;
+import net.fameless.core.command.framework.Command;
 import net.fameless.spigot.util.ItemUtils;
 import net.fameless.spigot.util.Skull;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -17,9 +18,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameless.core.gui.LanguageGUI<Inventory> {
+public class LanguageGUI implements Listener, InventoryHolder {
 
-    @Override
+    public LanguageGUI() {
+        Command.forId("language")
+                .ifPresent(command -> command.onExecute(
+                        (caller, args) -> {
+                            if (args.length != 0) return;
+                            if (caller instanceof net.fameless.core.player.BattlePlayer<?> player) {
+                                player.openInventory(getLanguageGUI());
+                            }
+                        }
+                ));
+    }
+
     public @NotNull Inventory getLanguageGUI() {
         Inventory gui = Bukkit.createInventory(this, 9, Caption.getAsLegacy("gui.language_title"));
         gui.setItem(
@@ -42,33 +54,13 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
                         null
                 )
         );
-        gui.setItem(
-                2,
-                ItemUtils.buildItem(
-                        Skull.FLAG_CHINA.asItemStack(),
-                        ChatColor.GOLD + "简体中文",
-                        List.of(ChatColor.GRAY + "点击将语言设置为简体中文"),
-                        null,
-                        null
-                )
-        );
-        gui.setItem(
-                3,
-                ItemUtils.buildItem(
-                        Skull.FLAG_CHINA.asItemStack(),
-                        ChatColor.GOLD + "繁体中文",
-                        List.of(ChatColor.GRAY + "点击将语言设置为繁体中文"),
-                        null,
-                        null
-                )
-        );
 
         return gui;
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(@NotNull InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof BukkitLanguageGUI)) {
+        if (!(event.getInventory().getHolder() instanceof LanguageGUI)) {
             return;
         }
         event.setCancelled(true);
@@ -89,22 +81,6 @@ public class BukkitLanguageGUI implements Listener, InventoryHolder, net.fameles
                     return;
                 }
                 Caption.setCurrentLanguage(Language.GERMAN);
-                ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
-            }
-            case 2 -> {
-                if (Caption.getCurrentLanguage() == Language.CHINESE_SIMPLIFIED) {
-                    event.getWhoClicked().sendMessage(ChatColor.RED + "成功设置为简体中文!");
-                    return;
-                }
-                Caption.setCurrentLanguage(Language.CHINESE_SIMPLIFIED);
-                ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
-            }
-            case 3 -> {
-                if (Caption.getCurrentLanguage() == Language.CHINESE_TRADITIONAL) {
-                    event.getWhoClicked().sendMessage(ChatColor.RED + "成功設寘爲緐體中文!");
-                    return;
-                }
-                Caption.setCurrentLanguage(Language.CHINESE_TRADITIONAL);
                 ForceBattle.platform().broadcast(MiniMessage.miniMessage().deserialize(Caption.getCurrentLanguage().getUpdateMessage(), Caption.prefixTagResolver()));
             }
         }

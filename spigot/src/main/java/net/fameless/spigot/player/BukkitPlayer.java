@@ -156,8 +156,8 @@ public class BukkitPlayer extends BattlePlayer<Player> {
         getPlatformPlayer().setFireTicks(0);
         getPlatformPlayer().getInventory().clear();
 
-        addSkip(BukkitPlatform.get().getConfig().getInt("skips"));
-        addSwap(BukkitPlatform.get().getConfig().getInt("swaps"));
+        addSkip(BukkitPlatform.get().getConfig().getInt("settings.skips", 3));
+        addSwap(BukkitPlatform.get().getConfig().getInt("settings.swaps", 1));
     }
 
     @Override
