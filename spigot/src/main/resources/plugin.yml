@@ -27,5 +27,3 @@ commands:
     skip:
     team:
     timer:
-    forcebattle:
-        aliases: [ fb ]

@@ -12,7 +12,7 @@ public class PluginPaths {
 
     @Contract("_ -> new")
     public static @NotNull File getLangFile(@NotNull Language language) {
-        return new File(BASE_FOLDER, "lang/lang_" + language.getIdentifier() + ".json");
+        return new File(BASE_FOLDER, "lang/" + language.getFilePath());
     }
 
     public static @NotNull File getConfigFile() {

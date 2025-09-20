@@ -10,6 +10,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Language extends Command {
@@ -38,8 +39,9 @@ public class Language extends Command {
 
     @Override
     public List<String> tabComplete(CommandCaller caller, String @NotNull [] args) {
+        List<String> languages = Arrays.stream(net.fameless.core.caption.Language.values()).map(net.fameless.core.caption.Language::getIdentifier).toList();
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("en", "zh_cn", "zh_tw", "de"), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[0], languages, new ArrayList<>());
         }
         return List.of();
     }

@@ -9,8 +9,7 @@ public final class StringUtil {
     private StringUtil() {
     }
 
-    @NotNull
-    public static <T extends Collection<? super String>> T copyPartialMatches(
+    @NotNull public static <T extends Collection<? super String>> T copyPartialMatches(
             @NotNull final String token,
             @NotNull final Iterable<String> originals,
             @NotNull final T collection

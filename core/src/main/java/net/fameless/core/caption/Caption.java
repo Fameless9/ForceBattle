@@ -80,7 +80,7 @@ public final class Caption {
             File langFile = PluginPaths.getLangFile(language);
 
             if (!langFile.exists()) {
-                ResourceUtil.extractResourceIfMissing("lang_" + language.getIdentifier() + ".json", langFile);
+                ResourceUtil.extractResourceIfMissing(language.getFilePath(), langFile);
             }
 
             JsonObject jsonObject;
@@ -90,7 +90,7 @@ public final class Caption {
                 throw new RuntimeException("Failed to load language file: " + langFile.getPath(), e);
             }
 
-            JsonObject defaultJsonObject = ResourceUtil.readJsonResource("lang_" + language.getIdentifier() + ".json");
+            JsonObject defaultJsonObject = ResourceUtil.readJsonResource(language.getFilePath());
             for (Map.Entry<String, JsonElement> entry : defaultJsonObject.entrySet()) {
                 String key = entry.getKey();
                 if (!jsonObject.has(key)) {
