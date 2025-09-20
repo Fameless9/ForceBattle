@@ -18,6 +18,8 @@ public enum BattleType {
     FORCE_BIOME("Biome", "Biom", "mode.force-biome"),
     FORCE_ADVANCEMENT("Advancement", "Advancement", "mode.force-advancement"),
     FORCE_HEIGHT("Height", "Höhe", "mode.force-height");
+    FORCE_COORDS("Coords", "Koordinaten", "mode.force-coords");
+    FORCE_STRUCTURE("Structure", "Struktur", "mode.force-structure");
 
     private final String englishPrefix;
     private final String germanPrefix;

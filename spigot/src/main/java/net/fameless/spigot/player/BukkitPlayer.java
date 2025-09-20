@@ -8,6 +8,9 @@ import net.fameless.spigot.util.BackpackInventoryHolder;
 import net.fameless.spigot.util.BukkitUtil;
 import net.fameless.spigot.util.ItemUtils;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -32,7 +35,8 @@ public class BukkitPlayer extends BattlePlayer<Player> {
     public BukkitPlayer(@NotNull Player player) {
         super(player.getUniqueId());
         this.name = player.getName();
-        BACKPACK_INVENTORY = Bukkit.createInventory(new BackpackInventoryHolder(), 27, Caption.getAsLegacy("gui.backpack_title"));
+        BACKPACK_INVENTORY = Bukkit.createInventory(new BackpackInventoryHolder(), 27, Caption.getAsLegacy("gui.backpack_title",
+                TagResolver.resolver("player", Tag.inserting(Component.text(player.getName())))));
         BUKKIT_PLAYERS.add(this);
     }
 

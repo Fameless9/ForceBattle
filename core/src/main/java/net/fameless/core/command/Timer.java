@@ -5,7 +5,11 @@ import net.fameless.core.caption.Caption;
 import net.fameless.core.command.framework.CallerType;
 import net.fameless.core.command.framework.Command;
 import net.fameless.core.command.framework.CommandCaller;
+import net.fameless.core.util.Format;
 import net.fameless.core.util.StringUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,11 +38,12 @@ public class Timer extends Command {
         net.fameless.core.game.Timer timer = ForceBattle.getTimer();
         switch (args[0]) {
             case "toggle" -> {
-                try {
-                    timer.setRunning(!timer.isRunning());
-                } catch (IllegalStateException e) {
-                    caller.sendMessage(Caption.of("notification.no_objectives_available"));
-                    return;
+                if (timer.isRunning()) {
+                    timer.pause();
+                    caller.sendMessage(Caption.of("command.timer_paused"));
+                } else {
+                    timer.start();
+                    caller.sendMessage(Caption.of("command.timer_started"));
                 }
                 return;
             }
@@ -52,6 +57,7 @@ public class Timer extends Command {
                     return;
                 }
                 timer.setTime(newTime);
+                caller.sendMessage(Caption.of("command.timer_set", TagResolver.resolver("time", Tag.inserting(Component.text(Format.formatTime(newTime))))));
                 return;
             }
             case "duration" -> {

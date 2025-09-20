@@ -62,6 +62,8 @@ public final class Caption {
                 .replace("<force-biome-active>", getString(PluginConfig.get().getBoolean("modes.force-biome.enabled", false) ? "active.true" : "active.false"))
                 .replace("<force-advancement-active>", getString(PluginConfig.get().getBoolean("modes.force-biome.enabled", false) ? "active.true" : "active.false"))
                 .replace("<force-height-active>", getString(PluginConfig.get().getBoolean("modes.force-height.enabled", false) ? "active.true" : "active.false"))
+                .replace("<force-coords-active>", getString(PluginConfig.get().getBoolean("modes.force-coords.enabled") ? "active.true" : "active.false"))
+                .replace("<force-structure-active>", getString(PluginConfig.get().getBoolean("modes.force-structure.enabled") ? "active.true" : "active.false"))
                 .replace("<chain-mode-active>", getString(PluginConfig.get().getBoolean("settings.enable-chain-mode", false) ? "active.true" : "active.false"))
                 .replace("<backpacks-active>", getString(PluginConfig.get().getBoolean("settings.enable-backpacks", false) ? "active.true" : "active.false"))
                 .replace("<hide-points-active>", getString(PluginConfig.get().getBoolean("settings.hide-points", false) ? "active.true" : "active.false"))

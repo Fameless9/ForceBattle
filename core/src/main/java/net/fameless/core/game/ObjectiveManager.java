@@ -3,6 +3,7 @@ package net.fameless.core.game;
 import net.fameless.core.config.PluginConfig;
 import net.fameless.core.player.BattlePlayer;
 import net.fameless.core.util.BattleType;
+import net.fameless.core.util.Coords;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +46,10 @@ public abstract class ObjectiveManager {
     public abstract List<String> getAvailableAdvancements();
 
     public abstract List<String> getAvailableHeights();
+
+    public abstract List<String> getAvailableStructures();
+
+    public abstract Coords getRandomLocation(BattlePlayer<?> battlePlayer);
 
     public abstract List<String> getChainList();
 
