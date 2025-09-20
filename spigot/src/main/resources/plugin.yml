@@ -18,6 +18,8 @@ commands:
     language:
         aliases: [ lang ]
     points:
+    reloadconfig:
+        aliases: [ reload, rl ]
     reset:
     result:
     settings:

@@ -9,6 +9,7 @@ import net.fameless.core.command.Help;
 import net.fameless.core.command.Joker;
 import net.fameless.core.command.Language;
 import net.fameless.core.command.Points;
+import net.fameless.core.command.Reload;
 import net.fameless.core.command.Reset;
 import net.fameless.core.command.Result;
 import net.fameless.core.command.Settings;
@@ -97,6 +98,7 @@ public abstract class Command {
         new Joker();
         new Language();
         new Points();
+        new Reload();
         new Reset();
         new Result();
         new Settings();

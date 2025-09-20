@@ -92,6 +92,7 @@
   "command.invalid_joker_type" : "<prefix><red>Invalid joker type. Available types: 'skip', 'swap'.",
   "command.invalid_battle_type" : "<prefix><red>Invalid battle type. Available types: 'force_item', 'force_mob'. 'force_biome', 'force_advancement', 'force_height'.",
   "command.main" : "<prefix><green>Running ForceBattle Version <bold><version></bold>.",
+  "command.reload_success" : "<prefix><green>Configuration reloaded successfully.",
   "error.no_challenge_selected" : "<prefix><red>You need to select at least 1 Challenge.",
   "error.backpacks_disabled" : "<prefix><red>Backpacks are disabled.",
   "error.no_caller_type" : "<prefix><red>Report an issue in case you see this message.",

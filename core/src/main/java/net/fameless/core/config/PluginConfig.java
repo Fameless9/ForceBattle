@@ -1,5 +1,6 @@
 package net.fameless.core.config;
 
+import net.fameless.core.caption.Caption;
 import net.fameless.core.util.PluginPaths;
 import net.fameless.core.util.ResourceUtil;
 import org.slf4j.Logger;
@@ -18,7 +19,6 @@ public class PluginConfig {
     public static Yaml YAML;
     private static YamlConfig config;
 
-    @SuppressWarnings("unchecked")
     public static void init() {
         LOGGER.info("Loading configuration...");
         File configFile = PluginPaths.getConfigFile();
@@ -45,6 +45,7 @@ public class PluginConfig {
     public static void reloadAll() {
         LOGGER.info("Reloading all configurations...");
         PluginConfig.reload();
+        Caption.loadDefaultLanguages();
     }
 
     public static void shutdown() {

@@ -83,7 +83,8 @@ public final class ItemUtils {
      * @param <C>                the complex type of the data
      * @return the retrieved data, or null if not present
      */
-    @Nullable public static <P, C> C getData(
+    @Nullable
+    public static <P, C> C getData(
             @NotNull ItemStack stack,
             NamespacedKey key,
             PersistentDataType<P, C> persistentDataType
@@ -106,7 +107,8 @@ public final class ItemUtils {
      * @return the modified ItemStack
      */
     @Contract("_, _, _, _, _ -> param1")
-    @NotNull public static ItemStack buildItem(
+    @NotNull
+    public static ItemStack buildItem(
             @NotNull ItemStack stack,
             String name,
             List<String> lore,

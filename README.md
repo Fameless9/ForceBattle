@@ -13,6 +13,7 @@
 The player with the most points after the timer ends wins the battle!
 
 **Objective types include:**
+
 - 🔹 Collect an item
 - 🔹 Kill a mob
 - 🔹 Discover a biome
@@ -34,21 +35,21 @@ Objective types can be enabled or disabled individually via the plugin's setting
 
 ### 📋 Commands
 
-| Command | Description |
-|:---|:---|
-| `/backpack` | Open the personal backpack (can be disabled) |
-| `/displayresults` | Show the final leaderboard |
-| `/exclude <player>` | Exclude a player from the battle |
-| `/help` | Display a list of available commands |
-| `/joker <player> <amount>` | Adjust jokers for a player |
-| `/language` | Open the language selection menu |
-| `/points <player> <amount>` | Modify a player's points |
-| `/reset [player]` | Reset the battle or a specific player |
-| `/result <player>` | Show detailed results for a player |
-| `/settings` | Open the plugin's settings menu |
-| `/skip <player>` | Skip a player's current objective (for admins) |
-| `/team` | Manage teams |
-| `/timer` | Control the timer (start, stop, set duration) |
+| Command                     | Description                                    |
+|:----------------------------|:-----------------------------------------------|
+| `/backpack`                 | Open the personal backpack (can be disabled)   |
+| `/displayresults`           | Show the final leaderboard                     |
+| `/exclude <player>`         | Exclude a player from the battle               |
+| `/help`                     | Display a list of available commands           |
+| `/joker <player> <amount>`  | Adjust jokers for a player                     |
+| `/language`                 | Open the language selection menu               |
+| `/points <player> <amount>` | Modify a player's points                       |
+| `/reset [player]`           | Reset the battle or a specific player          |
+| `/result <player>`          | Show detailed results for a player             |
+| `/settings`                 | Open the plugin's settings menu                |
+| `/skip <player>`            | Skip a player's current objective (for admins) |
+| `/team`                     | Manage teams                                   |
+| `/timer`                    | Control the timer (start, stop, set duration)  |
 
 ---
 

@@ -92,6 +92,7 @@
   "command.invalid_joker_type" : "<prefix><red>Ungültiger Joker Typ. Verfügbare Typen: 'skip', 'swap'.",
   "command.invalid_battle_type" : "<prefix><red>Ungültiger Battle Typ. Verfügbare Typen: 'force_item', 'force_mob', 'force_biome', 'force_advancement', 'force_height'.",
   "command.main" : "<prefix><green>ForceBattle Version <bold><version></bold>.",
+  "command.reload_success" : "<prefix><green>Die Konfiguration wurde neu geladen.",
   "error.no_challenge_selected" : "<prefix><red>Du musst mindestens eine Challenge aktivieren.",
   "error.backpacks_disabled" : "<prefix><red>Backpacks sind deaktiviert.",
   "error.no_caller_type" : "<prefix><red>Melde einen Fehler auf GitHub, wenn du diese Nachricht erhalten solltest.",

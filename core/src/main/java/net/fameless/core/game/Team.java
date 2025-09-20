@@ -5,8 +5,6 @@ import net.fameless.core.player.BattlePlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +12,6 @@ import java.util.Optional;
 
 public class Team {
 
-    private static final Logger logger = LoggerFactory.getLogger("ForceBattle/" + Team.class.getSimpleName());
     public static final List<Team> teams = new ArrayList<>();
 
     private final List<BattlePlayer<?>> players;
