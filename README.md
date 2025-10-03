@@ -46,6 +46,7 @@ Objective types can be enabled or disabled individually via the plugin's setting
 | `/joker <player> <amount>`  | Adjust jokers for a player                                 |
 | `/language`                 | Open the language selection menu                           |
 | `/points <player> <amount>` | Modify a player's points                                   |
+| `/randomteams <teamsize>`   | Creates random teams with a specific size                  |
 | `/reset [player]`           | Reset the battle or a specific player                      |
 | `/result <player>`          | Show detailed results for a player                         |
 | `/settings`                 | Open the plugin's settings menu                            |

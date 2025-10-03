@@ -1,0 +1,141 @@
+game-duration: 5400
+skips: 3
+swaps: 1
+reset-advancements-on-finish: true
+first-startup: true
+
+### --- Add items/objectives that should be excluded. Restart the server afterwards --- ###
+exclude:
+    items:
+        - WATER
+        - DECORATED_POT
+        - POWDER_SNOW
+        - CHAIN_COMMAND_BLOCK
+        - WATER_CAULDRON
+        - LAVA_CAULDRON
+        - COMMAND_BLOCK_MINECART
+        - COMMAND_BLOCK
+        - POWDER_SNOW_CAULDRON
+        - REPEATING_COMMAND_BLOCK
+        - BEDROCK
+        - AIR
+        - FIRE
+        - SOUL_FIRE
+        - END_PORTAL_FRAME
+        - NETHER_PORTAL
+        - END_PORTAL
+        - LIGHT
+        - END_GATEWAY
+        - TALL_SEAGRASS
+        - VOID_AIR
+        - PISTON_HEAD
+        - MOVING_PISTON
+        - WRITTEN_BOOK
+        - TORCHFLOWER_SEEDS
+        - JIGSAW
+        - TIPPED_ARROW
+        - LAVA
+        - WATER_CAULDRON
+        - STRUCTURE_VOID
+        - BARRIER
+        - DEBUG_STICK
+        - FARMLAND
+        - STRUCTURE_BLOCK
+        - BUBBLE_COLUMN
+        - CAVE_AIR
+        - KNOWLEDGE_BOOK
+        - DIRT_PATH
+        - REDSTONE_WIRE
+        - FROSTED_ICE
+        - REINFORCED_DEEPSLATE
+        - BUDDING_AMETHYST
+        - CHORUS_PLANT
+        - INFESTED_CHISELED_STONE_BRICKS
+        - INFESTED_CRACKED_STONE_BRICKS
+        - INFESTED_COBBLESTONE
+        - INFESTED_DEEPSLATE
+        - INFESTED_MOSSY_STONE_BRICKS
+        - INFESTED_STONE
+        - INFESTED_STONE_BRICKS
+        - MOB_SPAWNER
+        - SPAWNER
+        - LEASH_KNOT
+        - PLAYER_HEAD
+        - LINGERING_POTION
+        - SPLASH_POTION
+        - POTION
+        - OMINOUS_TRIAL_SPAWNER
+        - TRIAL_SPAWNER
+        - SUSPICIOUS_GRAVEL
+        - FROGSPAWN
+    mobs:
+        - MINECART_COMMAND
+        - ARMOR_STAND
+        - ENDER_SIGNAL
+        - LAMA_SPIT
+        - ENDER_PEARL
+        - PRIMED_TNT
+        - PAINTING
+        - EVOKER_FANGS
+        - GLOW_ITEM_FRAME
+        - MINECART_CHEST
+        - ARROW
+        - MINECART_FURNACE
+        - MARKER
+        - MINECART_TNT
+        - ITEM_FRAME
+        - SHULKER_BULLET
+        - ITEM_DISPLAY
+        - MINECART_COMMAND
+        - PRIMED_TNT
+        - MINECART_MOB_SPAWNER
+        - AREA_EFFECT_CLOUD
+        - BOAT
+        - SNOWBALL
+        - DROPPED_ITEM
+        - THROWN_EXP_BOTTLE
+        - BLOCK_DISPLAY
+        - CHEST_BOAT
+        - SMALL_FIREBALL
+        - UNKNOWN
+        - TEXT_DISPLAY
+        - INTERACTION
+        - SPLASH_POTION
+        - FIREBALL
+        - SPECTRAL_ARROW
+        - ENDER_SIGNAL
+        - FISHING_HOOK
+        - FISHING_BOBBER
+        - FIREWORK
+        - EXPERIENCE_ORB
+        - FALLING_BLOCK
+        - DRAGON_FIREBALL
+        - EGG
+        - LEASH_HITCH
+        - MINECART
+        - LIGHTNING
+        - MINECART_HOPPER
+        - ILLUSIONER
+        - GIANT
+        - WITHER_SKULL
+        - TRIDENT
+        - ENDER_CRYSTAL
+        - ITEM_FRAME
+        - TNT
+        - LIGHTNING_BOLT
+    biomes:
+        - THE_VOID
+
+    # default height range: -63 - 320
+    heights:
+    advancements:
+
+    # Most unobtainable items are excluded by default
+    # after changing values, you don't have to restart anything or rejoin. Just use /skip <player> if they have an unwanted objective and new items will not contain excluded items
+    exclude_spawn_eggs: true # unobtainable in survival
+    exclude_music_discs: true # obtainable in survival
+    exclude_banner_patterns: true # obtainable in survival
+    exclude_banners: false # obtainable in survival
+    exclude_armor_templates: true # obtainable in survival
+    exclude_pottery_sherds: true # obtainable in survival
+    exclude_ores: true # obtainable in survival (silk touch needed)
