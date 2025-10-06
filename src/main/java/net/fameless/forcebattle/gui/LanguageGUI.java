@@ -22,20 +22,20 @@ import java.util.List;
 
 public class LanguageGUI implements Listener, InventoryHolder {
 
+    @Getter
     private enum LanguageButton {
         ENGLISH(0, Language.ENGLISH, Skull.FLAG_UK, "English",
-                List.of(ChatColor.GRAY + "Click to set the language to english"), "Language is already set to english!"),
+                List.of("Click to set the language to english"), "Language is already set to english!"),
 
         GERMAN(1, Language.GERMAN, Skull.FLAG_GERMANY, "Deutsch",
-                List.of(ChatColor.GRAY + "Klicke, um die Sprache auf deutsch zu stellen"), "Die Sprache ist bereits auf Deutsch eingestellt."),
+                List.of("Klicke, um die Sprache auf deutsch zu stellen"), "Die Sprache ist bereits auf Deutsch eingestellt."),
 
         CHINESE_SIMPLIFIED(2, Language.CHINESE_SIMPLIFIED, Skull.FLAG_CHINA, "简体中文",
-                List.of(ChatColor.GRAY + "点击将语言设置为简体中文"), "成功设置为简体中文!"),
+                List.of("点击将语言设置为简体中文"), "成功设置为简体中文!"),
 
         CHINESE_TRADITIONAL(3, Language.CHINESE_TRADITIONAL, Skull.FLAG_CHINA, "繁体中文",
-                List.of(ChatColor.GRAY + "点击将语言设置为繁体中文"), "成功設寘爲緐體中文!");
+                List.of("点击将语言设置为繁体中文"), "成功設寘爲緐體中文!");
 
-        @Getter
         private final int slot;
         private final Language language;
         private final Skull skull;
@@ -53,7 +53,17 @@ public class LanguageGUI implements Listener, InventoryHolder {
         }
 
         public ItemStack buildItem() {
-            return ItemUtils.buildItem(skull.asItemStack(), ChatColor.GOLD + name, lore, null, null);
+            List<String> coloredLore = lore.stream()
+                    .map(line -> ChatColor.GRAY + line)
+                    .toList();
+
+            return ItemUtils.buildItem(
+                    skull.asItemStack(),
+                    ChatColor.GOLD + name,
+                    coloredLore,
+                    null,
+                    null
+            );
         }
 
         public static LanguageButton fromSlot(int slot) {
