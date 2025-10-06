@@ -170,6 +170,8 @@ public class GameListener implements Listener {
             player.getInventory().clear();
             player.getPlayer().setHealth(20);
             player.getPlayer().setSaturation(20);
+            player.getPlayer().setFoodLevel(20);
+            player.getPlayer().setFireTicks(0);
 
             player.getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSkipItem(ForceBattle.get().getConfig().getInt("skips", 3)));
             player.getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSwapItem(ForceBattle.get().getConfig().getInt("swaps", 1)));

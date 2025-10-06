@@ -340,9 +340,6 @@ public class BattlePlayer implements CommandCaller {
         getPlayer().setFireTicks(0);
         getPlayer().getInventory().clear();
         getPlayer().teleport(GameListener.spawn);
-
-        addSkip(ForceBattle.get().getConfig().getInt("skips", 3));
-        addSwap(ForceBattle.get().getConfig().getInt("swaps", 1));
     }
 
     public boolean isOffline() {

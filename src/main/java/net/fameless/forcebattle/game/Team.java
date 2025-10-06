@@ -100,6 +100,7 @@ public class Team {
                 TagResolver.resolver("player", Tag.inserting(Component.text(battlePlayer.getName())))
         )));
         players.add(battlePlayer);
+        battlePlayer.sendMessage(Caption.of("notification.team_joined", TagResolver.resolver("id", Tag.inserting(Component.text(this.getId())))));
     }
 
     public void removePlayer(BattlePlayer battlePlayer) {
