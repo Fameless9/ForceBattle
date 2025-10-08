@@ -1,4 +1,4 @@
-package net.fameless.forcebattle.util;
+package net.fameless.forcebattle.game.data;
 
 import lombok.Getter;
 import org.bukkit.NamespacedKey;

@@ -1,6 +1,8 @@
 package net.fameless.forcebattle.util;
 
 import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.game.data.Advancement;
+import net.fameless.forcebattle.game.data.Structure;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

@@ -1,4 +1,4 @@
-package net.fameless.forcebattle.util;
+package net.fameless.forcebattle.game.data;
 
 import lombok.Getter;
 import org.bukkit.NamespacedKey;
@@ -35,8 +35,6 @@ public enum Structure {
     IGLOO(NamespacedKey.minecraft("igloo"), "Igloo"),
     BASTION_REMNANT(NamespacedKey.minecraft("bastion_remnant"), "Bastion Remnant"),
     MINESHAFT(NamespacedKey.minecraft("mineshaft"), "Mineshaft"),
-    BURIED_TREASURE(NamespacedKey.minecraft("buried_treasure"), "Buried Treasure"),
-    NETHER_FOSSIL(NamespacedKey.minecraft("nether_fossil"), "Nether Fossil"),
     FORTRESS(NamespacedKey.minecraft("fortress"), "Fortress"),
     STRONGHOLD(NamespacedKey.minecraft("stronghold"), "Stronghold");
 

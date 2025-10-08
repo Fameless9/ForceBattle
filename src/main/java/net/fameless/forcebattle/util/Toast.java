@@ -1,5 +1,6 @@
 package net.fameless.forcebattle.util;
 
+import net.fameless.forcebattle.configuration.SettingsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -67,7 +68,9 @@ public final class Toast {
         createAdvancement();
         grantAdvancement(player);
 
-        Bukkit.getScheduler().runTaskLater(main, () -> revokeAdvancement(player), 10);
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) {
+            Bukkit.getScheduler().runTaskLater(main, () -> revokeAdvancement(player), 10);
+        }
     }
 
     private void start(@NotNull Collection<Player> players) {

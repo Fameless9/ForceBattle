@@ -6,6 +6,13 @@ import net.fameless.forcebattle.configuration.PluginUpdater;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.event.TimerEndEvent;
 import net.fameless.forcebattle.event.TimerStartEvent;
+import net.fameless.forcebattle.game.tasks.AdvancementTask;
+import net.fameless.forcebattle.game.tasks.BiomeTask;
+import net.fameless.forcebattle.game.tasks.CoordsTask;
+import net.fameless.forcebattle.game.tasks.HeightTask;
+import net.fameless.forcebattle.game.tasks.ItemTask;
+import net.fameless.forcebattle.game.tasks.StructureTask;
+import net.fameless.forcebattle.game.tasks.TaskManager;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.util.BattleType;
 import net.fameless.forcebattle.util.BukkitUtil;
@@ -22,13 +29,9 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
-import org.bukkit.advancement.Advancement;
-import org.bukkit.advancement.AdvancementProgress;
-import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -39,22 +42,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.generator.structure.GeneratedStructure;
-import org.bukkit.generator.structure.Structure;
-import org.bukkit.generator.structure.StructurePiece;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.BoundingBox;
-import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -68,12 +63,14 @@ public class GameListener implements Listener {
     public static Location spawn = new Location(Bukkit.getWorld("world"), 0.5, 201, 0.5);
 
     public GameListener() {
-        runItemTask();
-        runBiomeTask();
-        runAdvancementTask();
-        runHeightTask();
-        runCoordsTask();
-        runStructureTask();
+        TaskManager.register(new ItemTask());
+        TaskManager.register(new BiomeTask());
+        TaskManager.register(new AdvancementTask());
+        TaskManager.register(new HeightTask());
+        TaskManager.register(new CoordsTask());
+        TaskManager.register(new StructureTask());
+
+        TaskManager.startAll();
     }
 
     @EventHandler
@@ -232,269 +229,6 @@ public class GameListener implements Listener {
                     ForceBattle.get()
             );
             battlePlayer.updateObjective(true, false);
-        }
-    }
-
-    private void runItemTask() {
-        Bukkit.getScheduler().runTaskTimer(
-                ForceBattle.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) return;
-                    if (!ForceBattle.getTimer().isRunning()) return;
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        BattlePlayer battlePlayer = BattlePlayer.adapt(player);
-                        if (battlePlayer.isExcluded()) continue;
-
-                        String objectiveString = battlePlayer.getObjective().getObjectiveString();
-                        if (BukkitUtil.convertObjective(BattleType.FORCE_ITEM, objectiveString) instanceof Material objective) {
-                            if (player.getInventory().contains(objective)) {
-                                battlePlayer.sendMessage(Caption.of(
-                                        "notification.objective_finished",
-                                        TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(objectiveString))))
-                                ));
-                                Toast.display(
-                                        player,
-                                        objective,
-                                        ChatColor.BLUE + Format.formatName(objectiveString),
-                                        Toast.Style.GOAL,
-                                        ForceBattle.get()
-                                );
-                                battlePlayer.updateObjective(true, false);
-                            }
-                        }
-                    }
-                }, 0, 3
-        );
-    }
-
-    private void runBiomeTask() {
-        Bukkit.getScheduler().runTaskTimer(
-                ForceBattle.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) return;
-                    if (!ForceBattle.getTimer().isRunning()) return;
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        BattlePlayer battlePlayer = BattlePlayer.adapt(player);
-                        if (battlePlayer.isExcluded()) continue;
-
-                        String objectiveString = battlePlayer.getObjective().getObjectiveString();
-                        if (BukkitUtil.convertObjective(BattleType.FORCE_BIOME, objectiveString) instanceof Biome biome) {
-                            if (player.getWorld().getBiome(player.getLocation()).equals(biome)) {
-                                battlePlayer.sendMessage(Caption.of(
-                                        "notification.objective_finished",
-                                        TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(objectiveString))))
-                                ));
-                                Toast.display(
-                                        player,
-                                        Material.GRASS_BLOCK,
-                                        ChatColor.BLUE + Format.formatName(objectiveString),
-                                        Toast.Style.GOAL,
-                                        ForceBattle.get()
-                                );
-                                battlePlayer.updateObjective(true, false);
-                            }
-                        }
-                    }
-                }, 0, 3
-        );
-    }
-
-    private void runAdvancementTask() {
-        Bukkit.getScheduler().runTaskTimer(
-                ForceBattle.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) return;
-                    if (!ForceBattle.getTimer().isRunning()) return;
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        BattlePlayer battlePlayer = BattlePlayer.adapt(player);
-                        if (battlePlayer.isExcluded()) continue;
-
-                        String objectiveString = battlePlayer.getObjective().getObjectiveString();
-                        if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objectiveString) instanceof net.fameless.forcebattle.util.Advancement advancement) {
-                            if (hasAdvancement(player, advancement.getKey())) {
-                                battlePlayer.sendMessage(Caption.of(
-                                        "notification.objective_finished",
-                                        TagResolver.resolver("objective", Tag.inserting(Component.text(advancement.getName())))
-                                ));
-                                if (ForceBattle.get().getConfig().getBoolean("reset-advancements-on-finish", true)) {resetAdvancements(player);}
-
-                                Toast.display(
-                                        player,
-                                        Material.BREWING_STAND,
-                                        ChatColor.BLUE + advancement.getName(),
-                                        Toast.Style.GOAL,
-                                        ForceBattle.get()
-                                );
-                                battlePlayer.updateObjective(true, false);
-                            }
-                        }
-                    }
-                }, 0, 3
-        );
-    }
-
-    private void runHeightTask() {
-        Bukkit.getScheduler().runTaskTimer(
-                ForceBattle.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) return;
-                    if (!ForceBattle.getTimer().isRunning()) return;
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        BattlePlayer battlePlayer = BattlePlayer.adapt(player);
-                        if (battlePlayer.isExcluded()) continue;
-
-                        String objectiveString = battlePlayer.getObjective().getObjectiveString();
-                        if (BukkitUtil.convertObjective(BattleType.FORCE_HEIGHT, objectiveString) instanceof Integer height) {
-                            if (player.getLocation().getBlockY() == height) {
-                                battlePlayer.sendMessage(Caption.of(
-                                        "notification.objective_finished",
-                                        TagResolver.resolver("objective", Tag.inserting(Component.text(height)))
-                                ));
-                                Toast.display(
-                                        player,
-                                        Material.SCAFFOLDING,
-                                        ChatColor.BLUE + Format.formatName(objectiveString),
-                                        Toast.Style.GOAL,
-                                        ForceBattle.get()
-                                );
-                                battlePlayer.updateObjective(true, false);
-                            }
-                        }
-                    }
-                }, 0, 3
-        );
-    }
-
-    private void runCoordsTask() {
-        Bukkit.getScheduler().runTaskTimer(
-                ForceBattle.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) return;
-                    if (!ForceBattle.getTimer().isRunning()) return;
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        BattlePlayer battlePlayer = BattlePlayer.adapt(player);
-                        if (battlePlayer.isExcluded()) continue;
-
-                        String objectiveString = battlePlayer.getObjective().getObjectiveString();
-
-                        if (BukkitUtil.convertObjective(BattleType.FORCE_COORDS, objectiveString) instanceof Location coords) {
-                            double targetX = coords.getX();
-                            double targetZ = coords.getZ();
-
-                            double distance = player.getLocation().distance(
-                                    new Location(player.getWorld(), targetX, player.getLocation().getY(), targetZ)
-                            );
-
-                            if (distance <= 2.0) {
-                                battlePlayer.sendMessage(Caption.of(
-                                        "notification.objective_finished",
-                                        TagResolver.resolver("objective", Tag.inserting(Component.text(targetX + ", " + targetZ)))
-                                ));
-                                Toast.display(
-                                        player,
-                                        Material.COMPASS,
-                                        ChatColor.BLUE + Format.formatName(objectiveString),
-                                        Toast.Style.GOAL,
-                                        ForceBattle.get()
-                                );
-                                battlePlayer.updateObjective(true, false);
-                            }
-                        }
-                    }
-                }, 0, 3
-        );
-    }
-
-    private void runStructureTask() {
-        Bukkit.getScheduler().runTaskTimer(
-                ForceBattle.get(), () -> {
-                    if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) return;
-                    if (!ForceBattle.getTimer().isRunning()) return;
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        BattlePlayer battlePlayer = BattlePlayer.adapt(player);
-                        if (battlePlayer.isExcluded()) continue;
-
-                        String objectiveString = battlePlayer.getObjective().getObjectiveString();
-
-                        if (BukkitUtil.convertObjective(BattleType.FORCE_STRUCTURE, objectiveString)
-                                instanceof net.fameless.forcebattle.util.Structure structEnum) {
-
-                            Registry<Structure> structureRegistry = Bukkit.getRegistry(Structure.class);
-
-                            Structure bukkitStruct = structureRegistry.get(structEnum.getKey());
-
-                            if (bukkitStruct == null) continue;
-
-                            StructureSearchResult result = player.getWorld()
-                                    .locateNearestStructure(player.getLocation(), bukkitStruct, 10, false);
-
-                            if (result != null) {
-                                Location structLoc = result.getLocation();
-
-                                GeneratedStructure generatedStructure = structLoc.getChunk().getStructures(bukkitStruct).stream().findFirst().get();
-                                Collection<StructurePiece> structurePieces = generatedStructure.getPieces();
-
-                                Location playerLocation = player.getLocation();
-                                double playerX = playerLocation.getX();
-                                double playerY = playerLocation.getY();
-                                double playerZ = playerLocation.getZ();
-
-                                for (StructurePiece piece : structurePieces) {
-                                    BoundingBox box = piece.getBoundingBox();
-                                    if (playerX <= box.getMaxX() && playerX >= box.getMinX() &&
-                                            playerY <= box.getMaxY() && playerY >= box.getMinY() &&
-                                            playerZ <= box.getMaxZ() && playerZ >= box.getMinZ()) {
-
-                                        battlePlayer.sendMessage(Caption.of(
-                                                "notification.objective_finished",
-                                                TagResolver.resolver("objective", Tag.inserting(Component.text(structEnum.getName())))
-                                        ));
-                                        Toast.display(
-                                                player,
-                                                Material.STRUCTURE_BLOCK,
-                                                ChatColor.BLUE + structEnum.getName(),
-                                                Toast.Style.GOAL,
-                                                ForceBattle.get()
-                                        );
-                                        battlePlayer.updateObjective(true, false);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }, 0, 3
-        );
-    }
-
-    private boolean hasAdvancement(Player player, NamespacedKey key) {
-        @NotNull Optional<Advancement> advancementOptional = getAdvancement(key);
-        if (advancementOptional.isPresent()) {
-            AdvancementProgress progress = player.getAdvancementProgress(advancementOptional.get());
-            return progress.isDone();
-        }
-        return false;
-    }
-
-    private @NotNull Optional<Advancement> getAdvancement(NamespacedKey key) {
-        Iterator<Advancement> it = Bukkit.getServer().advancementIterator();
-        while (it.hasNext()) {
-            Advancement a = it.next();
-            if (a.getKey().equals(key)) {
-                return Optional.of(a);
-            }
-        }
-        return Optional.empty();
-    }
-
-    public void resetAdvancements(Player player) {
-        Iterator<Advancement> iterator = Bukkit.getServer().advancementIterator();
-        while (iterator.hasNext()) {
-            AdvancementProgress progress = player.getAdvancementProgress(iterator.next());
-            for (String criteria : progress.getAwardedCriteria()) {
-                progress.revokeCriteria(criteria);
-            }
         }
     }
 
