@@ -60,6 +60,8 @@ public final class Caption {
                 .replace("<hide-objectives-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES) ? "active.true" : "active.false"))
                 .replace("<no-duplicate-objectives-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.NO_DUPLICATE_OBJECTIVES) ? "active.true" :
                         "active.false"))
+                .replace("<no-simplified-objectives-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES) ? "active.true" :
+                        "active.false"))
         ;
         return input;
     }

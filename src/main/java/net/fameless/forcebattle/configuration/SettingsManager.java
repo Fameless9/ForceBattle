@@ -101,7 +101,9 @@ public class SettingsManager {
         updateSetting(Setting.HIDE_OBJECTIVES, enabled, true);
     }
 
-    public static void setNoDuplicateObjectives(boolean enabled) { updateSetting(Setting.NO_DUPLICATE_OBJECTIVES, enabled, false); }
+    public static void setNoDuplicateObjectivesEnabled(boolean enabled) { updateSetting(Setting.NO_DUPLICATE_OBJECTIVES, enabled, false); }
+
+    public static void setSimplifiedObjectivesEnabled(boolean enabled) { updateSetting(Setting.SIMPLIFIED_OBJECTIVES, enabled, false); }
 
     public enum Setting {
         FORCE_ITEM,
@@ -115,7 +117,8 @@ public class SettingsManager {
         CHAIN_MODE,
         HIDE_POINTS,
         HIDE_OBJECTIVES,
-        NO_DUPLICATE_OBJECTIVES
+        NO_DUPLICATE_OBJECTIVES,
+        SIMPLIFIED_OBJECTIVES
     }
 
 }

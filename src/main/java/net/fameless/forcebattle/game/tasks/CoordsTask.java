@@ -27,6 +27,7 @@ public class CoordsTask implements ForceTask {
         for (Player player : Bukkit.getOnlinePlayers()) {
             BattlePlayer battlePlayer = BattlePlayer.adapt(player);
             if (battlePlayer.isExcluded()) continue;
+            if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_COORDS) continue;
 
             String objectiveString = battlePlayer.getObjective().getObjectiveString();
 

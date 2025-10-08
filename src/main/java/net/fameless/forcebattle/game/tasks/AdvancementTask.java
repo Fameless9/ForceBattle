@@ -32,6 +32,7 @@ public class AdvancementTask implements ForceTask {
         for (Player player : Bukkit.getOnlinePlayers()) {
             BattlePlayer battlePlayer = BattlePlayer.adapt(player);
             if (battlePlayer.isExcluded()) continue;
+            if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_ADVANCEMENT) continue;
 
             String objectiveString = battlePlayer.getObjective().getObjectiveString();
             if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objectiveString) instanceof net.fameless.forcebattle.game.data.Advancement advancement) {

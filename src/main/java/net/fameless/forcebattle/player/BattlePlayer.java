@@ -24,6 +24,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -339,6 +340,7 @@ public class BattlePlayer implements CommandCaller {
         getPlayer().setSaturation(20);
         getPlayer().setFireTicks(0);
         getPlayer().getInventory().clear();
+        getPlayer().setGameMode(GameMode.ADVENTURE);
         getPlayer().teleport(GameListener.spawn);
     }
 

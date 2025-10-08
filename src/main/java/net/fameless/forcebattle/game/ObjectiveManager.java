@@ -2,6 +2,8 @@ package net.fameless.forcebattle.game;
 
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.configuration.SettingsManager;
+import net.fameless.forcebattle.game.data.BiomeSimplified;
+import net.fameless.forcebattle.game.data.StructureSimplified;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.game.data.Advancement;
 import net.fameless.forcebattle.util.BattleType;
@@ -15,8 +17,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,27 +43,13 @@ public class ObjectiveManager {
         }
 
         List<BattleType> availableBattleTypes = new ArrayList<>();
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) {
-            availableBattleTypes.add(BattleType.FORCE_ITEM);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) {
-            availableBattleTypes.add(BattleType.FORCE_MOB);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) {
-            availableBattleTypes.add(BattleType.FORCE_BIOME);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) {
-            availableBattleTypes.add(BattleType.FORCE_ADVANCEMENT);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) {
-            availableBattleTypes.add(BattleType.FORCE_HEIGHT);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) {
-            availableBattleTypes.add(BattleType.FORCE_COORDS);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) {
-            availableBattleTypes.add(BattleType.FORCE_STRUCTURE);
-        }
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) availableBattleTypes.add(BattleType.FORCE_ITEM);
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) availableBattleTypes.add(BattleType.FORCE_MOB);
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) availableBattleTypes.add(BattleType.FORCE_BIOME);
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) availableBattleTypes.add(BattleType.FORCE_ADVANCEMENT);
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) availableBattleTypes.add(BattleType.FORCE_HEIGHT);
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) availableBattleTypes.add(BattleType.FORCE_COORDS);
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) availableBattleTypes.add(BattleType.FORCE_STRUCTURE);
 
         Random random = new Random();
         BattleType battleType = availableBattleTypes.get(random.nextInt(availableBattleTypes.size()));
@@ -68,15 +58,30 @@ public class ObjectiveManager {
         switch (battleType) {
             case FORCE_ITEM -> objectiveString = getAvailableItems().get(random.nextInt(getAvailableItems().size())).name();
             case FORCE_MOB -> objectiveString = getAvailableMobs().get(random.nextInt(getAvailableMobs().size())).name();
-            case FORCE_BIOME -> objectiveString = getAvailableBiomes().get(random.nextInt(getAvailableBiomes().size())).name();
+            case FORCE_BIOME -> {
+                if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
+                    List<BiomeSimplified> list = getAvailableBiomesSimplified();
+                    objectiveString = list.get(random.nextInt(list.size())).getName();
+                } else {
+                    List<Biome> list = getAvailableBiomes();
+                    objectiveString = list.get(random.nextInt(list.size())).name();
+                }
+            }
             case FORCE_ADVANCEMENT -> objectiveString = getAvailableAdvancements().get(random.nextInt(getAvailableAdvancements().size())).toString();
             case FORCE_HEIGHT -> objectiveString = String.valueOf(getAvailableHeights().get(random.nextInt(getAvailableHeights().size())));
             case FORCE_COORDS -> {
                 Location coords = getRandomLocation(battlePlayer);
                 objectiveString = coords.getX() + "," + coords.getZ();
             }
-            case FORCE_STRUCTURE -> objectiveString = getAvailableStructures().get(random.nextInt(getAvailableStructures().size())).toString();
-
+            case FORCE_STRUCTURE -> {
+                if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
+                    List<StructureSimplified> list = getAvailableStructuresSimplified();
+                    objectiveString = list.get(random.nextInt(list.size())).getName();
+                } else {
+                    List<Structure> list = getAvailableStructures();
+                    objectiveString = list.get(random.nextInt(list.size())).toString();
+                }
+            }
             default -> {
                 return null;
             }
@@ -98,6 +103,7 @@ public class ObjectiveManager {
             }
         }
 
+        System.out.println(objectiveString);
         return new Objective(battleType, objectiveString);
     }
 
@@ -114,63 +120,26 @@ public class ObjectiveManager {
         boolean excludeOres = ForceBattle.get().getConfig().getBoolean("exclude.exclude_ores", false);
 
         for (Material material : Material.values()) {
-            if (!material.isItem()) {
-                continue;
-            }
-            if (itemsToExclude.contains(material.name())) {
-                continue;
-            }
-            if (excludeSpawnEggs && material.name().endsWith("SPAWN_EGG")) {
-                continue;
-            }
-            if (excludeMusicDiscs && material.name().contains("DISC")) {
-                continue;
-            }
-            if (excludeBannerPatterns && material.name().endsWith("BANNER_PATTERN")) {
-                continue;
-            }
-            if (excludeBanners && material.name().endsWith("BANNER")) {
-                continue;
-            }
-            if (excludeArmorTemplates && material.name().endsWith("TEMPLATE")) {
-                continue;
-            }
-            if (excludePotteryShreds && material.name().endsWith("POTTERY_SHERD")) {
-                continue;
-            }
-            if (excludeOres && material.name().endsWith("ORE")) {
-                continue;
-            }
-            if (material.name().endsWith("CANDLE_CAKE")) {
-                continue;
-            }
-            if (material.name().startsWith("POTTED")) {
-                continue;
-            }
-            if (material.name().contains("PETRIFIED")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("TORCH")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("SIGN")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("HEAD")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("CORAL")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("BANNER")) {
-                continue;
-            }
-            if (material.name().contains("WALL") && material.name().contains("SKULL")) {
-                continue;
-            }
-            if (material.name().endsWith("STEM")) {
-                continue;
-            }
+            if (!material.isItem()) continue;
+            if (itemsToExclude.contains(material.name())) continue;
+            if (excludeSpawnEggs && material.name().endsWith("SPAWN_EGG")) continue;
+            if (excludeMusicDiscs && material.name().contains("DISC")) continue;
+            if (excludeBannerPatterns && material.name().endsWith("BANNER_PATTERN")) continue;
+            if (excludeBanners && material.name().endsWith("BANNER")) continue;
+            if (excludeArmorTemplates && material.name().endsWith("TEMPLATE")) continue;
+            if (excludePotteryShreds && material.name().endsWith("POTTERY_SHERD")) continue;
+            if (excludeOres && material.name().endsWith("ORE")) continue;
+            if (material.name().endsWith("CANDLE_CAKE")) continue;
+            if (material.name().startsWith("POTTED")) continue;
+            if (material.name().contains("PETRIFIED")) continue;
+            if (material.name().contains("WALL") && material.name().contains("TORCH")) continue;
+            if (material.name().contains("WALL") && material.name().contains("SIGN")) continue;
+            if (material.name().contains("WALL") && material.name().contains("HEAD")) continue;
+            if (material.name().contains("WALL") && material.name().contains("CORAL")) continue;
+            if (material.name().contains("WALL") && material.name().contains("BANNER")) continue;
+            if (material.name().contains("WALL") && material.name().contains("SKULL")) continue;
+            if (material.name().endsWith("STEM")) continue;
+
             availableItems.add(material);
         }
         return availableItems;
@@ -202,6 +171,13 @@ public class ObjectiveManager {
             availableBiomes.add(biome);
         }
         return availableBiomes;
+    }
+
+    public List<BiomeSimplified> getAvailableBiomesSimplified() {
+        List<BiomeSimplified> list = new ArrayList<>(Arrays.asList(BiomeSimplified.values()));
+        List<String> biomesToExclude = ForceBattle.get().getConfig().getStringList("exclude.biomes");
+        list.removeIf(b -> biomesToExclude.contains(b.getName().toUpperCase(Locale.ROOT)));
+        return list;
     }
 
     public List<Advancement> getAvailableAdvancements() {
@@ -266,6 +242,13 @@ public class ObjectiveManager {
         return availableStructures;
     }
 
+    public List<StructureSimplified> getAvailableStructuresSimplified() {
+        List<StructureSimplified> list = new ArrayList<>(Arrays.asList(StructureSimplified.values()));
+        List<String> structuresToExclude = ForceBattle.get().getConfig().getStringList("exclude.structures");
+        list.removeIf(s -> structuresToExclude.contains(s.name().toUpperCase(Locale.ROOT)));
+        return list;
+    }
+
     public List<String> getChainList() {
         if (chainList.isEmpty()) {
             updateChainList();
@@ -275,41 +258,34 @@ public class ObjectiveManager {
 
     public void updateChainList() {
         chainList.clear();
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) {
-            List<String> itemStringList = new ArrayList<>();
-            getAvailableItems().forEach(material -> itemStringList.add(material.name()));
-            chainList.addAll(itemStringList);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) {
-            List<String> mobStringList = new ArrayList<>();
-            getAvailableMobs().forEach(entityType -> mobStringList.add(entityType.name()));
-            chainList.addAll(mobStringList);
-        }
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM))
+            getAvailableItems().forEach(m -> chainList.add(m.name()));
+
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB))
+            getAvailableMobs().forEach(e -> chainList.add(e.name()));
+
         if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) {
-            List<String> biomeStringList = new ArrayList<>();
-            getAvailableBiomes().forEach(biome -> biomeStringList.add(biome.name()));
-            chainList.addAll(biomeStringList);
+            if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
+                getAvailableBiomesSimplified().forEach(b -> chainList.add(b.getName()));
+            } else {
+                getAvailableBiomes().forEach(b -> chainList.add(b.name()));
+            }
         }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) {
-            List<String> advancementStringList = new ArrayList<>();
-            getAvailableAdvancements().forEach(advancement -> advancementStringList.add(advancement.name()));
-            chainList.addAll(advancementStringList);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) {
-            List<String> heightStringList = new ArrayList<>();
-            getAvailableHeights().forEach(height -> heightStringList.add(String.valueOf(height)));
-            chainList.addAll(heightStringList);
-        }
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) {
-            List<String> coordStringList = new ArrayList<>();
-            getAvailableHeights().forEach(coord -> coordStringList.add(String.valueOf(coord)));
-            chainList.addAll(coordStringList);
-        }
+
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT))
+            getAvailableAdvancements().forEach(a -> chainList.add(a.name()));
+
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT))
+            getAvailableHeights().forEach(h -> chainList.add(String.valueOf(h)));
+
         if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) {
-            List<String> structureStringList = new ArrayList<>();
-            getAvailableStructures().forEach(structure -> structureStringList.add(structure.name()));
-            chainList.addAll(structureStringList);
+            if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
+                getAvailableStructuresSimplified().forEach(s -> chainList.add(s.name()));
+            } else {
+                getAvailableStructures().forEach(s -> chainList.add(s.name()));
+            }
         }
+
         Collections.shuffle(chainList);
     }
 

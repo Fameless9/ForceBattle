@@ -26,6 +26,7 @@ public class HeightTask implements ForceTask {
         for (Player player : Bukkit.getOnlinePlayers()) {
             BattlePlayer battlePlayer = BattlePlayer.adapt(player);
             if (battlePlayer.isExcluded()) continue;
+            if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_HEIGHT) continue;
 
             String objectiveString = battlePlayer.getObjective().getObjectiveString();
             if (BukkitUtil.convertObjective(BattleType.FORCE_HEIGHT, objectiveString) instanceof Integer height) {
