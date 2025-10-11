@@ -12,9 +12,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -42,75 +42,107 @@ public class DisplayResultsCommand extends Command {
             return;
         }
 
-        final HashMap<BattlePlayer, Integer> PLAYER_POINTS_MAP = new HashMap<>();
-        final HashMap<Team, Integer> TEAM_POINTS_MAP = new HashMap<>();
+        Map<BattlePlayer, Integer> PLAYER_POINTS_MAP = new HashMap<>();
+        Map<Team, Integer> TEAM_POINTS_MAP = new HashMap<>();
 
         for (BattlePlayer battlePlayer : BattlePlayer.BATTLE_PLAYERS) {
             PLAYER_POINTS_MAP.put(battlePlayer, battlePlayer.getPoints());
         }
 
-        LinkedHashMap<BattlePlayer, Integer> sortedPlayerPointsMap = PLAYER_POINTS_MAP.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue())
-                .collect(Collectors.toMap(
-                        HashMap.Entry::getKey,
-                        HashMap.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
-
         for (Team team : Team.teams) {
             TEAM_POINTS_MAP.put(team, team.getPoints());
         }
-
-        LinkedHashMap<Team, Integer> sortedTeamPointsMap = TEAM_POINTS_MAP.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue())
-                .collect(Collectors.toMap(
-                        HashMap.Entry::getKey,
-                        HashMap.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         final long delay = 750;
         final long[] counter = {0};
 
-        switch (args[0]) {
+        switch (args[0].toLowerCase()) {
             case "player" -> {
-                sortedPlayerPointsMap.forEach((battlePlayer, points) -> {
-                    long place = sortedPlayerPointsMap.size() - counter[0];
-                    scheduler.schedule(
-                            () -> ForceBattle.broadcast(
-                                    MiniMessage.miniMessage().deserialize("<gold>" + place + ". <blue>" + battlePlayer.getName() + "<dark_gray>: <gold>" + points)
-                            ), counter[0] * delay, TimeUnit.MILLISECONDS
-                    );
+                List<Map.Entry<BattlePlayer, Integer>> sortedPlayers = PLAYER_POINTS_MAP.entrySet().stream()
+                        .sorted(Map.Entry.<BattlePlayer, Integer>comparingByValue().reversed())
+                        .toList();
+
+                List<Map.Entry<BattlePlayer, Integer>> reversed = new ArrayList<>(sortedPlayers);
+                Collections.reverse(reversed);
+
+                int currentPlace = 0;
+                int skip = 0;
+                int lastPoints = Integer.MIN_VALUE;
+
+                Map<BattlePlayer, Integer> placeMap = new HashMap<>();
+                for (Map.Entry<BattlePlayer, Integer> entry : sortedPlayers) {
+                    int points = entry.getValue();
+                    if (points != lastPoints) {
+                        currentPlace += 1 + skip;
+                        skip = 0;
+                        lastPoints = points;
+                    } else skip++;
+                    placeMap.put(entry.getKey(), currentPlace);
+                }
+
+                for (Map.Entry<BattlePlayer, Integer> entry : reversed) {
+                    BattlePlayer player = entry.getKey();
+                    int points = entry.getValue();
+                    int place = placeMap.get(player);
+
+                    scheduler.schedule(() -> ForceBattle.broadcast(
+                            MiniMessage.miniMessage().deserialize(
+                                    "<gold>" + place + ". <blue>" + player.getName() + "<dark_gray>: <gold>" + points
+                            )
+                    ), counter[0] * delay, TimeUnit.MILLISECONDS);
                     counter[0]++;
-                });
+                }
 
                 scheduler.shutdown();
             }
+
             case "team" -> {
-                sortedTeamPointsMap.forEach((team, points) -> {
-                    long place = sortedTeamPointsMap.size() - counter[0];
+                List<Map.Entry<Team, Integer>> sortedTeams = TEAM_POINTS_MAP.entrySet().stream()
+                        .sorted(Map.Entry.<Team, Integer>comparingByValue().reversed())
+                        .toList();
+
+                List<Map.Entry<Team, Integer>> reversed = new ArrayList<>(sortedTeams);
+                Collections.reverse(reversed);
+
+                int currentPlace = 0;
+                int skip = 0;
+                int lastPoints = Integer.MIN_VALUE;
+
+                Map<Team, Integer> placeMap = new HashMap<>();
+                for (Map.Entry<Team, Integer> entry : sortedTeams) {
+                    int points = entry.getValue();
+                    if (points != lastPoints) {
+                        currentPlace += 1 + skip;
+                        skip = 0;
+                        lastPoints = points;
+                    } else skip++;
+                    placeMap.put(entry.getKey(), currentPlace);
+                }
+
+                for (Map.Entry<Team, Integer> entry : reversed) {
+                    Team team = entry.getKey();
+                    int points = entry.getValue();
+                    int place = placeMap.get(team);
 
                     String players = team.getPlayers().stream()
                             .sorted(Comparator.comparingInt(BattlePlayer::getPoints).reversed())
                             .map(p -> p.getName() + " (" + p.getPoints() + ")")
                             .collect(Collectors.joining(", "));
 
-                    scheduler.schedule(
-                            () -> ForceBattle.broadcast(
-                                    MiniMessage.miniMessage().deserialize("<gold>" + place + ". <blue>" + team.getId() + " (<gray>" + players + "<blue>)" + "<dark_gray" +
-                                            ">: <gold>" + points)
-                            ), counter[0] * delay, TimeUnit.MILLISECONDS
-                    );
+                    scheduler.schedule(() -> ForceBattle.broadcast(
+                            MiniMessage.miniMessage().deserialize(
+                                    "<gold>" + place + ". <blue>" + team.getId() + " (<gray>" + players +
+                                            "<blue>)<dark_gray>: <gold>" + points
+                            )
+                    ), counter[0] * delay, TimeUnit.MILLISECONDS);
                     counter[0]++;
-                });
+                }
 
                 scheduler.shutdown();
             }
+
+            default -> sendUsage(caller);
         }
     }
 
