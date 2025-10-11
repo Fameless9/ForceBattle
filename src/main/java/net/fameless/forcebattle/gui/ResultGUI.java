@@ -5,6 +5,8 @@ import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.game.Objective;
 import net.fameless.forcebattle.game.Team;
+import net.fameless.forcebattle.game.data.BiomeSimplified;
+import net.fameless.forcebattle.game.data.StructureSimplified;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.game.data.Advancement;
 import net.fameless.forcebattle.util.BukkitUtil;
@@ -506,7 +508,7 @@ public class ResultGUI implements Listener, InventoryHolder {
             if (objectiveObject instanceof EntityType) {
                 return Material.SPIDER_SPAWN_EGG;
             }
-            if (objectiveObject instanceof Biome) {
+            if (objectiveObject instanceof Biome || objectiveObject instanceof BiomeSimplified) {
                 return Material.GRASS_BLOCK;
             }
             if (objectiveObject instanceof Advancement) {
@@ -518,7 +520,7 @@ public class ResultGUI implements Listener, InventoryHolder {
             if (objectiveObject instanceof Location) {
                 return Material.DIAMOND_BOOTS;
             }
-            if (objectiveObject instanceof Structure) {
+            if (objectiveObject instanceof Structure || objectiveObject instanceof StructureSimplified) {
                 return Material.STRUCTURE_BLOCK;
             }
             throw new RuntimeException("Corrupt/Invalid objective type: " + objective.getObjectiveString() + ". battleType: " + objective.getBattleType());

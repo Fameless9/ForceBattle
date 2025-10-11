@@ -29,10 +29,17 @@ public class SettingsFile {
             // Load and enable settings
             for (SettingsManager.Setting setting : SettingsManager.Setting.values()) {
                 if (settingsObject.has(setting.name())) {
-                    boolean isEnabled = settingsObject.get(setting.name()).getAsBoolean();
-                    SettingsManager.setEnabled(setting, isEnabled);
+                    String stateStr = settingsObject.get(setting.name()).getAsString();
+                    try {
+                        SettingsManager.SettingState state = SettingsManager.SettingState.valueOf(stateStr);
+                        SettingsManager.setState(setting, state);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Invalid state '{}' for setting {} in settings file, defaulting to OFF", stateStr, setting.name());
+                        SettingsManager.setState(setting, SettingsManager.SettingState.OFF);
+                    }
                 }
             }
+
             SettingsManager.applyMinimum();
 
             if (settingsObject.has("language")) {
@@ -40,7 +47,7 @@ public class SettingsFile {
                     Language language = Language.valueOf(settingsObject.get("language").getAsString());
                     Caption.setCurrentLanguage(language);
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Failed to load language from Settings file. No such language.");
+                    logger.warn("Failed to load language from settings file. No such language.");
                 }
             }
         }
@@ -50,7 +57,8 @@ public class SettingsFile {
         JsonObject settingsObject = new JsonObject();
 
         for (SettingsManager.Setting setting : SettingsManager.Setting.values()) {
-            settingsObject.addProperty(setting.name(), SettingsManager.isEnabled(setting));
+            SettingsManager.SettingState state = SettingsManager.getState(setting);
+            settingsObject.addProperty(setting.name(), state.name());
         }
 
         if (Caption.getCurrentLanguage() != null) {

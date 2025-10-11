@@ -1,10 +1,14 @@
 package net.fameless.forcebattle.game;
 
 import lombok.Getter;
+import lombok.Setter;
+import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
+import net.fameless.forcebattle.event.ObjectiveUpdateEvent;
 import net.fameless.forcebattle.event.PlayerTeamJoinEvent;
 import net.fameless.forcebattle.event.PlayerTeamLeaveEvent;
 import net.fameless.forcebattle.player.BattlePlayer;
+import net.fameless.forcebattle.util.Format;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -27,6 +31,9 @@ public class Team {
     private final List<BattlePlayer> players;
     private final int ID;
     private boolean privateTeam = false;
+    @Getter
+    @Setter
+    private Objective objective;
     @Getter
     private JoinRequest lastJoinRequest = null;
 
@@ -173,6 +180,39 @@ public class Team {
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse(-1);
+    }
+
+    public void updateObjective(BattlePlayer finisher, boolean finishLast, boolean hasBeenSkipped) {
+        Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
+        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
+        Bukkit.getPluginManager().callEvent(updateEvent);
+        if (updateEvent.isCancelled()) {
+            logger.info("ObjectiveUpdateEvent has been denied by an external plugin.");
+            return;
+        }
+
+        setCurrentObjective(updateEvent.getNewObjective(), finisher, finishLast, hasBeenSkipped);
+    }
+
+    public void setCurrentObjective(Objective newObjective, BattlePlayer finisher, boolean finishLast, boolean hasBeenSkipped) {
+        if (finishLast && this.objective != null) {
+            this.objective.setFinished(finisher);
+            this.objective.setHasBeenSkipped(hasBeenSkipped);
+
+            finisher.setPoints(finisher.getPoints() + 1);
+        }
+
+        if (ForceBattle.getTimer().isRunning()) {
+            for (BattlePlayer member : players) {
+                member.sendMessage(Caption.of(
+                        "notification.next_objective",
+                        TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(newObjective.getObjectiveString())))),
+                        TagResolver.resolver("objective_type", Tag.inserting(Component.text(newObjective.getBattleType().getPrefix())))
+                ));
+            }
+        }
+
+        this.objective = newObjective;
     }
 
     @Getter

@@ -2,7 +2,9 @@ package net.fameless.forcebattle.util;
 
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.game.data.Advancement;
+import net.fameless.forcebattle.game.data.BiomeSimplified;
 import net.fameless.forcebattle.game.data.Structure;
+import net.fameless.forcebattle.game.data.StructureSimplified;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -64,6 +66,14 @@ public final class BukkitUtil {
     }
 
     private static @Nullable Object tryBiome(String value) {
+        if (value == null || value.isEmpty()) return null;
+
+        for (BiomeSimplified simplified : BiomeSimplified.values()) {
+            if (simplified.getName().equalsIgnoreCase(value)) {
+                return simplified;
+            }
+        }
+
         try {
             return Biome.valueOf(value);
         } catch (IllegalArgumentException e) {
@@ -102,6 +112,14 @@ public final class BukkitUtil {
     }
 
     private static @Nullable Object tryStructure(String value) {
+        if (value == null || value.isEmpty()) return null;
+
+        for (StructureSimplified simplified : StructureSimplified.values()) {
+            if (simplified.getName().equalsIgnoreCase(value)) {
+                return simplified;
+            }
+        }
+
         try {
             return Structure.valueOf(value);
         } catch (IllegalArgumentException e) {

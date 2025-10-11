@@ -5,6 +5,7 @@ import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.command.framework.CallerType;
 import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.CommandCaller;
+import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.game.Timer;
 import net.fameless.forcebattle.util.Format;
 import net.fameless.forcebattle.util.StringUtil;
@@ -43,6 +44,10 @@ public class TimerCommand extends Command {
                     timer.pause();
                     caller.sendMessage(Caption.of("command.timer_paused"));
                 } else {
+                    if (SettingsManager.getActiveChallenges().isEmpty()) {
+                        caller.sendMessage(Caption.of("error.no_battletype_selected"));
+                        return;
+                    }
                     timer.start();
                     caller.sendMessage(Caption.of("command.timer_started"));
                 }

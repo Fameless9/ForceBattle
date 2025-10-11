@@ -73,6 +73,13 @@ public class GameListener implements Listener {
         TaskManager.startAll();
     }
 
+    //TODO bp nach dem battle aufmachen
+    //TODO prüfen ob ruined portals gehen
+    //TODO /displayresults auf gleiche Plätze setzen wenn Punkte gleich => nächstes team dementsprechend abstufen
+    //TODO evtl dupe obj fix for both player/team idk
+    //TODO better tablist
+    //TODO scoreboard which shows teammate obj
+
     @EventHandler
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
         if (ForceBattle.getTimer().isRunning()) {
@@ -115,9 +122,6 @@ public class GameListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         BattlePlayer battlePlayer = BattlePlayer.adapt(event.getPlayer());
-        if (battlePlayer.getObjective() == null) {
-            battlePlayer.updateObjective(false, false);
-        }
 
         if (!ForceBattle.getTimer().isRunning() && startPhase) {
             if (!spawnCreated) {
@@ -162,6 +166,12 @@ public class GameListener implements Listener {
         }
 
         for (BattlePlayer player : BattlePlayer.getOnlinePlayers()) {
+            if (player.getObjective() == null) {
+                player.updateObjective(false, false);
+            }
+            if (player.isInTeam() && player.getTeam().getObjective() == null) {
+                player.getTeam().updateObjective(player, false, false);
+            }
             player.getPlayer().playSound(player.getPlayer(), Sound.EVENT_RAID_HORN, SoundCategory.MASTER, 100, 1);
             player.getPlayer().setGameMode(GameMode.SURVIVAL);
             player.getInventory().clear();
@@ -170,8 +180,12 @@ public class GameListener implements Listener {
             player.getPlayer().setFoodLevel(20);
             player.getPlayer().setFireTicks(0);
 
-            player.getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSkipItem(ForceBattle.get().getConfig().getInt("skips", 3)));
+            player.getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getPlayerSkipItem(ForceBattle.get().getConfig().getInt("playerSkips", 3)));
             player.getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSwapItem(ForceBattle.get().getConfig().getInt("swaps", 1)));
+
+            if (SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE)) {
+                player.getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getTeamSkipItem(ForceBattle.get().getConfig().getInt("teamSkips", 1)));
+            }
 
             player.getPlayer().teleport(world.getSpawnLocation());
         }
@@ -188,55 +202,86 @@ public class GameListener implements Listener {
         }
     }
 
-    @EventHandler()
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent damageEvent) {
-        if (!ForceBattle.getTimer().isRunning() && damageEvent.getEntity() instanceof Player) {
-            damageEvent.setCancelled(true);
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!ForceBattle.getTimer().isRunning() && event.getEntity() instanceof Player) {
+            event.setCancelled(true);
             return;
         }
+
         if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) return;
-        if (!(damageEvent.getDamager() instanceof Player player)) return;
 
-        if (!damageEvent.getEntity().isDead()) {
-            LivingEntity entity = (LivingEntity) damageEvent.getEntity();
-            if (entity.getHealth() - damageEvent.getDamage() > 0) {
-                return;
-            }
-        }
+        if (!(event.getDamager() instanceof Player damager)) return;
+        if (!(event.getEntity() instanceof LivingEntity target)) return;
 
-        BattlePlayer battlePlayer = BattlePlayer.adapt(player);
+        BattlePlayer battlePlayer = BattlePlayer.adapt(damager);
         if (battlePlayer.isExcluded()) return;
 
-        String objectiveString = battlePlayer.getObjective().getObjectiveString();
-        if (!(BukkitUtil.convertObjective(BattleType.FORCE_MOB, objectiveString) instanceof EntityType requiredEntity)) return;
+        if (target.getHealth() - event.getDamage() > 0) return;
 
-        if (damageEvent.getEntity().getType().equals(requiredEntity)) {
-            if (!damageEvent.getEntity().isDead()) {
-                LivingEntity entity = (LivingEntity) damageEvent.getEntity();
-                if (entity.getHealth() - damageEvent.getDamage() > 0) {
-                    return;
-                }
-            }
-            battlePlayer.sendMessage(Caption.of(
-                    "notification.objective_finished",
-                    TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(objectiveString))))
-            ));
-            Toast.display(
-                    player,
-                    Material.DIAMOND_SWORD,
-                    ChatColor.BLUE + Format.formatName(objectiveString),
-                    Toast.Style.GOAL,
-                    ForceBattle.get()
-            );
+        checkPlayerObjective(battlePlayer, target);
+        checkTeamObjective(battlePlayer, target);
+    }
+
+    private void checkPlayerObjective(BattlePlayer battlePlayer, LivingEntity target) {
+        if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_MOB) return;
+
+        String objective = battlePlayer.getObjective().getObjectiveString();
+        if (isTargetMatch(target, objective)) {
+            completeObjective(battlePlayer, objective);
             battlePlayer.updateObjective(true, false);
         }
+    }
+
+    private void checkTeamObjective(BattlePlayer battlePlayer, LivingEntity target) {
+        if (!battlePlayer.isInTeam()) return;
+        if (battlePlayer.getTeam().getObjective() == null) return;
+        if (battlePlayer.getTeam().getObjective().getBattleType() != BattleType.FORCE_MOB) return;
+
+        String objective = battlePlayer.getTeam().getObjective().getObjectiveString();
+        if (isTargetMatch(target, objective)) {
+            completeObjective(battlePlayer, objective);
+            battlePlayer.getTeam().updateObjective(battlePlayer, true, false);
+        }
+    }
+
+    private boolean isTargetMatch(LivingEntity target, String objectiveString) {
+        Object converted = BukkitUtil.convertObjective(BattleType.FORCE_MOB, objectiveString);
+        return converted instanceof EntityType required && target.getType() == required;
+    }
+
+    private void completeObjective(BattlePlayer player, String objective) {
+        String formattedObjective = Format.formatName(objective);
+        Material toastIcon = Material.DIAMOND_SWORD;
+        ForceBattle plugin = ForceBattle.get();
+
+        if (player.isInTeam() && SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE)) {
+            Component teammateMsg = Caption.of(
+                    "notification.objective_finished_by_teammate",
+                    TagResolver.resolver("player", Tag.inserting(Component.text(player.getName()))),
+                    TagResolver.resolver("objective", Tag.inserting(Component.text(formattedObjective)))
+            );
+
+            player.getTeam().getPlayers().stream()
+                    .filter(teammate -> teammate != player)
+                    .forEach(teammate -> {
+                        teammate.sendMessage(teammateMsg);
+                        Toast.display(teammate.getPlayer(), toastIcon, ChatColor.BLUE + formattedObjective, Toast.Style.GOAL, plugin);
+                    });
+        }
+
+        player.sendMessage(Caption.of(
+                "notification.objective_finished",
+                TagResolver.resolver("objective", Tag.inserting(Component.text(formattedObjective)))
+        ));
+        Toast.display(player.getPlayer(), toastIcon, ChatColor.BLUE + formattedObjective, Toast.Style.GOAL, plugin);
     }
 
     @EventHandler
     public void onPlayerSkip(@NotNull PlayerInteractEvent event) {
         if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) {return;}
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) {return;}
-        if (event.getItem() == null || !ItemUtils.isSkipItem(event.getItem())) {return;}
+        if (event.getItem() == null || !ItemUtils.isPlayerSkipItem(event.getItem())) {return;}
 
         BattlePlayer battlePlayer = BattlePlayer.adapt(event.getPlayer());
         if (battlePlayer.isExcluded()) return;
@@ -260,6 +305,57 @@ public class GameListener implements Listener {
                 TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(oldObjective.getObjectiveString()))))
         ));
         battlePlayer.updateObjective(true, true);
+
+        decreaseItemAmount(event);
+
+        if (oldObjective.getBattleType() == BattleType.FORCE_ITEM) {
+            ItemStack itemStack = new ItemStack(Material.valueOf(oldObjective.getObjectiveString()));
+            battlePlayer.getPlayer().getWorld().dropItemNaturally(battlePlayer.getPlayer().getLocation(), itemStack);
+        }
+        skipCooldown.add(battlePlayer);
+        Bukkit.getScheduler().runTaskLater(ForceBattle.get(), () -> skipCooldown.remove(battlePlayer), 20);
+    }
+
+    @EventHandler
+    public void onTeamSkip(@NotNull PlayerInteractEvent event) {
+        if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) {return;}
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) {return;}
+        if (event.getItem() == null || !ItemUtils.isTeamSkipItem(event.getItem())) {return;}
+
+        BattlePlayer battlePlayer = BattlePlayer.adapt(event.getPlayer());
+        Team team = battlePlayer.getTeam();
+        if (battlePlayer.isExcluded()) return;
+        if (skipCooldown.contains(battlePlayer)) return;
+
+        event.setCancelled(true);
+
+        if (!ForceBattle.getTimer().isRunning()) {
+            battlePlayer.sendMessage(Caption.of("notification.skip_timer_paused"));
+            return;
+        }
+        if (team.getObjective() == null) {
+            battlePlayer.sendMessage(Caption.of("notification.skip_no_objective"));
+            return;
+        }
+
+        Objective oldObjective = team.getObjective();
+
+        team.getPlayers().forEach(player -> {
+            if (player != battlePlayer) {
+                player.sendMessage(Caption.of(
+                        "notification.objective_skipped_by_teammate",
+                        TagResolver.resolver("player", Tag.inserting(Component.text(player.getName()))),
+                        TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(oldObjective.getObjectiveString()))))
+                ));
+            }
+        });
+
+        battlePlayer.sendMessage(Caption.of(
+                "notification.objective_skipped",
+                TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(oldObjective.getObjectiveString()))))
+        ));
+
+        team.updateObjective(battlePlayer, true, true);
 
         decreaseItemAmount(event);
 

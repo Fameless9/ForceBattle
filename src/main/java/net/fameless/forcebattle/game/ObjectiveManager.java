@@ -19,15 +19,38 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ObjectiveManager {
 
     private final List<String> chainList = new ArrayList<>();
+
+    public Objective getNewObjective(Team team) {
+        List<BattlePlayer> players = team.getPlayers();
+        if (players.isEmpty()) return null;
+
+        Random random = new Random();
+        BattlePlayer player = players.get(random.nextInt(players.size()));
+
+        List<BattleType> availableBattleTypes = new ArrayList<>();
+        for (BattleType type : BattleType.values()) {
+            SettingsManager.SettingState state = type.getSettingState();
+            if (state == SettingsManager.SettingState.TEAM || state == SettingsManager.SettingState.BOTH) {
+                availableBattleTypes.add(type);
+            }
+        }
+
+        if (availableBattleTypes.isEmpty()) return null;
+
+        BattleType battleType = availableBattleTypes.get(random.nextInt(availableBattleTypes.size()));
+        return generateObjective(battleType, player, team);
+    }
 
     public Objective getNewObjective(BattlePlayer battlePlayer) {
         if (SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)) {
@@ -43,68 +66,67 @@ public class ObjectiveManager {
         }
 
         List<BattleType> availableBattleTypes = new ArrayList<>();
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) availableBattleTypes.add(BattleType.FORCE_ITEM);
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) availableBattleTypes.add(BattleType.FORCE_MOB);
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) availableBattleTypes.add(BattleType.FORCE_BIOME);
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) availableBattleTypes.add(BattleType.FORCE_ADVANCEMENT);
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) availableBattleTypes.add(BattleType.FORCE_HEIGHT);
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) availableBattleTypes.add(BattleType.FORCE_COORDS);
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) availableBattleTypes.add(BattleType.FORCE_STRUCTURE);
+        for (BattleType type : BattleType.values()) {
+            SettingsManager.SettingState state = type.getSettingState();
+            if (state == SettingsManager.SettingState.PLAYER || state == SettingsManager.SettingState.BOTH) {
+                availableBattleTypes.add(type);
+            }
+        }
+
+        if (availableBattleTypes.isEmpty()) return null;
 
         Random random = new Random();
         BattleType battleType = availableBattleTypes.get(random.nextInt(availableBattleTypes.size()));
-        String objectiveString;
 
-        switch (battleType) {
-            case FORCE_ITEM -> objectiveString = getAvailableItems().get(random.nextInt(getAvailableItems().size())).name();
-            case FORCE_MOB -> objectiveString = getAvailableMobs().get(random.nextInt(getAvailableMobs().size())).name();
-            case FORCE_BIOME -> {
-                if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
-                    List<BiomeSimplified> list = getAvailableBiomesSimplified();
-                    objectiveString = list.get(random.nextInt(list.size())).getName();
-                } else {
-                    List<Biome> list = getAvailableBiomes();
-                    objectiveString = list.get(random.nextInt(list.size())).name();
-                }
-            }
-            case FORCE_ADVANCEMENT -> objectiveString = getAvailableAdvancements().get(random.nextInt(getAvailableAdvancements().size())).toString();
-            case FORCE_HEIGHT -> objectiveString = String.valueOf(getAvailableHeights().get(random.nextInt(getAvailableHeights().size())));
-            case FORCE_COORDS -> {
-                Location coords = getRandomLocation(battlePlayer);
-                objectiveString = coords.getX() + "," + coords.getZ();
-            }
-            case FORCE_STRUCTURE -> {
-                if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
-                    List<StructureSimplified> list = getAvailableStructuresSimplified();
-                    objectiveString = list.get(random.nextInt(list.size())).getName();
-                } else {
-                    List<Structure> list = getAvailableStructures();
-                    objectiveString = list.get(random.nextInt(list.size())).toString();
-                }
-            }
-            default -> {
-                return null;
-            }
-        }
+        return generateObjective(battleType, battlePlayer, null);
+    }
+
+    private Objective generateObjective(BattleType battleType, BattlePlayer battlePlayer, Team team) {
+        Random random = new Random();
+        List<String> allPossible = getAllPossibleObjectives(battleType, battlePlayer);
+        if (allPossible.isEmpty()) return null;
 
         if (SettingsManager.isEnabled(SettingsManager.Setting.NO_DUPLICATE_OBJECTIVES)) {
-            List<Objective> objectives = new ArrayList<>();
-
-            if (!battlePlayer.isInTeam()) {
-                objectives.addAll(Objective.finishedBy(battlePlayer));
+            Set<String> finished = new HashSet<>();
+            if (team == null || !battlePlayer.isInTeam()) {
+                Objective.finishedBy(battlePlayer).forEach(obj -> finished.add(obj.getObjectiveString()));
             } else {
-                battlePlayer.getTeam().getPlayers().forEach(teamPlayer -> objectives.addAll(Objective.finishedBy(teamPlayer)));
+                team.getPlayers().forEach(p -> Objective.finishedBy(p).forEach(obj -> finished.add(obj.getObjectiveString())));
             }
-
-            for (Objective objective : objectives) {
-                if (Objects.equals(objective.getObjectiveString(), objectiveString)) {
-                    return getNewObjective(battlePlayer);
-                }
-            }
+            allPossible.removeIf(finished::contains);
         }
 
-        System.out.println(objectiveString);
+        if (allPossible.isEmpty()) return null;
+
+        String objectiveString = allPossible.get(random.nextInt(allPossible.size()));
         return new Objective(battleType, objectiveString);
+    }
+
+    private List<String> getAllPossibleObjectives(BattleType battleType, BattlePlayer battlePlayer) {
+        List<String> list = new ArrayList<>();
+        switch (battleType) {
+            case FORCE_ITEM -> getAvailableItems().forEach(i -> list.add(i.name()));
+            case FORCE_MOB -> getAvailableMobs().forEach(m -> list.add(m.name()));
+            case FORCE_BIOME -> {
+                if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES))
+                    getAvailableBiomesSimplified().forEach(b -> list.add(b.getName()));
+                else
+                    getAvailableBiomes().forEach(b -> list.add(b.name()));
+            }
+            case FORCE_ADVANCEMENT -> getAvailableAdvancements().forEach(a -> list.add(a.toString()));
+            case FORCE_HEIGHT -> getAvailableHeights().forEach(h -> list.add(String.valueOf(h)));
+            case FORCE_COORDS -> {
+                Location coords = getRandomLocation(battlePlayer);
+                list.add(coords.getX() + "," + coords.getZ());
+            }
+            case FORCE_STRUCTURE -> {
+                if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES))
+                    getAvailableStructuresSimplified().forEach(s -> list.add(s.getName()));
+                else
+                    getAvailableStructures().forEach(s -> list.add(s.toString()));
+            }
+        }
+        return list;
     }
 
     public List<Material> getAvailableItems() {
@@ -139,6 +161,7 @@ public class ObjectiveManager {
             if (material.name().contains("WALL") && material.name().contains("BANNER")) continue;
             if (material.name().contains("WALL") && material.name().contains("SKULL")) continue;
             if (material.name().endsWith("STEM")) continue;
+            if (material.name().startsWith("INFESTED")) continue;
 
             availableItems.add(material);
         }

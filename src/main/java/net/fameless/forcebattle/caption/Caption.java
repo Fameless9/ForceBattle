@@ -3,7 +3,6 @@ package net.fameless.forcebattle.caption;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.fameless.forcebattle.ForceBattle;
-import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.event.LanguageChangeEvent;
 import net.fameless.forcebattle.util.Format;
 import net.kyori.adventure.text.Component;
@@ -47,21 +46,6 @@ public final class Caption {
     private static @NotNull String replaceDefaults(String input) {
         input = input.replace("<prefix>", getString("prefix"))
                 .replace("<time>", Format.formatTime(ForceBattle.getTimer().getTime()))
-                .replace("<force-item-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM) ? "active.true" : "active.false"))
-                .replace("<force-mob-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB) ? "active.true" : "active.false"))
-                .replace("<force-biome-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME) ? "active.true" : "active.false"))
-                .replace("<force-advancement-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT) ? "active.true" : "active.false"))
-                .replace("<force-height-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT) ? "active.true" : "active.false"))
-                .replace("<force-coords-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS) ? "active.true" : "active.false"))
-                .replace("<force-structure-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE) ? "active.true" : "active.false"))
-                .replace("<chain-mode-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE) ? "active.true" : "active.false"))
-                .replace("<backpacks-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.BACKPACK) ? "active.true" : "active.false"))
-                .replace("<hide-points-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS) ? "active.true" : "active.false"))
-                .replace("<hide-objectives-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES) ? "active.true" : "active.false"))
-                .replace("<no-duplicate-objectives-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.NO_DUPLICATE_OBJECTIVES) ? "active.true" :
-                        "active.false"))
-                .replace("<no-simplified-objectives-active>", getString(SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES) ? "active.true" :
-                        "active.false"))
         ;
         return input;
     }

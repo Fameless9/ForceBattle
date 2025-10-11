@@ -3,6 +3,8 @@ package net.fameless.forcebattle.bossbar;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
+import net.fameless.forcebattle.game.Objective;
+import net.fameless.forcebattle.game.Team;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.util.Format;
 import net.kyori.adventure.bossbar.BossBar;
@@ -17,66 +19,122 @@ import java.util.TimerTask;
 
 public class BossbarManager {
 
-    private static final HashMap<BattlePlayer, BossBar> lastBossbarMap = new HashMap<>();
+    private static final HashMap<BattlePlayer, BossBar> lastPlayerBarMap = new HashMap<>();
+    private static final HashMap<BattlePlayer, BossBar> lastTeamBarMap = new HashMap<>();
 
     public static void runTask() {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                boolean timerRunning = ForceBattle.getTimer().isRunning();
+
                 for (BattlePlayer battlePlayer : BattlePlayer.getOnlinePlayers()) {
                     if (battlePlayer.isExcluded()) {
-                        hideBossBar(battlePlayer);
+                        hideBossBars(battlePlayer);
                         continue;
                     }
 
-                    Component bossbarTitle = getBossbarTitle(battlePlayer);
-                    BossBar bossBar = BossBar.bossBar(bossbarTitle, 1, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+                    BossBar playerBar = BossBar.bossBar(
+                            getPlayerObjectiveTitle(battlePlayer),
+                            1,
+                            BossBar.Color.BLUE,
+                            BossBar.Overlay.PROGRESS
+                    );
+                    updateBossBar(battlePlayer, playerBar, lastPlayerBarMap);
 
-                    updateBossBar(battlePlayer, bossBar);
+                    if (!timerRunning) {
+                        hideBossBar(battlePlayer, lastTeamBarMap);
+                        continue;
+                    }
+
+                    if (battlePlayer.isInTeam()) {
+                        Team team = battlePlayer.getTeam();
+                        Objective teamObjective = team.getObjective();
+
+                        if (teamObjective != null) {
+                            BossBar teamBar = BossBar.bossBar(
+                                    getTeamObjectiveTitle(team),
+                                    1,
+                                    BossBar.Color.PURPLE,
+                                    BossBar.Overlay.PROGRESS
+                            );
+                            updateBossBar(battlePlayer, teamBar, lastTeamBarMap);
+                        } else {
+                            hideBossBar(battlePlayer, lastTeamBarMap);
+                        }
+                    } else {
+                        hideBossBar(battlePlayer, lastTeamBarMap);
+                    }
                 }
             }
         };
         new Timer("forcebattle/bossbar").scheduleAtFixedRate(task, 150, 150);
     }
 
-    private static void hideBossBar(BattlePlayer battlePlayer) {
-        if (lastBossbarMap.containsKey(battlePlayer)) {
-            battlePlayer.getAudience().hideBossBar(lastBossbarMap.get(battlePlayer));
-            lastBossbarMap.remove(battlePlayer);
+    private static void hideBossBars(BattlePlayer battlePlayer) {
+        hideBossBar(battlePlayer, lastPlayerBarMap);
+        hideBossBar(battlePlayer, lastTeamBarMap);
+    }
+
+    private static void hideBossBar(BattlePlayer battlePlayer, HashMap<BattlePlayer, BossBar> map) {
+        if (map.containsKey(battlePlayer)) {
+            battlePlayer.getAudience().hideBossBar(map.get(battlePlayer));
+            map.remove(battlePlayer);
         }
     }
 
-    private static @NotNull Component getBossbarTitle(BattlePlayer battlePlayer) {
-        if (ForceBattle.getTimer().isRunning()) {
-            boolean isPlayerInTeam = battlePlayer.isInTeam();
-            int points = isPlayerInTeam ? battlePlayer.getTeam().getPoints() : battlePlayer.getPoints();
+    private static @NotNull Component getPlayerObjectiveTitle(BattlePlayer battlePlayer) {
+        if (!ForceBattle.getTimer().isRunning()) return Caption.of("waiting");
 
-            if (SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
-                return Caption.of(
-                        "bossbar.format_hide_points",
-                        TagResolver.resolver("battletype", Tag.inserting(Component.text(battlePlayer.getObjective().getBattleType().getPrefix()))),
-                        TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(battlePlayer.getObjective().getObjectiveString()))))
-                );
-            }
+        Objective playerObjective = battlePlayer.getObjective();
+        if (playerObjective == null) return Caption.of("waiting");
 
+        boolean isPlayerInTeam = battlePlayer.isInTeam();
+        int points = isPlayerInTeam ? battlePlayer.getTeam().getPoints() : battlePlayer.getPoints();
+
+        if (SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
             return Caption.of(
-                    "bossbar.format",
-                    TagResolver.resolver("battletype", Tag.inserting(Component.text(battlePlayer.getObjective().getBattleType().getPrefix()))),
-                    TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(battlePlayer.getObjective().getObjectiveString())))),
-                    TagResolver.resolver("pointstype", Tag.inserting(Component.text(isPlayerInTeam ? "Team-Points" : "Points"))),
-                    TagResolver.resolver("points", Tag.inserting(Component.text(points)))
+                    "bossbar.format_hide_points",
+                    TagResolver.resolver("battletype", Tag.inserting(Component.text(playerObjective.getBattleType().getPrefix()))),
+                    TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(playerObjective.getObjectiveString()))))
             );
-        } else {
-            return Caption.of("waiting");
         }
+
+        return Caption.of(
+                "bossbar.format",
+                TagResolver.resolver("battletype", Tag.inserting(Component.text(playerObjective.getBattleType().getPrefix()))),
+                TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(playerObjective.getObjectiveString())))),
+                TagResolver.resolver("pointstype", Tag.inserting(Component.text(isPlayerInTeam ? "Team-Points" : "Points"))),
+                TagResolver.resolver("points", Tag.inserting(Component.text(points)))
+        );
     }
 
-    private static void updateBossBar(BattlePlayer battlePlayer, BossBar bossBar) {
-        if (lastBossbarMap.containsKey(battlePlayer)) {
-            battlePlayer.getAudience().hideBossBar(lastBossbarMap.get(battlePlayer));
+    private static @NotNull Component getTeamObjectiveTitle(Team team) {
+        Objective teamObjective = team.getObjective();
+        if (teamObjective == null) return Component.empty();
+
+        if (SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
+            return Caption.of(
+                    "bossbar.team_format_hide_points",
+                    TagResolver.resolver("battletype", Tag.inserting(Component.text(teamObjective.getBattleType().getPrefix()))),
+                    TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(teamObjective.getObjectiveString()))))
+            );
+        }
+
+        return Caption.of(
+                "bossbar.team_format",
+                TagResolver.resolver("battletype", Tag.inserting(Component.text(teamObjective.getBattleType().getPrefix()))),
+                TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(teamObjective.getObjectiveString())))),
+                TagResolver.resolver("pointstype", Tag.inserting(Component.text("Team-Points"))),
+                TagResolver.resolver("points", Tag.inserting(Component.text(team.getPoints())))
+        );
+    }
+
+    private static void updateBossBar(BattlePlayer battlePlayer, BossBar bossBar, HashMap<BattlePlayer, BossBar> map) {
+        if (map.containsKey(battlePlayer)) {
+            battlePlayer.getAudience().hideBossBar(map.get(battlePlayer));
         }
         battlePlayer.getAudience().showBossBar(bossBar);
-        lastBossbarMap.put(battlePlayer, bossBar);
+        map.put(battlePlayer, bossBar);
     }
-
 }

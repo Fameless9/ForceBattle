@@ -23,7 +23,8 @@ import java.util.Map;
  */
 public final class ItemUtils {
 
-    private static final NamespacedKey SKIP_KEY = new NamespacedKey(ForceBattle.get(), "skipItem");
+    private static final NamespacedKey PLAYER_SKIP_KEY = new NamespacedKey(ForceBattle.get(), "playerSkipItem");
+    private static final NamespacedKey TEAM_SKIP_KEY = new NamespacedKey(ForceBattle.get(), "teamSkipItem");
     private static final NamespacedKey SWAP_KEY = new NamespacedKey(ForceBattle.get(), "swapItem");
 
     private ItemUtils() {
@@ -40,13 +41,23 @@ public final class ItemUtils {
     }
 
     /**
-     * Checks if the given ItemStack is a skip item.
+     * Checks if the given ItemStack is a playerSkip item.
      *
      * @param stack the ItemStack to check
-     * @return true if the ItemStack is a skip item, false otherwise
+     * @return true if the ItemStack is a playerSkip item, false otherwise
      */
-    public static boolean isSkipItem(@NotNull ItemStack stack) {
-        return hasData(stack, SKIP_KEY);
+    public static boolean isPlayerSkipItem(@NotNull ItemStack stack) {
+        return hasData(stack, PLAYER_SKIP_KEY);
+    }
+
+    /**
+     * Checks if the given ItemStack is a teamSkip item.
+     *
+     * @param stack the ItemStack to check
+     * @return true if the ItemStack is a teamSkip item, false otherwise
+     */
+    public static boolean isTeamSkipItem(@NotNull ItemStack stack) {
+        return hasData(stack, TEAM_SKIP_KEY);
     }
 
     public static boolean hasData(@NotNull ItemStack stack, NamespacedKey key) {
@@ -234,12 +245,22 @@ public final class ItemUtils {
             );
         }
 
-        public static @NotNull ItemStack getSkipItem(int amount) {
+        public static @NotNull ItemStack getPlayerSkipItem(int amount) {
             return createSpecialItem(
                     Material.BARRIER,
-                    Caption.getAsLegacy("item.skip_item_name"),
-                    Caption.getAsLegacy("item.skip_item_lore"),
-                    SKIP_KEY,
+                    Caption.getAsLegacy("item.player_skip_item_name"),
+                    Caption.getAsLegacy("item.player_skip_item_lore"),
+                    PLAYER_SKIP_KEY,
+                    amount
+            );
+        }
+
+        public static @NotNull ItemStack getTeamSkipItem(int amount) {
+            return createSpecialItem(
+                    Material.NETHER_STAR,
+                    Caption.getAsLegacy("item.team_skip_item_name"),
+                    Caption.getAsLegacy("item.team_skip_item_lore"),
+                    TEAM_SKIP_KEY,
                     amount
             );
         }
@@ -248,9 +269,11 @@ public final class ItemUtils {
             return getSwapItem(1);
         }
 
-        public static @NotNull ItemStack getSkipItem() {
-            return getSkipItem(1);
+        public static @NotNull ItemStack getPlayerSkipItem() {
+            return getPlayerSkipItem(1);
         }
+
+        public static @NotNull ItemStack getTeamSkipItem() { return getTeamSkipItem(1); }
 
         public static @NotNull ItemStack getFillerItem() {
             return new ItemBuilder()

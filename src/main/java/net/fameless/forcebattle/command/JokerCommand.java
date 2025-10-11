@@ -58,13 +58,15 @@ public class JokerCommand extends Command {
         switch (args[0]) {
             case "add" -> {
                 switch (jokerType) {
-                    case SKIP -> target.addSkip(amount);
+                    case PLAYERSKIP -> target.addPlayerSkip(amount);
+                    case TEAMSKIP -> target.addTeamSkip(amount);
                     case SWAP -> target.addSwap(amount);
                 }
             }
             case "remove" -> {
                 switch (jokerType) {
-                    case SKIP -> target.removeSkip(amount);
+                    case PLAYERSKIP -> target.removePlayerSkip(amount);
+                    case TEAMSKIP -> target.removeTeamSkip(amount);
                     case SWAP -> target.removeSwap(amount);
                 }
             }
@@ -80,7 +82,8 @@ public class JokerCommand extends Command {
             return StringUtil.copyPartialMatches(args[1], TabCompletions.getPlayerNamesTabCompletions(), new ArrayList<>());
         }
         if (args.length == 3) {
-            return StringUtil.copyPartialMatches(args[2], List.of(JokerType.SKIP.getIdentifier(), JokerType.SWAP.getIdentifier()), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[2], List.of(JokerType.PLAYERSKIP.getIdentifier(), JokerType.SWAP.getIdentifier(),
+                    JokerType.TEAMSKIP.getIdentifier()), new ArrayList<>());
         }
         if (args.length == 4) {
             return StringUtil.copyPartialMatches(args[3], List.of("amount"), new ArrayList<>());
@@ -89,7 +92,8 @@ public class JokerCommand extends Command {
     }
 
     private enum JokerType {
-        SKIP,
+        PLAYERSKIP,
+        TEAMSKIP,
         SWAP;
 
         private final String IDENTIFIER = name().toLowerCase();
