@@ -183,18 +183,6 @@ public class Team {
     }
 
     public void updateObjective(BattlePlayer finisher, boolean finishLast, boolean hasBeenSkipped) {
-        Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
-        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
-        Bukkit.getPluginManager().callEvent(updateEvent);
-        if (updateEvent.isCancelled()) {
-            logger.info("ObjectiveUpdateEvent has been denied by an external plugin.");
-            return;
-        }
-
-        setCurrentObjective(updateEvent.getNewObjective(), finisher, finishLast, hasBeenSkipped);
-    }
-
-    public void setCurrentObjective(Objective newObjective, BattlePlayer finisher, boolean finishLast, boolean hasBeenSkipped) {
         if (finishLast && this.objective != null) {
             this.objective.setFinished(finisher);
             this.objective.setHasBeenSkipped(hasBeenSkipped);
@@ -202,6 +190,14 @@ public class Team {
             finisher.setPoints(finisher.getPoints() + 1);
         }
 
+        Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
+        if (newObjective == null) return;
+
+        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
+        Bukkit.getPluginManager().callEvent(updateEvent);
+        if (updateEvent.isCancelled()) return;
+
+        this.objective = updateEvent.getNewObjective();
         if (ForceBattle.getTimer().isRunning()) {
             for (BattlePlayer member : players) {
                 member.sendMessage(Caption.of(
@@ -211,8 +207,6 @@ public class Team {
                 ));
             }
         }
-
-        this.objective = newObjective;
     }
 
     @Getter

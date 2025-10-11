@@ -187,14 +187,39 @@ public class BattlePlayer implements CommandCaller {
         return getTeam() != null;
     }
 
+    public void updateObjective(boolean finishLast, boolean hasBeenSkipped) {
+        if (finishLast && this.objective != null) {
+            this.objective.setFinished(this);
+            this.objective.setHasBeenSkipped(hasBeenSkipped);
+
+            this.points++;
+        }
+
+        Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
+        if (newObjective == null) return;
+
+        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
+        Bukkit.getPluginManager().callEvent(updateEvent);
+        if (updateEvent.isCancelled()) {
+            logger.info("ObjectiveUpdateEvent has been denied by an external plugin.");
+            return;
+        }
+
+        setCurrentObjective(updateEvent.getNewObjective(), false, false);
+
+        if (SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)) {
+            increaseChainProgress();
+        }
+    }
+
     public void setCurrentObjective(Objective newObjective, boolean finishLast, boolean hasBeenSkipped) {
-        if (finishLast) {
+        if (finishLast && this.objective != null) {
             this.objective.setFinished(this);
             this.objective.setHasBeenSkipped(hasBeenSkipped);
             this.points++;
         }
 
-        if (ForceBattle.getTimer().isRunning()) {
+        if (ForceBattle.getTimer().isRunning() && newObjective != null) {
             sendMessage(Caption.of(
                     "notification.next_objective",
                     TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(newObjective.getObjectiveString())))),
@@ -268,20 +293,6 @@ public class BattlePlayer implements CommandCaller {
 
     public void openBackpack(BattlePlayer viewer) {
         viewer.openInventory(getBackpack());
-    }
-
-    public void updateObjective(boolean finishLast, boolean hasBeenSkipped) {
-        Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
-        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
-        Bukkit.getPluginManager().callEvent(updateEvent);
-        if (updateEvent.isCancelled()) {
-            logger.info("ObjectiveUpdateEvent has been denied by an external plugin.");
-            return;
-        }
-        setCurrentObjective(updateEvent.getNewObjective(), finishLast, hasBeenSkipped);
-        if (SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)) {
-            increaseChainProgress();
-        }
     }
 
     public void playSound(Sound sound) {

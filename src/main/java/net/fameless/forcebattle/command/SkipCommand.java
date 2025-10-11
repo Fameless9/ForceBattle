@@ -51,17 +51,21 @@ public class SkipCommand extends Command {
                     );
                 }
                 case "team" -> {
-                    @NotNull Optional<Team> teamOpt = Team.ofId(Integer.parseInt(args[1]));
-                    teamOpt.ifPresentOrElse(
-                            team -> {
-                                team.updateObjective(null, false, false);
-                                team.getPlayers().forEach(player -> player.sendMessage(Caption.of("notification.skip_by_admin_target")));
-                                caller.sendMessage(Caption.of(
-                                        "notification.skip_by_admin_player",
-                                        TagResolver.resolver("player", Tag.inserting(Component.text(team.getId())))
-                                ));
-                            }, () -> caller.sendMessage(Caption.of("command.no_such_team"))
-                    );
+                    try {
+                        @NotNull Optional<Team> teamOpt = Team.ofId(Integer.parseInt(args[3]));
+                        teamOpt.ifPresentOrElse(
+                                team -> {
+                                    team.updateObjective(null, false, false);
+                                    team.getPlayers().forEach(player -> player.sendMessage(Caption.of("notification.skip_by_admin_target")));
+                                    caller.sendMessage(Caption.of(
+                                            "notification.skip_by_admin_player",
+                                            TagResolver.resolver("player", Tag.inserting(Component.text(team.getId())))
+                                    ));
+                                }, () -> caller.sendMessage(Caption.of("command.no_such_team"))
+                        );
+                    } catch (NumberFormatException e) {
+                        caller.sendMessage(Caption.of("command.not_a_number"));
+                    }
                 }
             }
         } else {

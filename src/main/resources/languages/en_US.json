@@ -105,6 +105,7 @@
   "error.game_already_started" : "<prefix><red>The game has already started.",
   "error.no_equal_teams" : "<prefix><red>No equal teams can be created.",
   "error.no_battletype_selected" : "<prefix><red>No battletype is selected, game can not be started!",
+  "error.no_objective_available" : "<prefix><red>No objective available for BattleType <type>. Possible all completed already?",
   "permission.no_permission" : "<prefix><red>Insufficient permission: <permission>.",
   "item.player_skip_item_name" : "<red>Skip",
   "item.player_skip_item_lore" : "<gray>Click to skip your current objective.",
