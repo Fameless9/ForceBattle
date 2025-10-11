@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,13 +144,28 @@ public class BattlePlayer implements CommandCaller {
     }
 
     public static int getPlace(BattlePlayer player) {
-        return getPlaces().entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().equals(player))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(-1);
+        List<BattlePlayer> sortedPlayers = new ArrayList<>(BattlePlayer.BATTLE_PLAYERS);
+        sortedPlayers.sort(Comparator.comparingInt(BattlePlayer::getPoints).reversed());
+
+        int place = 1;
+        int previousPoints = -1;
+
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            BattlePlayer current = sortedPlayers.get(i);
+
+            if (current.getPoints() != previousPoints) {
+                place = i + 1;
+                previousPoints = current.getPoints();
+            }
+
+            if (current.equals(player)) {
+                return place;
+            }
+        }
+
+        return -1;
     }
+
 
     @Override
     public CallerType callerType() {

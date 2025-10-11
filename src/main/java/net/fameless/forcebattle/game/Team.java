@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,13 +175,28 @@ public class Team {
     }
 
     public static int getPlace(Team team) {
-        return getPlaces().entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().equals(team))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(-1);
+        List<Team> sortedTeams = new ArrayList<>(Team.teams);
+        sortedTeams.sort(Comparator.comparingInt(Team::getPoints).reversed());
+
+        int place = 1;
+        int previousPoints = -1;
+
+        for (int i = 0; i < sortedTeams.size(); i++) {
+            Team current = sortedTeams.get(i);
+
+            if (current.getPoints() != previousPoints) {
+                place = i + 1;
+                previousPoints = current.getPoints();
+            }
+
+            if (current.equals(team)) {
+                return place;
+            }
+        }
+
+        return -1;
     }
+
 
     public void updateObjective(BattlePlayer finisher, boolean finishLast, boolean hasBeenSkipped) {
         if (finishLast && this.objective != null) {

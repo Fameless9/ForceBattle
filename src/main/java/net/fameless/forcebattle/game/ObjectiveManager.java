@@ -103,7 +103,11 @@ public class ObjectiveManager {
             battlePlayer.sendMessage(Caption.of(
                     "error.no_objective_available", TagResolver.resolver("type", Tag.inserting(Component.text(battleType.name())))
             ));
-            return null;
+            if (team != null) {
+                return getNewObjective(team);
+            } else {
+                return getNewObjective(battlePlayer);
+            }
         }
 
         String objectiveString = allPossible.get(random.nextInt(allPossible.size()));

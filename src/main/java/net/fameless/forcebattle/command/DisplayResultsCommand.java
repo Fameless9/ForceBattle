@@ -12,11 +12,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -42,49 +39,23 @@ public class DisplayResultsCommand extends Command {
             return;
         }
 
-        Map<BattlePlayer, Integer> PLAYER_POINTS_MAP = new HashMap<>();
-        Map<Team, Integer> TEAM_POINTS_MAP = new HashMap<>();
-
-        for (BattlePlayer battlePlayer : BattlePlayer.BATTLE_PLAYERS) {
-            PLAYER_POINTS_MAP.put(battlePlayer, battlePlayer.getPoints());
+        if (args.length == 0) {
+            sendUsage(caller);
+            return;
         }
 
-        for (Team team : Team.teams) {
-            TEAM_POINTS_MAP.put(team, team.getPoints());
-        }
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         final long delay = 750;
         final long[] counter = {0};
 
         switch (args[0].toLowerCase()) {
             case "player" -> {
-                List<Map.Entry<BattlePlayer, Integer>> sortedPlayers = PLAYER_POINTS_MAP.entrySet().stream()
-                        .sorted(Map.Entry.<BattlePlayer, Integer>comparingByValue().reversed())
-                        .toList();
+                List<BattlePlayer> sortedPlayers = new ArrayList<>(BattlePlayer.BATTLE_PLAYERS);
+                sortedPlayers.sort(Comparator.comparingInt(BattlePlayer::getPoints).reversed());
 
-                List<Map.Entry<BattlePlayer, Integer>> reversed = new ArrayList<>(sortedPlayers);
-                Collections.reverse(reversed);
-
-                int currentPlace = 0;
-                int skip = 0;
-                int lastPoints = Integer.MIN_VALUE;
-
-                Map<BattlePlayer, Integer> placeMap = new HashMap<>();
-                for (Map.Entry<BattlePlayer, Integer> entry : sortedPlayers) {
-                    int points = entry.getValue();
-                    if (points != lastPoints) {
-                        currentPlace += 1 + skip;
-                        skip = 0;
-                        lastPoints = points;
-                    } else skip++;
-                    placeMap.put(entry.getKey(), currentPlace);
-                }
-
-                for (Map.Entry<BattlePlayer, Integer> entry : reversed) {
-                    BattlePlayer player = entry.getKey();
-                    int points = entry.getValue();
-                    int place = placeMap.get(player);
+                for (BattlePlayer player : sortedPlayers) {
+                    int place = BattlePlayer.getPlace(player);
+                    int points = player.getPoints();
 
                     scheduler.schedule(() -> ForceBattle.broadcast(
                             MiniMessage.miniMessage().deserialize(
@@ -93,37 +64,15 @@ public class DisplayResultsCommand extends Command {
                     ), counter[0] * delay, TimeUnit.MILLISECONDS);
                     counter[0]++;
                 }
-
-                scheduler.shutdown();
             }
 
             case "team" -> {
-                List<Map.Entry<Team, Integer>> sortedTeams = TEAM_POINTS_MAP.entrySet().stream()
-                        .sorted(Map.Entry.<Team, Integer>comparingByValue().reversed())
-                        .toList();
+                List<Team> sortedTeams = new ArrayList<>(Team.teams);
+                sortedTeams.sort(Comparator.comparingInt(Team::getPoints).reversed());
 
-                List<Map.Entry<Team, Integer>> reversed = new ArrayList<>(sortedTeams);
-                Collections.reverse(reversed);
-
-                int currentPlace = 0;
-                int skip = 0;
-                int lastPoints = Integer.MIN_VALUE;
-
-                Map<Team, Integer> placeMap = new HashMap<>();
-                for (Map.Entry<Team, Integer> entry : sortedTeams) {
-                    int points = entry.getValue();
-                    if (points != lastPoints) {
-                        currentPlace += 1 + skip;
-                        skip = 0;
-                        lastPoints = points;
-                    } else skip++;
-                    placeMap.put(entry.getKey(), currentPlace);
-                }
-
-                for (Map.Entry<Team, Integer> entry : reversed) {
-                    Team team = entry.getKey();
-                    int points = entry.getValue();
-                    int place = placeMap.get(team);
+                for (Team team : sortedTeams) {
+                    int place = Team.getPlace(team);
+                    int points = team.getPoints();
 
                     String players = team.getPlayers().stream()
                             .sorted(Comparator.comparingInt(BattlePlayer::getPoints).reversed())
@@ -132,18 +81,18 @@ public class DisplayResultsCommand extends Command {
 
                     scheduler.schedule(() -> ForceBattle.broadcast(
                             MiniMessage.miniMessage().deserialize(
-                                    "<gold>" + place + ". <blue>" + team.getId() + " (<gray>" + players +
-                                            "<blue>)<dark_gray>: <gold>" + points
+                                    "<gold>" + place + ". <blue>" + team.getId() +
+                                            " (<gray>" + players + "<blue>)<dark_gray>: <gold>" + points
                             )
                     ), counter[0] * delay, TimeUnit.MILLISECONDS);
                     counter[0]++;
                 }
-
-                scheduler.shutdown();
             }
 
             default -> sendUsage(caller);
         }
+
+        scheduler.shutdown();
     }
 
     @Override
