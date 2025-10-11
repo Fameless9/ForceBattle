@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,13 +144,28 @@ public class BattlePlayer implements CommandCaller {
     }
 
     public static int getPlace(BattlePlayer player) {
-        return getPlaces().entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().equals(player))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(-1);
+        List<BattlePlayer> sortedPlayers = new ArrayList<>(BattlePlayer.BATTLE_PLAYERS);
+        sortedPlayers.sort(Comparator.comparingInt(BattlePlayer::getPoints).reversed());
+
+        int place = 1;
+        int previousPoints = -1;
+
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            BattlePlayer current = sortedPlayers.get(i);
+
+            if (current.getPoints() != previousPoints) {
+                place = i + 1;
+                previousPoints = current.getPoints();
+            }
+
+            if (current.equals(player)) {
+                return place;
+            }
+        }
+
+        return -1;
     }
+
 
     @Override
     public CallerType callerType() {
@@ -187,14 +203,39 @@ public class BattlePlayer implements CommandCaller {
         return getTeam() != null;
     }
 
+    public void updateObjective(boolean finishLast, boolean hasBeenSkipped) {
+        if (finishLast && this.objective != null) {
+            this.objective.setFinished(this);
+            this.objective.setHasBeenSkipped(hasBeenSkipped);
+
+            this.points++;
+        }
+
+        Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
+        if (newObjective == null) return;
+
+        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
+        Bukkit.getPluginManager().callEvent(updateEvent);
+        if (updateEvent.isCancelled()) {
+            logger.info("ObjectiveUpdateEvent has been denied by an external plugin.");
+            return;
+        }
+
+        setCurrentObjective(updateEvent.getNewObjective(), false, false);
+
+        if (SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)) {
+            increaseChainProgress();
+        }
+    }
+
     public void setCurrentObjective(Objective newObjective, boolean finishLast, boolean hasBeenSkipped) {
-        if (finishLast) {
+        if (finishLast && this.objective != null) {
             this.objective.setFinished(this);
             this.objective.setHasBeenSkipped(hasBeenSkipped);
             this.points++;
         }
 
-        if (ForceBattle.getTimer().isRunning()) {
+        if (ForceBattle.getTimer().isRunning() && newObjective != null) {
             sendMessage(Caption.of(
                     "notification.next_objective",
                     TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(newObjective.getObjectiveString())))),
@@ -268,20 +309,6 @@ public class BattlePlayer implements CommandCaller {
 
     public void openBackpack(BattlePlayer viewer) {
         viewer.openInventory(getBackpack());
-    }
-
-    public void updateObjective(boolean finishLast, boolean hasBeenSkipped) {
-        Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
-        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
-        Bukkit.getPluginManager().callEvent(updateEvent);
-        if (updateEvent.isCancelled()) {
-            logger.info("ObjectiveUpdateEvent has been denied by an external plugin.");
-            return;
-        }
-        setCurrentObjective(updateEvent.getNewObjective(), finishLast, hasBeenSkipped);
-        if (SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)) {
-            increaseChainProgress();
-        }
     }
 
     public void playSound(Sound sound) {

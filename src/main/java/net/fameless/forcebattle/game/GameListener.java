@@ -55,7 +55,8 @@ import java.util.UUID;
 
 public class GameListener implements Listener {
 
-    private final List<BattlePlayer> skipCooldown = new ArrayList<>();
+    private final List<BattlePlayer> playerSkipCooldown = new ArrayList<>();
+    private final List<BattlePlayer> teamSkipCooldown = new ArrayList<>();
     private final List<BattlePlayer> swapCooldown = new ArrayList<>();
     private boolean sentUpdateMessage = false;
     private boolean startPhase = true;
@@ -73,10 +74,6 @@ public class GameListener implements Listener {
         TaskManager.startAll();
     }
 
-    //TODO bp nach dem battle aufmachen
-    //TODO prüfen ob ruined portals gehen
-    //TODO /displayresults auf gleiche Plätze setzen wenn Punkte gleich => nächstes team dementsprechend abstufen
-    //TODO evtl dupe obj fix for both player/team idk
     //TODO better tablist
     //TODO scoreboard which shows teammate obj
 
@@ -285,7 +282,7 @@ public class GameListener implements Listener {
 
         BattlePlayer battlePlayer = BattlePlayer.adapt(event.getPlayer());
         if (battlePlayer.isExcluded()) return;
-        if (skipCooldown.contains(battlePlayer)) return;
+        if (playerSkipCooldown.contains(battlePlayer)) return;
 
         event.setCancelled(true);
 
@@ -312,8 +309,8 @@ public class GameListener implements Listener {
             ItemStack itemStack = new ItemStack(Material.valueOf(oldObjective.getObjectiveString()));
             battlePlayer.getPlayer().getWorld().dropItemNaturally(battlePlayer.getPlayer().getLocation(), itemStack);
         }
-        skipCooldown.add(battlePlayer);
-        Bukkit.getScheduler().runTaskLater(ForceBattle.get(), () -> skipCooldown.remove(battlePlayer), 20);
+        playerSkipCooldown.add(battlePlayer);
+        Bukkit.getScheduler().runTaskLater(ForceBattle.get(), () -> playerSkipCooldown.remove(battlePlayer), 20);
     }
 
     @EventHandler
@@ -325,7 +322,7 @@ public class GameListener implements Listener {
         BattlePlayer battlePlayer = BattlePlayer.adapt(event.getPlayer());
         Team team = battlePlayer.getTeam();
         if (battlePlayer.isExcluded()) return;
-        if (skipCooldown.contains(battlePlayer)) return;
+        if (teamSkipCooldown.contains(battlePlayer)) return;
 
         event.setCancelled(true);
 
@@ -363,8 +360,8 @@ public class GameListener implements Listener {
             ItemStack itemStack = new ItemStack(Material.valueOf(oldObjective.getObjectiveString()));
             battlePlayer.getPlayer().getWorld().dropItemNaturally(battlePlayer.getPlayer().getLocation(), itemStack);
         }
-        skipCooldown.add(battlePlayer);
-        Bukkit.getScheduler().runTaskLater(ForceBattle.get(), () -> skipCooldown.remove(battlePlayer), 20);
+        teamSkipCooldown.add(battlePlayer);
+        Bukkit.getScheduler().runTaskLater(ForceBattle.get(), () -> teamSkipCooldown.remove(battlePlayer), 20);
     }
 
     @EventHandler

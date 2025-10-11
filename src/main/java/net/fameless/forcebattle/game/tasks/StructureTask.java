@@ -6,7 +6,10 @@ import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.game.data.Structure;
 import net.fameless.forcebattle.game.data.StructureSimplified;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.*;
+import net.fameless.forcebattle.util.BattleType;
+import net.fameless.forcebattle.util.BukkitUtil;
+import net.fameless.forcebattle.util.Format;
+import net.fameless.forcebattle.util.Toast;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -15,11 +18,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.generator.structure.GeneratedStructure;
 import org.bukkit.generator.structure.StructurePiece;
 import org.bukkit.util.BoundingBox;
-import org.bukkit.util.StructureSearchResult;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class StructureTask implements ForceTask {
+
+    private static final Map<String, Set<BoundingBox>> STRUCTURE_CACHE = new ConcurrentHashMap<>();
 
     @Override
     public void runTick() {
@@ -82,17 +87,45 @@ public class StructureTask implements ForceTask {
     }
 
     private boolean checkPlayerLocationInStructure(Player player, org.bukkit.generator.structure.Structure bukkitStruct) {
-        StructureSearchResult result = player.getWorld().locateNearestStructure(player.getLocation(), bukkitStruct, 10, false);
-        if (result == null) return false;
-
-        Location loc = result.getLocation();
-        Optional<GeneratedStructure> generated = loc.getChunk().getStructures(bukkitStruct).stream().findFirst();
-        if (generated.isEmpty()) return false;
-
+        String worldName = player.getWorld().getName();
+        String cacheKey = worldName + ":" + bukkitStruct.getKey().getKey();
+        Set<BoundingBox> cachedBoxes = STRUCTURE_CACHE.get(cacheKey);
         Location playerLoc = player.getLocation();
-        for (StructurePiece piece : generated.get().getPieces()) {
-            if (isInsideBoundingBox(playerLoc, piece.getBoundingBox())) return true;
+
+        if (cachedBoxes != null) {
+            for (BoundingBox box : cachedBoxes) {
+                if (isInsideBoundingBox(playerLoc, box)) return true;
+            }
         }
+
+        Bukkit.getScheduler().runTaskAsynchronously(ForceBattle.get(), () -> {
+            try {
+                World world = player.getWorld();
+                Chunk center = playerLoc.getChunk();
+                int radius = 6;
+
+                Set<BoundingBox> newBoxes = new HashSet<>();
+                for (int dx = -radius; dx <= radius; dx++) {
+                    for (int dz = -radius; dz <= radius; dz++) {
+                        Chunk chunk = world.getChunkAt(center.getX() + dx, center.getZ() + dz);
+                        for (GeneratedStructure generated : chunk.getStructures(bukkitStruct)) {
+                            for (StructurePiece piece : generated.getPieces()) {
+                                newBoxes.add(piece.getBoundingBox());
+                            }
+                        }
+                    }
+                }
+
+                if (!newBoxes.isEmpty()) {
+                    STRUCTURE_CACHE.compute(cacheKey, (key, oldSet) -> {
+                        if (oldSet == null) return newBoxes;
+                        oldSet.addAll(newBoxes);
+                        return oldSet;
+                    });
+                }
+            } catch (Exception ignored) {}
+        });
+
         return false;
     }
 

@@ -1,6 +1,5 @@
 package net.fameless.forcebattle.command;
 
-import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.command.framework.CallerType;
 import net.fameless.forcebattle.command.framework.Command;
@@ -32,10 +31,6 @@ public class BackpackCommand extends Command {
     public void executeCommand(CommandCaller caller, String[] args) {
         if (!SettingsManager.isEnabled(SettingsManager.Setting.BACKPACK)) {
             caller.sendMessage(Caption.of("error.backpacks_disabled"));
-            return;
-        }
-        if (!ForceBattle.getTimer().isRunning()) {
-            caller.sendMessage(Caption.of("error.game_not_started"));
             return;
         }
 

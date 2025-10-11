@@ -1,6 +1,7 @@
 package net.fameless.forcebattle.game;
 
 import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.game.data.BiomeSimplified;
 import net.fameless.forcebattle.game.data.StructureSimplified;
@@ -9,6 +10,9 @@ import net.fameless.forcebattle.game.data.Advancement;
 import net.fameless.forcebattle.util.BattleType;
 import net.fameless.forcebattle.util.BukkitUtil;
 import net.fameless.forcebattle.game.data.Structure;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,7 +26,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -96,7 +99,16 @@ public class ObjectiveManager {
             allPossible.removeIf(finished::contains);
         }
 
-        if (allPossible.isEmpty()) return null;
+        if (allPossible.isEmpty()) {
+            battlePlayer.sendMessage(Caption.of(
+                    "error.no_objective_available", TagResolver.resolver("type", Tag.inserting(Component.text(battleType.name())))
+            ));
+            if (team != null) {
+                return getNewObjective(team);
+            } else {
+                return getNewObjective(battlePlayer);
+            }
+        }
 
         String objectiveString = allPossible.get(random.nextInt(allPossible.size()));
         return new Objective(battleType, objectiveString);

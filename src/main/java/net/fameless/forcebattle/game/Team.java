@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,27 +175,30 @@ public class Team {
     }
 
     public static int getPlace(Team team) {
-        return getPlaces().entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().equals(team))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(-1);
-    }
+        List<Team> sortedTeams = new ArrayList<>(Team.teams);
+        sortedTeams.sort(Comparator.comparingInt(Team::getPoints).reversed());
 
-    public void updateObjective(BattlePlayer finisher, boolean finishLast, boolean hasBeenSkipped) {
-        Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
-        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
-        Bukkit.getPluginManager().callEvent(updateEvent);
-        if (updateEvent.isCancelled()) {
-            logger.info("ObjectiveUpdateEvent has been denied by an external plugin.");
-            return;
+        int place = 1;
+        int previousPoints = -1;
+
+        for (int i = 0; i < sortedTeams.size(); i++) {
+            Team current = sortedTeams.get(i);
+
+            if (current.getPoints() != previousPoints) {
+                place = i + 1;
+                previousPoints = current.getPoints();
+            }
+
+            if (current.equals(team)) {
+                return place;
+            }
         }
 
-        setCurrentObjective(updateEvent.getNewObjective(), finisher, finishLast, hasBeenSkipped);
+        return -1;
     }
 
-    public void setCurrentObjective(Objective newObjective, BattlePlayer finisher, boolean finishLast, boolean hasBeenSkipped) {
+
+    public void updateObjective(BattlePlayer finisher, boolean finishLast, boolean hasBeenSkipped) {
         if (finishLast && this.objective != null) {
             this.objective.setFinished(finisher);
             this.objective.setHasBeenSkipped(hasBeenSkipped);
@@ -202,6 +206,14 @@ public class Team {
             finisher.setPoints(finisher.getPoints() + 1);
         }
 
+        Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
+        if (newObjective == null) return;
+
+        ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
+        Bukkit.getPluginManager().callEvent(updateEvent);
+        if (updateEvent.isCancelled()) return;
+
+        this.objective = updateEvent.getNewObjective();
         if (ForceBattle.getTimer().isRunning()) {
             for (BattlePlayer member : players) {
                 member.sendMessage(Caption.of(
@@ -211,8 +223,6 @@ public class Team {
                 ));
             }
         }
-
-        this.objective = newObjective;
     }
 
     @Getter
