@@ -1,5 +1,6 @@
 game-duration: 5400
-skips: 3
+playerSkips: 3
+teamSkips : 1
 swaps: 1
 reset-advancements-on-finish: true
 first-startup: true
@@ -50,13 +51,6 @@ exclude:
         - REINFORCED_DEEPSLATE
         - BUDDING_AMETHYST
         - CHORUS_PLANT
-        - INFESTED_CHISELED_STONE_BRICKS
-        - INFESTED_CRACKED_STONE_BRICKS
-        - INFESTED_COBBLESTONE
-        - INFESTED_DEEPSLATE
-        - INFESTED_MOSSY_STONE_BRICKS
-        - INFESTED_STONE
-        - INFESTED_STONE_BRICKS
         - MOB_SPAWNER
         - SPAWNER
         - LEASH_KNOT
@@ -67,62 +61,78 @@ exclude:
         - OMINOUS_TRIAL_SPAWNER
         - TRIAL_SPAWNER
         - SUSPICIOUS_GRAVEL
+        - SUSPICIOUS_SAND
         - FROGSPAWN
     mobs:
-        - MINECART_COMMAND
-        - ARMOR_STAND
-        - ENDER_SIGNAL
-        - LAMA_SPIT
-        - ENDER_PEARL
-        - PRIMED_TNT
-        - PAINTING
-        - EVOKER_FANGS
-        - GLOW_ITEM_FRAME
-        - MINECART_CHEST
-        - ARROW
-        - MINECART_FURNACE
-        - MARKER
-        - MINECART_TNT
-        - ITEM_FRAME
-        - SHULKER_BULLET
-        - ITEM_DISPLAY
-        - MINECART_COMMAND
-        - PRIMED_TNT
-        - MINECART_MOB_SPAWNER
-        - AREA_EFFECT_CLOUD
-        - BOAT
-        - SNOWBALL
-        - DROPPED_ITEM
-        - THROWN_EXP_BOTTLE
-        - BLOCK_DISPLAY
-        - CHEST_BOAT
-        - SMALL_FIREBALL
-        - UNKNOWN
-        - TEXT_DISPLAY
-        - INTERACTION
-        - SPLASH_POTION
-        - FIREBALL
-        - SPECTRAL_ARROW
-        - ENDER_SIGNAL
-        - FISHING_HOOK
-        - FISHING_BOBBER
-        - FIREWORK
         - EXPERIENCE_ORB
-        - FALLING_BLOCK
-        - DRAGON_FIREBALL
+        - AREA_EFFECT_CLOUD
         - EGG
-        - LEASH_HITCH
-        - MINECART
-        - LIGHTNING
-        - MINECART_HOPPER
-        - ILLUSIONER
-        - GIANT
-        - WITHER_SKULL
-        - TRIDENT
-        - ENDER_CRYSTAL
+        - LEASH_KNOT
+        - PAINTING
+        - ARROW
+        - SNOWBALL
+        - FIREBALL
+        - SMALL_FIREBALL
+        - ENDER_PEARL
+        - EYE_OF_ENDER
+        - POTION
+        - EXPERIENCE_BOTTLE
         - ITEM_FRAME
+        - WITHER_SKULL
         - TNT
+        - FALLING_BLOCK
+        - FIREWORK_ROCKET
+        - SPECTRAL_ARROW
+        - SHULKER_BULLET
+        - DRAGON_FIREBALL
+        - ZOMBIE_HORSE
+        - ARMOR_STAND
+        - EVOKER_FANGS
+        - ILLUSIONER
+        - COMMAND_BLOCK_MINECART
+        - MINECART
+        - CHEST_MINECART
+        - FURNACE_MINECART
+        - TNT_MINECART
+        - HOPPER_MINECART
+        - SPAWNER_MINECART
+        - GIANT
+        - LLAMA_SPIT
+        - END_CRYSTAL
+        - TRIDENT
+        - GLOW_ITEM_FRAME
+        - MARKER
+        - BLOCK_DISPLAY
+        - INTERACTION
+        - ITEM_DISPLAY
+        - TEXT_DISPLAY
+        - WIND_CHARGE
+        - BREEZE_WIND_CHARGE
+        - OMINOUS_ITEM_SPAWNER
+        - ACACIA_BOAT
+        - ACACIA_CHEST_BOAT
+        - BAMBOO_RAFT
+        - BAMBOO_CHEST_RAFT
+        - BIRCH_BOAT
+        - BIRCH_CHEST_BOAT
+        - CHERRY_BOAT
+        - CHERRY_CHEST_BOAT
+        - DARK_OAK_BOAT
+        - DARK_OAK_CHEST_BOAT
+        - JUNGLE_BOAT
+        - JUNGLE_CHEST_BOAT
+        - MANGROVE_BOAT
+        - MANGROVE_CHEST_BOAT
+        - OAK_BOAT
+        - OAK_CHEST_BOAT
+        - PALE_OAK_BOAT
+        - PALE_OAK_CHEST_BOAT
+        - SPRUCE_BOAT
+        - SPRUCE_CHEST_BOAT
+        - FISHING_BOBBER
         - LIGHTNING_BOLT
+        - UNKNOWN
+        - ITEM
     biomes:
         - THE_VOID
 

@@ -23,25 +23,65 @@ public class ItemTask implements ForceTask {
         for (Player player : Bukkit.getOnlinePlayers()) {
             BattlePlayer battlePlayer = BattlePlayer.adapt(player);
             if (battlePlayer.isExcluded()) continue;
-            if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_ITEM) continue;
 
-            String objectiveString = battlePlayer.getObjective().getObjectiveString();
-            if (BukkitUtil.convertObjective(BattleType.FORCE_ITEM, objectiveString) instanceof Material objective) {
-                if (player.getInventory().contains(objective)) {
-                    battlePlayer.sendMessage(Caption.of(
-                            "notification.objective_finished",
-                            TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(objectiveString))))
-                    ));
-                    Toast.display(
-                            player,
-                            objective,
-                            ChatColor.BLUE + Format.formatName(objectiveString),
-                            Toast.Style.GOAL,
-                            ForceBattle.get()
-                    );
-                    battlePlayer.updateObjective(true, false);
-                }
-            }
+            checkPlayerObjective(battlePlayer, player);
+            checkTeamObjective(battlePlayer, player);
         }
+    }
+
+    private void checkPlayerObjective(BattlePlayer battlePlayer, Player player) {
+        if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_ITEM) return;
+
+        String objective = battlePlayer.getObjective().getObjectiveString();
+        if (hasRequiredItem(player, objective)) {
+            completeObjective(battlePlayer, objective);
+            battlePlayer.updateObjective(true, false);
+        }
+    }
+
+    private void checkTeamObjective(BattlePlayer battlePlayer, Player player) {
+        if (!battlePlayer.isInTeam()) return;
+        if (battlePlayer.getTeam().getObjective() == null) return;
+        if (battlePlayer.getTeam().getObjective().getBattleType() != BattleType.FORCE_ITEM) return;
+
+        String objective = battlePlayer.getTeam().getObjective().getObjectiveString();
+        if (hasRequiredItem(player, objective)) {
+            completeObjective(battlePlayer, objective);
+            battlePlayer.getTeam().updateObjective(battlePlayer, true, false);
+        }
+    }
+
+    private boolean hasRequiredItem(Player player, String objectiveString) {
+        Object obj = BukkitUtil.convertObjective(BattleType.FORCE_ITEM, objectiveString);
+        if (!(obj instanceof Material material)) return false;
+        return player.getInventory().contains(material);
+    }
+
+    private void completeObjective(BattlePlayer player, String objective) {
+        String formattedObjective = Format.formatName(objective);
+        Object obj = BukkitUtil.convertObjective(BattleType.FORCE_ITEM, objective);
+        Material toastIcon = obj instanceof Material mat ? mat : Material.BOOK;
+        ForceBattle plugin = ForceBattle.get();
+
+        if (player.isInTeam() && SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE)) {
+            Component teammateMsg = Caption.of(
+                    "notification.objective_finished_by_teammate",
+                    TagResolver.resolver("player", Tag.inserting(Component.text(player.getName()))),
+                    TagResolver.resolver("objective", Tag.inserting(Component.text(formattedObjective)))
+            );
+
+            player.getTeam().getPlayers().stream()
+                    .filter(teammate -> teammate != player)
+                    .forEach(teammate -> {
+                        teammate.sendMessage(teammateMsg);
+                        Toast.display(teammate.getPlayer(), toastIcon, ChatColor.BLUE + formattedObjective, Toast.Style.GOAL, plugin);
+                    });
+        }
+
+        player.sendMessage(Caption.of(
+                "notification.objective_finished",
+                TagResolver.resolver("objective", Tag.inserting(Component.text(formattedObjective)))
+        ));
+        Toast.display(player.getPlayer(), toastIcon, ChatColor.BLUE + formattedObjective, Toast.Style.GOAL, plugin);
     }
 }

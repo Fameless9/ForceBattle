@@ -300,11 +300,18 @@ public class BattlePlayer implements CommandCaller {
         return getPlayer().hasPermission(permission);
     }
 
-    public void addSkip(final int amount) {
+    public void addPlayerSkip(final int amount) {
         if (getPlayer() == null) {
             return;
         }
-        getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSkipItem(amount));
+        getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getPlayerSkipItem(amount));
+    }
+
+    public void addTeamSkip(final int amount) {
+        if (getPlayer() == null) {
+            return;
+        }
+        getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getTeamSkipItem(amount));
     }
 
     public void addSwap(final int amount) {
@@ -314,11 +321,18 @@ public class BattlePlayer implements CommandCaller {
         getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSwapItem(amount));
     }
 
-    public void removeSkip(final int amount) {
+    public void removePlayerSkip(final int amount) {
         if (getPlayer() == null) {
             return;
         }
-        getPlayer().getInventory().removeItem(ItemUtils.SpecialItems.getSkipItem(amount));
+        getPlayer().getInventory().removeItem(ItemUtils.SpecialItems.getPlayerSkipItem(amount));
+    }
+
+    public void removeTeamSkip(final int amount) {
+        if (getPlayer() == null) {
+            return;
+        }
+        getPlayer().getInventory().removeItem(ItemUtils.SpecialItems.getTeamSkipItem(amount));
     }
 
     public void removeSwap(final int amount) {

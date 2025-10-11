@@ -4,6 +4,7 @@ import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.command.framework.CallerType;
 import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.CommandCaller;
+import net.fameless.forcebattle.game.Team;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.util.StringUtil;
 import net.fameless.forcebattle.util.TabCompletions;
@@ -32,20 +33,37 @@ public class SkipCommand extends Command {
     @Override
     public void executeCommand(CommandCaller caller, String[] args) {
         if (args.length > 0) {
-            @NotNull Optional<BattlePlayer> battlePlayerOpt = BattlePlayer.adapt(args[0]);
-            battlePlayerOpt.ifPresentOrElse(
-                    battlePlayer -> {
-                        if (battlePlayer.isOffline()) {
-                            return;
-                        }
-                        battlePlayer.updateObjective(false, false);
-                        battlePlayer.sendMessage(Caption.of("notification.skip_by_admin_target"));
-                        caller.sendMessage(Caption.of(
-                                "notification.skip_by_admin_player",
-                                TagResolver.resolver("player", Tag.inserting(Component.text(battlePlayer.getName())))
-                        ));
-                    }, () -> caller.sendMessage(Caption.of("command.no_such_player"))
-            );
+            switch (args[0]) {
+                case "player" -> {
+                    @NotNull Optional<BattlePlayer> battlePlayerOpt = BattlePlayer.adapt(args[1]);
+                    battlePlayerOpt.ifPresentOrElse(
+                            battlePlayer -> {
+                                if (battlePlayer.isOffline()) {
+                                    return;
+                                }
+                                battlePlayer.updateObjective(false, false);
+                                battlePlayer.sendMessage(Caption.of("notification.skip_by_admin_target"));
+                                caller.sendMessage(Caption.of(
+                                        "notification.skip_by_admin_player",
+                                        TagResolver.resolver("player", Tag.inserting(Component.text(battlePlayer.getName())))
+                                ));
+                            }, () -> caller.sendMessage(Caption.of("command.no_such_player"))
+                    );
+                }
+                case "team" -> {
+                    @NotNull Optional<Team> teamOpt = Team.ofId(Integer.parseInt(args[1]));
+                    teamOpt.ifPresentOrElse(
+                            team -> {
+                                team.updateObjective(null, false, false);
+                                team.getPlayers().forEach(player -> player.sendMessage(Caption.of("notification.skip_by_admin_target")));
+                                caller.sendMessage(Caption.of(
+                                        "notification.skip_by_admin_player",
+                                        TagResolver.resolver("player", Tag.inserting(Component.text(team.getId())))
+                                ));
+                            }, () -> caller.sendMessage(Caption.of("command.no_such_team"))
+                    );
+                }
+            }
         } else {
             sendUsage(caller);
         }
@@ -54,7 +72,13 @@ public class SkipCommand extends Command {
     @Override
     public List<String> tabComplete(CommandCaller caller, String @NotNull [] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], TabCompletions.getPlayerNamesTabCompletions(), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[0], List.of("player", "team"), new ArrayList<>());
+        } else if (args.length == 2) {
+            return switch (args[0]) {
+                case "player" -> StringUtil.copyPartialMatches(args[1], TabCompletions.getPlayerNamesTabCompletions(), new ArrayList<>());
+                case "team" -> StringUtil.copyPartialMatches(args[1], TabCompletions.getTeamIdTabCompletions(), new ArrayList<>());
+                default -> List.of();
+            };
         }
         return List.of();
     }

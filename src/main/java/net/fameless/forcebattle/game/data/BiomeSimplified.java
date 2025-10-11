@@ -28,7 +28,6 @@ public enum BiomeSimplified {
     END("The End", List.of(Biome.THE_END, Biome.SMALL_END_ISLANDS, Biome.END_MIDLANDS, Biome.END_HIGHLANDS, Biome.END_BARRENS)),
     FROZEN("Frozen", List.of(Biome.ICE_SPIKES, Biome.FROZEN_OCEAN, Biome.DEEP_FROZEN_OCEAN, Biome.FROZEN_PEAKS, Biome.FROZEN_RIVER)),
     MUSHROOM_FIELDS("Mushroom Fields", List.of(Biome.MUSHROOM_FIELDS)),
-
     ;
 
     private final String name;

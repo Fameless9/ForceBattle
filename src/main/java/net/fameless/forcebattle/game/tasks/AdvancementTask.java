@@ -4,9 +4,7 @@ import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.BattleType;
-import net.fameless.forcebattle.util.BukkitUtil;
-import net.fameless.forcebattle.util.Toast;
+import net.fameless.forcebattle.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -32,37 +30,76 @@ public class AdvancementTask implements ForceTask {
         for (Player player : Bukkit.getOnlinePlayers()) {
             BattlePlayer battlePlayer = BattlePlayer.adapt(player);
             if (battlePlayer.isExcluded()) continue;
-            if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_ADVANCEMENT) continue;
 
-            String objectiveString = battlePlayer.getObjective().getObjectiveString();
-            if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objectiveString) instanceof net.fameless.forcebattle.game.data.Advancement advancement) {
-                if (hasAdvancement(player, advancement.getKey())) {
-                    battlePlayer.sendMessage(Caption.of(
-                            "notification.objective_finished",
-                            TagResolver.resolver("objective", Tag.inserting(Component.text(advancement.getName())))
-                    ));
-                    if (ForceBattle.get().getConfig().getBoolean("reset-advancements-on-finish", true)) {resetAdvancements(player);}
-
-                    Toast.display(
-                            player,
-                            Material.BREWING_STAND,
-                            ChatColor.BLUE + advancement.getName(),
-                            Toast.Style.GOAL,
-                            ForceBattle.get()
-                    );
-                    battlePlayer.updateObjective(true, false);
-                }
-            }
+            checkPlayerObjective(battlePlayer, player);
+            checkTeamObjective(battlePlayer, player);
         }
     }
 
-    private boolean hasAdvancement(Player player, NamespacedKey key) {
-        @NotNull Optional<Advancement> advancementOptional = getAdvancement(key);
-        if (advancementOptional.isPresent()) {
-            AdvancementProgress progress = player.getAdvancementProgress(advancementOptional.get());
-            return progress.isDone();
+    private void checkPlayerObjective(BattlePlayer battlePlayer, Player player) {
+        if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_ADVANCEMENT) return;
+
+        String objective = battlePlayer.getObjective().getObjectiveString();
+        if (hasCompletedAdvancement(player, objective)) {
+            completeObjective(battlePlayer, objective);
+            if (ForceBattle.get().getConfig().getBoolean("reset-advancements-on-finish", true)) {
+                resetAdvancements(player);
+            }
+            battlePlayer.updateObjective(true, false);
         }
-        return false;
+    }
+
+    private void checkTeamObjective(BattlePlayer battlePlayer, Player player) {
+        if (!battlePlayer.isInTeam()) return;
+        if (battlePlayer.getTeam().getObjective() == null) return;
+        if (battlePlayer.getTeam().getObjective().getBattleType() != BattleType.FORCE_ADVANCEMENT) return;
+
+        String objective = battlePlayer.getTeam().getObjective().getObjectiveString();
+        if (hasCompletedAdvancement(player, objective)) {
+            completeObjective(battlePlayer, objective);
+            if (ForceBattle.get().getConfig().getBoolean("reset-advancements-on-finish", true)) {
+                resetAdvancements(player);
+            }
+            battlePlayer.getTeam().updateObjective(battlePlayer, true, false);
+        }
+    }
+
+    private boolean hasCompletedAdvancement(Player player, String objectiveString) {
+        Object obj = BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objectiveString);
+        if (!(obj instanceof net.fameless.forcebattle.game.data.Advancement adv)) return false;
+
+        Optional<Advancement> advancementOpt = getAdvancement(adv.getKey());
+        if (advancementOpt.isEmpty()) return false;
+
+        AdvancementProgress progress = player.getAdvancementProgress(advancementOpt.get());
+        return progress.isDone();
+    }
+
+    private void completeObjective(BattlePlayer player, String objective) {
+        String formattedObjective = Format.formatName(objective);
+        Material toastIcon = Material.BREWING_STAND;
+        ForceBattle plugin = ForceBattle.get();
+
+        if (player.isInTeam() && SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE)) {
+            Component teammateMsg = Caption.of(
+                    "notification.objective_finished_by_teammate",
+                    TagResolver.resolver("player", Tag.inserting(Component.text(player.getName()))),
+                    TagResolver.resolver("objective", Tag.inserting(Component.text(formattedObjective)))
+            );
+
+            player.getTeam().getPlayers().stream()
+                    .filter(teammate -> teammate != player)
+                    .forEach(teammate -> {
+                        teammate.sendMessage(teammateMsg);
+                        Toast.display(teammate.getPlayer(), toastIcon, ChatColor.BLUE + formattedObjective, Toast.Style.GOAL, plugin);
+                    });
+        }
+
+        player.sendMessage(Caption.of(
+                "notification.objective_finished",
+                TagResolver.resolver("objective", Tag.inserting(Component.text(formattedObjective)))
+        ));
+        Toast.display(player.getPlayer(), toastIcon, ChatColor.BLUE + formattedObjective, Toast.Style.GOAL, plugin);
     }
 
     private @NotNull Optional<Advancement> getAdvancement(NamespacedKey key) {
@@ -76,7 +113,7 @@ public class AdvancementTask implements ForceTask {
         return Optional.empty();
     }
 
-    public void resetAdvancements(Player player) {
+    private void resetAdvancements(Player player) {
         Iterator<Advancement> iterator = Bukkit.getServer().advancementIterator();
         while (iterator.hasNext()) {
             AdvancementProgress progress = player.getAdvancementProgress(iterator.next());
@@ -85,5 +122,4 @@ public class AdvancementTask implements ForceTask {
             }
         }
     }
-
 }

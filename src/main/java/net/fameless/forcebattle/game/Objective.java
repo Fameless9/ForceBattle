@@ -55,7 +55,9 @@ public class Objective {
         objectives.remove(this);
     }
 
-    public boolean hasBeenSkipped() { return hasBeenSkipped; }
+    public boolean hasBeenSkipped() {
+        return hasBeenSkipped;
+    }
 
     public int getTime() {
         if (!isFinished()) {
@@ -72,5 +74,4 @@ public class Objective {
         this.whoFinished = whoFinished;
         this.time = ForceBattle.getTimer().getTime();
     }
-
 }

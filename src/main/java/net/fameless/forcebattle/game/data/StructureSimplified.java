@@ -7,7 +7,8 @@ import java.util.List;
 public enum StructureSimplified {
     VILLAGE("Village", List.of(Structure.VILLAGE_PLAINS, Structure.VILLAGE_SAVANNA, Structure.VILLAGE_SNOWY, Structure.VILLAGE_TAIGA, Structure.VILLAGE_DESERT)),
     PILLAGER_OUTPOST("Pillager Outpost", List.of(Structure.PILLAGER_OUTPOST)),
-    RUINED_PORTAL("Ruined Portal", List.of(Structure.RUINED_PORTAL_MOUNTAIN, Structure.RUINED_PORTAL_DESERT, Structure.RUINED_PORTAL_JUNGLE, Structure.RUINED_PORTAL_OCEAN, Structure.RUINED_PORTAL_SWAMP, Structure.RUINED_PORTAL_NETHER)),
+    //RUINED_PORTAL("Ruined Portal", List.of(Structure.RUINED_PORTAL_MOUNTAIN, Structure.RUINED_PORTAL_DESERT, Structure.RUINED_PORTAL_JUNGLE,
+    //               Structure.RUINED_PORTAL_OCEAN, Structure.RUINED_PORTAL_SWAMP, Structure.RUINED_PORTAL_NETHER)),
     OCEAN_RUIN("Ocean Ruin", List.of(Structure.OCEAN_RUIN_COLD, Structure.OCEAN_RUIN_WARM)),
     TRIAL_CHAMBERS("Trial Chambers", List.of(Structure.TRIAL_CHAMBERS)),
     SHIPWRECK("Shipwreck", List.of(Structure.SHIPWRECK, Structure.SHIPWRECK_BEACHED)),

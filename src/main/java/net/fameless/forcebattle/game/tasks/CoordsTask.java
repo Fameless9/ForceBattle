@@ -4,10 +4,7 @@ import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.BattleType;
-import net.fameless.forcebattle.util.BukkitUtil;
-import net.fameless.forcebattle.util.Format;
-import net.fameless.forcebattle.util.Toast;
+import net.fameless.forcebattle.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -19,6 +16,8 @@ import org.bukkit.entity.Player;
 
 public class CoordsTask implements ForceTask {
 
+    private static final double COMPLETION_RADIUS = 2.0;
+
     @Override
     public void runTick() {
         if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_COORDS)) return;
@@ -27,34 +26,77 @@ public class CoordsTask implements ForceTask {
         for (Player player : Bukkit.getOnlinePlayers()) {
             BattlePlayer battlePlayer = BattlePlayer.adapt(player);
             if (battlePlayer.isExcluded()) continue;
-            if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_COORDS) continue;
 
-            String objectiveString = battlePlayer.getObjective().getObjectiveString();
-
-            if (BukkitUtil.convertObjective(BattleType.FORCE_COORDS, objectiveString) instanceof Location coords) {
-                double targetX = coords.getX();
-                double targetZ = coords.getZ();
-
-                double distance = player.getLocation().distance(
-                        new Location(player.getWorld(), targetX, player.getLocation().getY(), targetZ)
-                );
-
-                if (distance <= 2.0) {
-                    battlePlayer.sendMessage(Caption.of(
-                            "notification.objective_finished",
-                            TagResolver.resolver("objective", Tag.inserting(Component.text(targetX + ", " + targetZ)))
-                    ));
-                    Toast.display(
-                            player,
-                            Material.COMPASS,
-                            ChatColor.BLUE + Format.formatName(objectiveString),
-                            Toast.Style.GOAL,
-                            ForceBattle.get()
-                    );
-                    battlePlayer.updateObjective(true, false);
-                }
-            }
+            checkPlayerObjective(battlePlayer, player);
+            checkTeamObjective(battlePlayer, player);
         }
     }
 
+    private void checkPlayerObjective(BattlePlayer battlePlayer, Player player) {
+        if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_COORDS) return;
+
+        String objective = battlePlayer.getObjective().getObjectiveString();
+        if (isAtCoordinates(player, objective)) {
+            completeObjective(battlePlayer, objective);
+            battlePlayer.updateObjective(true, false);
+        }
+    }
+
+    private void checkTeamObjective(BattlePlayer battlePlayer, Player player) {
+        if (!battlePlayer.isInTeam()) return;
+        if (battlePlayer.getTeam().getObjective() == null) return;
+        if (battlePlayer.getTeam().getObjective().getBattleType() != BattleType.FORCE_COORDS) return;
+
+        String objective = battlePlayer.getTeam().getObjective().getObjectiveString();
+        if (isAtCoordinates(player, objective)) {
+            completeObjective(battlePlayer, objective);
+            battlePlayer.getTeam().updateObjective(battlePlayer, true, false);
+        }
+    }
+
+    private boolean isAtCoordinates(Player player, String objectiveString) {
+        Object obj = BukkitUtil.convertObjective(BattleType.FORCE_COORDS, objectiveString);
+        if (!(obj instanceof Location target)) return false;
+
+        Location playerLoc = player.getLocation();
+        Location targetLoc = new Location(player.getWorld(), target.getX(), playerLoc.getY(), target.getZ());
+        double distance = playerLoc.distance(targetLoc);
+
+        return distance <= COMPLETION_RADIUS;
+    }
+
+    private void completeObjective(BattlePlayer player, String objective) {
+        Object obj = BukkitUtil.convertObjective(BattleType.FORCE_COORDS, objective);
+        String coordsDisplay;
+
+        if (obj instanceof Location loc) {
+            coordsDisplay = String.format("%.0f, %.0f", loc.getX(), loc.getZ());
+        } else {
+            coordsDisplay = Format.formatName(objective);
+        }
+
+        Material toastIcon = Material.COMPASS;
+        ForceBattle plugin = ForceBattle.get();
+
+        if (player.isInTeam() && SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE)) {
+            Component teammateMsg = Caption.of(
+                    "notification.objective_finished_by_teammate",
+                    TagResolver.resolver("player", Tag.inserting(Component.text(player.getName()))),
+                    TagResolver.resolver("objective", Tag.inserting(Component.text(coordsDisplay)))
+            );
+
+            player.getTeam().getPlayers().stream()
+                    .filter(teammate -> teammate != player)
+                    .forEach(teammate -> {
+                        teammate.sendMessage(teammateMsg);
+                        Toast.display(teammate.getPlayer(), toastIcon, ChatColor.BLUE + coordsDisplay, Toast.Style.GOAL, plugin);
+                    });
+        }
+
+        player.sendMessage(Caption.of(
+                "notification.objective_finished",
+                TagResolver.resolver("objective", Tag.inserting(Component.text(coordsDisplay)))
+        ));
+        Toast.display(player.getPlayer(), toastIcon, ChatColor.BLUE + coordsDisplay, Toast.Style.GOAL, plugin);
+    }
 }
