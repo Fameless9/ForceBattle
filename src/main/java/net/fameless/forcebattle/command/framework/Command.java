@@ -11,6 +11,7 @@ import net.fameless.forcebattle.command.JokerCommand;
 import net.fameless.forcebattle.command.LanguageCommand;
 import net.fameless.forcebattle.command.PointsCommand;
 import net.fameless.forcebattle.command.RandomTeamsCommand;
+import net.fameless.forcebattle.command.RecipeCommand;
 import net.fameless.forcebattle.command.ResetCommand;
 import net.fameless.forcebattle.command.ResultCommand;
 import net.fameless.forcebattle.command.SettingsCommand;
@@ -91,6 +92,7 @@ public abstract class Command {
         new LanguageCommand();
         new PointsCommand();
         new RandomTeamsCommand();
+        new RecipeCommand();
         new ResetCommand();
         new ResultCommand();
         new SettingsCommand();
