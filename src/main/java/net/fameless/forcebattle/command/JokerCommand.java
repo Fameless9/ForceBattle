@@ -5,7 +5,7 @@ import net.fameless.forcebattle.command.framework.CallerType;
 import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.CommandCaller;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.StringUtil;
+import net.fameless.forcebattle.util.StringUtility;
 import net.fameless.forcebattle.util.TabCompletions;
 
 import java.util.ArrayList;
@@ -76,17 +76,17 @@ public class JokerCommand extends Command {
     @Override
     protected List<String> tabComplete(final CommandCaller caller, final String[] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("add", "remove"), new ArrayList<>());
+            return StringUtility.copyPartialMatches(args[0], List.of("add", "remove"), new ArrayList<>());
         }
         if (args.length == 2) {
-            return StringUtil.copyPartialMatches(args[1], TabCompletions.getPlayerNamesTabCompletions(), new ArrayList<>());
+            return StringUtility.copyPartialMatches(args[1], TabCompletions.getPlayerNamesTabCompletions(), new ArrayList<>());
         }
         if (args.length == 3) {
-            return StringUtil.copyPartialMatches(args[2], List.of(JokerType.PLAYERSKIP.getIdentifier(), JokerType.SWAP.getIdentifier(),
+            return StringUtility.copyPartialMatches(args[2], List.of(JokerType.PLAYERSKIP.getIdentifier(), JokerType.SWAP.getIdentifier(),
                     JokerType.TEAMSKIP.getIdentifier()), new ArrayList<>());
         }
         if (args.length == 4) {
-            return StringUtil.copyPartialMatches(args[3], List.of("amount"), new ArrayList<>());
+            return StringUtility.copyPartialMatches(args[3], List.of("amount"), new ArrayList<>());
         }
         return List.of();
     }

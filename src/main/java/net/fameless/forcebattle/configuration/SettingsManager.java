@@ -1,6 +1,7 @@
 package net.fameless.forcebattle.configuration;
 
 import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.gui.impl.SettingsGUI;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.util.BattleType;
 import org.bukkit.ChatColor;
@@ -61,21 +62,14 @@ public class SettingsManager {
         BattlePlayer.BATTLE_PLAYERS.forEach(player -> player.updateObjective(false, false));
     }
 
-    public static void setForceItemEnabled(boolean enabled) { setState(Setting.FORCE_ITEM, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setForceMobEnabled(boolean enabled) { setState(Setting.FORCE_MOB, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setForceBiomeEnabled(boolean enabled) { setState(Setting.FORCE_BIOME, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setForceAdvancementEnabled(boolean enabled) { setState(Setting.FORCE_ADVANCEMENT, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setForceHeightEnabled(boolean enabled) { setState(Setting.FORCE_HEIGHT, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setForceCoordsEnabled(boolean enabled) { setState(Setting.FORCE_COORDS, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setForceStructureEnabled(boolean enabled) { setState(Setting.FORCE_STRUCTURE, enabled ? SettingState.PLAYER : SettingState.OFF); }
-
-    public static void setChainModeEnabled(boolean enabled) { setState(Setting.CHAIN_MODE, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setBackpackEnabled(boolean enabled) { setState(Setting.BACKPACK, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setHidePointsEnabled(boolean enabled) { setState(Setting.HIDE_POINTS, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setHideObjectivesEnabled(boolean enabled) { setState(Setting.HIDE_OBJECTIVES, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setNoDuplicateObjectivesEnabled(boolean enabled) { setState(Setting.NO_DUPLICATE_OBJECTIVES, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setSimplifiedObjectivesEnabled(boolean enabled) { setState(Setting.SIMPLIFIED_OBJECTIVES, enabled ? SettingState.PLAYER : SettingState.OFF); }
-    public static void setExtraTeamObjectivesEnabled(boolean enabled) { setState(Setting.EXTRA_TEAM_OBJECTIVE, enabled ? SettingState.TEAM : SettingState.OFF); }
+    public static boolean isMultiState(Setting setting) {
+        for (SettingsGUI.SettingButton button : SettingsGUI.SettingButton.values()) {
+            if (button.getSetting() == setting) {
+                return button.isMultiState();
+            }
+        }
+        return false;
+    }
 
     public enum Setting {
         FORCE_ITEM,
@@ -85,14 +79,24 @@ public class SettingsManager {
         FORCE_HEIGHT,
         FORCE_COORDS,
         FORCE_STRUCTURE,
+
         BACKPACK,
         CHAIN_MODE,
         HIDE_POINTS,
         HIDE_OBJECTIVES,
         NO_DUPLICATE_OBJECTIVES,
         SIMPLIFIED_OBJECTIVES,
-        EXTRA_TEAM_OBJECTIVE
+        EXTRA_TEAM_OBJECTIVE,
+
+        EXCLUDE_MUSIC_DISCS,
+        EXCLUDE_BANNER_PATTERNS,
+        EXCLUDE_ARMOR_TEMPLATES,
+        EXCLUDE_POTTERY_SHERDS,
+        EXCLUDE_ORES,
+        EXCLUDE_END_ITEMS,
+        EXCLUDE_TRIAL_ITEMS,
     }
+
 
     public enum SettingState {
         OFF(ChatColor.RED + "Off"),
@@ -100,22 +104,31 @@ public class SettingsManager {
         TEAM(ChatColor.AQUA + "Team"),
         BOTH(ChatColor.GOLD + "Both");
 
-        private final String displayName;
+        private final String defaultName;
 
-        SettingState(String displayName) {
-            this.displayName = displayName;
+        SettingState(String defaultName) {
+            this.defaultName = defaultName;
         }
 
-        public String getDisplayName() {
-            return displayName;
+        public SettingState next(boolean multiState) {
+            if (multiState) {
+                return switch (this) {
+                    case OFF -> PLAYER;
+                    case PLAYER -> TEAM;
+                    case TEAM -> BOTH;
+                    case BOTH -> OFF;
+                };
+            } else {
+                return this == OFF ? PLAYER : OFF;
+            }
         }
 
-        public SettingState next() {
+        public String getDisplayName(boolean multiState) {
+            if (multiState) return defaultName;
+
             return switch (this) {
-                case OFF -> PLAYER;
-                case PLAYER -> TEAM;
-                case TEAM -> BOTH;
-                case BOTH -> OFF;
+                case OFF -> ChatColor.RED + "Off";
+                default -> ChatColor.GREEN + "On";
             };
         }
     }

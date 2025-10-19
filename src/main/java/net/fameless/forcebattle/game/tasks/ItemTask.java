@@ -4,7 +4,10 @@ import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.*;
+import net.fameless.forcebattle.util.BattleType;
+import net.fameless.forcebattle.util.BukkitUtil;
+import net.fameless.forcebattle.util.StringUtility;
+import net.fameless.forcebattle.util.Toast;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -58,7 +61,7 @@ public class ItemTask implements ForceTask {
     }
 
     private void completeObjective(BattlePlayer player, String objective) {
-        String formattedObjective = Format.formatName(objective);
+        String formattedObjective = StringUtility.formatName(objective);
         Object obj = BukkitUtil.convertObjective(BattleType.FORCE_ITEM, objective);
         Material toastIcon = obj instanceof Material mat ? mat : Material.BOOK;
         ForceBattle plugin = ForceBattle.get();

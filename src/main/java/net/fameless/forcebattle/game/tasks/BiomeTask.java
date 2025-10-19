@@ -5,7 +5,10 @@ import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.game.data.BiomeSimplified;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.*;
+import net.fameless.forcebattle.util.BattleType;
+import net.fameless.forcebattle.util.BukkitUtil;
+import net.fameless.forcebattle.util.StringUtility;
+import net.fameless.forcebattle.util.Toast;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -69,7 +72,7 @@ public class BiomeTask implements ForceTask {
     }
 
     private void completeObjective(BattlePlayer player, String objective) {
-        String formattedObjective = Format.formatName(objective);
+        String formattedObjective = StringUtility.formatName(objective);
         Material toastIcon = Material.GRASS_BLOCK;
         ForceBattle plugin = ForceBattle.get();
 

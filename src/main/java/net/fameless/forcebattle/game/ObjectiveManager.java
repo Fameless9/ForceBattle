@@ -3,13 +3,13 @@ package net.fameless.forcebattle.game;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
+import net.fameless.forcebattle.game.data.FBAdvancement;
 import net.fameless.forcebattle.game.data.BiomeSimplified;
+import net.fameless.forcebattle.game.data.FBStructure;
 import net.fameless.forcebattle.game.data.StructureSimplified;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.game.data.Advancement;
 import net.fameless.forcebattle.util.BattleType;
 import net.fameless.forcebattle.util.BukkitUtil;
-import net.fameless.forcebattle.game.data.Structure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -145,24 +145,23 @@ public class ObjectiveManager {
         List<Material> availableItems = new ArrayList<>();
 
         List<String> itemsToExclude = ForceBattle.get().getConfig().getStringList("exclude.items");
-        boolean excludeSpawnEggs = ForceBattle.get().getConfig().getBoolean("exclude.exclude_spawn_eggs", true);
-        boolean excludeMusicDiscs = ForceBattle.get().getConfig().getBoolean("exclude.exclude_music_discs", false);
-        boolean excludeBannerPatterns = ForceBattle.get().getConfig().getBoolean("exclude.exclude_banner_patterns", true);
-        boolean excludeBanners = ForceBattle.get().getConfig().getBoolean("exclude.exclude_banners", true);
-        boolean excludeArmorTemplates = ForceBattle.get().getConfig().getBoolean("exclude.exclude_armor_templates", false);
-        boolean excludePotteryShreds = ForceBattle.get().getConfig().getBoolean("exclude.exclude_pottery_sherds", false);
-        boolean excludeOres = ForceBattle.get().getConfig().getBoolean("exclude.exclude_ores", false);
+        boolean excludeMusicDiscs = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_MUSIC_DISCS);
+        boolean excludeBannerPatterns = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_BANNER_PATTERNS);
+        boolean excludeArmorTemplates = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_ARMOR_TEMPLATES);
+        boolean excludePotteryShreds = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_POTTERY_SHERDS);
+        boolean excludeOres = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_ORES);
+        boolean excludeEndItems = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_END_ITEMS);
 
         for (Material material : Material.values()) {
             if (!material.isItem()) continue;
             if (itemsToExclude.contains(material.name())) continue;
-            if (excludeSpawnEggs && material.name().endsWith("SPAWN_EGG")) continue;
             if (excludeMusicDiscs && material.name().contains("DISC")) continue;
             if (excludeBannerPatterns && material.name().endsWith("BANNER_PATTERN")) continue;
-            if (excludeBanners && material.name().endsWith("BANNER")) continue;
             if (excludeArmorTemplates && material.name().endsWith("TEMPLATE")) continue;
             if (excludePotteryShreds && material.name().endsWith("POTTERY_SHERD")) continue;
             if (excludeOres && material.name().endsWith("ORE")) continue;
+            if (excludeEndItems && ENDITEMS.contains(material)) continue;
+            if (material.name().endsWith("SPAWN_EGG")) continue;
             if (material.name().endsWith("CANDLE_CAKE")) continue;
             if (material.name().startsWith("POTTED")) continue;
             if (material.name().contains("PETRIFIED")) continue;
@@ -215,12 +214,12 @@ public class ObjectiveManager {
         return list;
     }
 
-    public List<Advancement> getAvailableAdvancements() {
-        List<Advancement> availableAdvancements = new ArrayList<>();
+    public List<FBAdvancement> getAvailableAdvancements() {
+        List<FBAdvancement> availableAdvancements = new ArrayList<>();
 
         List<String> advancementsToExclude = ForceBattle.get().getConfig().getStringList("exclude.advancements");
 
-        for (Advancement advancement : Advancement.values()) {
+        for (FBAdvancement advancement : FBAdvancement.values()) {
             if (advancementsToExclude.contains(advancement.name())) {
                 continue;
             }
@@ -262,12 +261,12 @@ public class ObjectiveManager {
         return new Location(player.getWorld(), x, y, z);
     }
 
-    public List<Structure> getAvailableStructures() {
-        List<Structure> availableStructures = new ArrayList<>();
+    public List<FBStructure> getAvailableStructures() {
+        List<FBStructure> availableStructures = new ArrayList<>();
 
         List<String> structuresToExclude = ForceBattle.get().getConfig().getStringList("exclude.structures");
 
-        for (Structure structure : Structure.values()) {
+        for (FBStructure structure : FBStructure.values()) {
             if (structuresToExclude.contains(structure.getKey())) {
                 continue;
             }
@@ -324,4 +323,14 @@ public class ObjectiveManager {
         Collections.shuffle(chainList);
     }
 
+    private final List<Material> ENDITEMS = List.of(
+            Material.END_STONE, Material.END_STONE_BRICK_SLAB, Material.END_STONE_BRICKS, Material.END_STONE_BRICK_STAIRS, Material.END_STONE_BRICK_WALL,
+            Material.END_PORTAL_FRAME, Material.END_PORTAL, Material.END_GATEWAY, Material.END_ROD, Material.ELYTRA, Material.PURPUR_BLOCK, Material.PURPUR_PILLAR,
+            Material.PURPUR_SLAB, Material.PURPUR_STAIRS, Material.CHORUS_FLOWER, Material.CHORUS_FRUIT, Material.CHORUS_PLANT, Material.POPPED_CHORUS_FRUIT,
+            Material.DRAGON_BREATH, Material.DRAGON_EGG, Material.DRAGON_HEAD, Material.DRAGON_WALL_HEAD, Material.SHULKER_SHELL, Material.SHULKER_BOX,
+            Material.BLUE_SHULKER_BOX, Material.BLACK_SHULKER_BOX, Material.CYAN_SHULKER_BOX, Material.BROWN_SHULKER_BOX, Material.GRAY_SHULKER_BOX,
+            Material.GREEN_SHULKER_BOX, Material.LIGHT_BLUE_SHULKER_BOX, Material.LIGHT_GRAY_SHULKER_BOX, Material.LIME_SHULKER_BOX, Material.MAGENTA_SHULKER_BOX,
+            Material.ORANGE_SHULKER_BOX, Material.PINK_SHULKER_BOX, Material.PURPLE_SHULKER_BOX, Material.RED_SHULKER_BOX, Material.WHITE_SHULKER_BOX,
+            Material.YELLOW_SHULKER_BOX, Material.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE
+    );
 }

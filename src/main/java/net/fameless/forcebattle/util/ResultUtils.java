@@ -18,9 +18,10 @@ public class ResultUtils {
                 .append(Component.text(player.getName()).color(NamedTextColor.GOLD))
                 .append(Component.text(" | Place: " + place + " | Points: " + player.getPoints())
                         .color(NamedTextColor.YELLOW))
-                .append(Component.text(" [Open GUI]")
+                .append(Component.text(" [Open Results]")
                         .color(NamedTextColor.GREEN)
-                        .clickEvent(ClickEvent.runCommand("/result player " + player.getName())));
+                        .clickEvent(ClickEvent.runCommand("/result player " + player.getName()))
+                );
     }
 
     public static Component buildTeamResultMessage(Team team) {
@@ -35,7 +36,7 @@ public class ResultUtils {
                 .append(Component.text(" [" + players + "] ")).color(NamedTextColor.GRAY)
                 .append(Component.text(" | Place: " + place + " | Points: " + team.getPoints())
                         .color(NamedTextColor.YELLOW))
-                .append(Component.text(" [Open GUI]")
+                .append(Component.text(" [Open Results]")
                         .color(NamedTextColor.GREEN)
                         .clickEvent(ClickEvent.runCommand("/result team " + team.getId())));
     }

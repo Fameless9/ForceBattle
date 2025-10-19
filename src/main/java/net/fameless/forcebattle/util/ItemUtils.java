@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -216,6 +217,11 @@ public final class ItemUtils {
             return this;
         }
 
+        public ItemBuilder addFlags(ItemFlag... flags) {
+            this.flags.addAll(Arrays.asList(flags));
+            return this;
+        }
+
         public ItemBuilder itemStack(ItemStack itemStack) {
             this.stack = itemStack;
             return this;
@@ -257,7 +263,7 @@ public final class ItemUtils {
 
         public static @NotNull ItemStack getTeamSkipItem(int amount) {
             return createSpecialItem(
-                    Material.NETHER_STAR,
+                    Material.KNOWLEDGE_BOOK,
                     Caption.getAsLegacy("item.team_skip_item_name"),
                     Caption.getAsLegacy("item.team_skip_item_lore"),
                     TEAM_SKIP_KEY,
@@ -295,7 +301,7 @@ public final class ItemUtils {
                             .type(material)
                             .amount(amount)
                             .name(name)
-                            .lore(Format.formatLineBreaks(lore))
+                            .lore(StringUtility.formatLineBreaks(lore))
                             .build(),
                     new ItemData<>(key, PersistentDataType.INTEGER, 1)
             );

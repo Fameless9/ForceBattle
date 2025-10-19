@@ -3,6 +3,7 @@ package net.fameless.forcebattle.command.framework;
 import lombok.Getter;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.command.BackpackCommand;
+import net.fameless.forcebattle.command.ConfigSettingsCommand;
 import net.fameless.forcebattle.command.DisplayResultsCommand;
 import net.fameless.forcebattle.command.ExcludeCommand;
 import net.fameless.forcebattle.command.HelpCommand;
@@ -93,6 +94,7 @@ public abstract class Command {
         new ResetCommand();
         new ResultCommand();
         new SettingsCommand();
+        new ConfigSettingsCommand();
         new SkipCommand();
         new TeamCommand();
         new TimerCommand();

@@ -77,7 +77,9 @@ public final class Toast {
         createAdvancement();
         players.forEach(this::grantAdvancement);
 
-        Bukkit.getScheduler().runTaskLater(main, () -> players.forEach(this::revokeAdvancement), 10);
+        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) {
+            Bukkit.getScheduler().runTaskLater(main, () -> players.forEach(this::revokeAdvancement), 10);
+        }
     }
 
     private void createAdvancement() {

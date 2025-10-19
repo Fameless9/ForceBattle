@@ -4,7 +4,10 @@ import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.*;
+import net.fameless.forcebattle.util.BattleType;
+import net.fameless.forcebattle.util.BukkitUtil;
+import net.fameless.forcebattle.util.StringUtility;
+import net.fameless.forcebattle.util.Toast;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -72,7 +75,7 @@ public class CoordsTask implements ForceTask {
         if (obj instanceof Location loc) {
             coordsDisplay = String.format("%.0f, %.0f", loc.getX(), loc.getZ());
         } else {
-            coordsDisplay = Format.formatName(objective);
+            coordsDisplay = StringUtility.formatName(objective);
         }
 
         Material toastIcon = Material.COMPASS;

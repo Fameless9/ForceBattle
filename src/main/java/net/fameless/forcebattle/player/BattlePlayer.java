@@ -15,7 +15,7 @@ import net.fameless.forcebattle.game.Objective;
 import net.fameless.forcebattle.game.Team;
 import net.fameless.forcebattle.util.BackpackInventoryHolder;
 import net.fameless.forcebattle.util.BukkitUtil;
-import net.fameless.forcebattle.util.Format;
+import net.fameless.forcebattle.util.StringUtility;
 import net.fameless.forcebattle.util.ItemUtils;
 import net.fameless.forcebattle.util.StructureUtil;
 import net.kyori.adventure.audience.Audience;
@@ -30,7 +30,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scoreboard.Scoreboard;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -184,6 +183,9 @@ public class BattlePlayer implements CommandCaller {
     }
 
     public Audience getAudience() {
+        if (BukkitUtil.BUKKIT_AUDIENCES == null) {
+            logger.warn("[ForceBattle] Bukkit audiences not initialized!");
+        }
         if (getPlayer() == null) {
             return Audience.empty();
         }
@@ -238,7 +240,7 @@ public class BattlePlayer implements CommandCaller {
         if (ForceBattle.getTimer().isRunning() && newObjective != null) {
             sendMessage(Caption.of(
                     "notification.next_objective",
-                    TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(newObjective.getObjectiveString())))),
+                    TagResolver.resolver("objective", Tag.inserting(Component.text(StringUtility.formatName(newObjective.getObjectiveString())))),
                     TagResolver.resolver("objective_type", Tag.inserting(Component.text(newObjective.getBattleType().getPrefix())))
             ));
         }
@@ -320,7 +322,7 @@ public class BattlePlayer implements CommandCaller {
     }
 
     @Override
-    public boolean hasPermission(@NonNull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         if (getPlayer() == null) {
             return false;
         }

@@ -7,7 +7,7 @@ import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.CommandCaller;
 import net.fameless.forcebattle.game.Team;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.StringUtil;
+import net.fameless.forcebattle.util.StringUtility;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -98,7 +98,7 @@ public class DisplayResultsCommand extends Command {
     @Override
     public List<String> tabComplete(CommandCaller caller, String @NotNull [] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("player", "team"), new ArrayList<>());
+            return StringUtility.copyPartialMatches(args[0], List.of("player", "team"), new ArrayList<>());
         }
         return List.of();
     }

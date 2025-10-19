@@ -1,9 +1,9 @@
 package net.fameless.forcebattle.util;
 
 import net.fameless.forcebattle.ForceBattle;
-import net.fameless.forcebattle.game.data.Advancement;
+import net.fameless.forcebattle.game.data.FBAdvancement;
 import net.fameless.forcebattle.game.data.BiomeSimplified;
-import net.fameless.forcebattle.game.data.Structure;
+import net.fameless.forcebattle.game.data.FBStructure;
 import net.fameless.forcebattle.game.data.StructureSimplified;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
@@ -83,7 +83,7 @@ public final class BukkitUtil {
 
     private static @Nullable Object tryAdvancement(String value) {
         try {
-            return Advancement.valueOf(value);
+            return FBAdvancement.valueOf(value);
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -121,7 +121,7 @@ public final class BukkitUtil {
         }
 
         try {
-            return Structure.valueOf(value);
+            return FBStructure.valueOf(value);
         } catch (IllegalArgumentException e) {
             return null;
         }

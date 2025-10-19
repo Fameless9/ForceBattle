@@ -16,7 +16,7 @@ import net.fameless.forcebattle.game.tasks.TaskManager;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.util.BattleType;
 import net.fameless.forcebattle.util.BukkitUtil;
-import net.fameless.forcebattle.util.Format;
+import net.fameless.forcebattle.util.StringUtility;
 import net.fameless.forcebattle.util.ItemUtils;
 import net.fameless.forcebattle.util.StructureUtil;
 import net.fameless.forcebattle.util.Toast;
@@ -39,6 +39,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -76,6 +77,9 @@ public class GameListener implements Listener {
 
     //TODO better tablist
     //TODO scoreboard which shows teammate obj
+    //TODO click im chat fixen
+    //TODO evtl /item => zeigt rezept an => wenn gui system done is
+    //TODO commands von cords ausführen
 
     @EventHandler
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
@@ -104,7 +108,7 @@ public class GameListener implements Listener {
                     }
                 }
 
-                String formattedTime = Format.formatTime(ForceBattle.getTimer().getTime());
+                String formattedTime = StringUtility.formatTime(ForceBattle.getTimer().getTime());
 
                 final String kickMessage = "§c§l✖ A game is currently running! ✖\n\n" +
                         "§7⏳ Time remaining: §6" + formattedTime + "\n\n" +
@@ -148,6 +152,9 @@ public class GameListener implements Listener {
         World world = Bukkit.getWorld("world");
         ForceBattle.broadcast(Caption.of("notification.battle_started"));
         world.setTime(0);
+        world.setStorm(false);
+        world.setThundering(false);
+        world.setWeatherDuration(0);
 
         Bukkit.getStructureManager().deleteStructure(new NamespacedKey("forcebattle", "spawn"), true);
 
@@ -163,6 +170,8 @@ public class GameListener implements Listener {
         }
 
         for (BattlePlayer player : BattlePlayer.getOnlinePlayers()) {
+            if (player.getPlayer() == null) return;
+
             if (player.getObjective() == null) {
                 player.updateObjective(false, false);
             }
@@ -180,7 +189,7 @@ public class GameListener implements Listener {
             player.getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getPlayerSkipItem(ForceBattle.get().getConfig().getInt("playerSkips", 3)));
             player.getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getSwapItem(ForceBattle.get().getConfig().getInt("swaps", 1)));
 
-            if (SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE)) {
+            if (SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE) && player.isInTeam()) {
                 player.getPlayer().getInventory().addItem(ItemUtils.SpecialItems.getTeamSkipItem(ForceBattle.get().getConfig().getInt("teamSkips", 1)));
             }
 
@@ -193,9 +202,23 @@ public class GameListener implements Listener {
         ForceBattle.broadcast(Caption.of("notification.battle_over"));
 
         for (BattlePlayer player : BattlePlayer.getOnlinePlayers()) {
+            if (player.getPlayer() == null) return;
+
             player.getPlayer().teleport(Bukkit.getWorld("world").getSpawnLocation());
             player.getPlayer().setHealth(20);
             player.getPlayer().setSaturation(20);
+        }
+    }
+
+    @EventHandler
+    public void onHungerChange(FoodLevelChangeEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        if (!ForceBattle.getTimer().isRunning()) {
+            event.setCancelled(true);
+
+            player.setFoodLevel(20);
+            player.setSaturation(20);
         }
     }
 
@@ -248,7 +271,7 @@ public class GameListener implements Listener {
     }
 
     private void completeObjective(BattlePlayer player, String objective) {
-        String formattedObjective = Format.formatName(objective);
+        String formattedObjective = StringUtility.formatName(objective);
         Material toastIcon = Material.DIAMOND_SWORD;
         ForceBattle plugin = ForceBattle.get();
 
@@ -299,7 +322,7 @@ public class GameListener implements Listener {
 
         battlePlayer.sendMessage(Caption.of(
                 "notification.objective_skipped",
-                TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(oldObjective.getObjectiveString()))))
+                TagResolver.resolver("objective", Tag.inserting(Component.text(StringUtility.formatName(oldObjective.getObjectiveString()))))
         ));
         battlePlayer.updateObjective(true, true);
 
@@ -342,14 +365,14 @@ public class GameListener implements Listener {
                 player.sendMessage(Caption.of(
                         "notification.objective_skipped_by_teammate",
                         TagResolver.resolver("player", Tag.inserting(Component.text(player.getName()))),
-                        TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(oldObjective.getObjectiveString()))))
+                        TagResolver.resolver("objective", Tag.inserting(Component.text(StringUtility.formatName(oldObjective.getObjectiveString()))))
                 ));
             }
         });
 
         battlePlayer.sendMessage(Caption.of(
                 "notification.objective_skipped",
-                TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(oldObjective.getObjectiveString()))))
+                TagResolver.resolver("objective", Tag.inserting(Component.text(StringUtility.formatName(oldObjective.getObjectiveString()))))
         ));
 
         team.updateObjective(battlePlayer, true, true);

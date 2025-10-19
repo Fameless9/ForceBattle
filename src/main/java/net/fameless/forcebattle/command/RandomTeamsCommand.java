@@ -46,10 +46,8 @@ public class RandomTeamsCommand extends Command {
                 return;
             }
 
-            System.out.println("Size: " + size);
-            List<BattlePlayer> players = new ArrayList<>(BattlePlayer.BATTLE_PLAYERS);
+            List<BattlePlayer> players = new ArrayList<>(BattlePlayer.getOnlinePlayers());
             int playerAmount = players.size();
-            System.out.println("PlayerAmount: " + playerAmount);
 
             if (playerAmount % size != 0) {
                 caller.sendMessage(Caption.of("error.no_equal_teams"));
@@ -58,7 +56,6 @@ public class RandomTeamsCommand extends Command {
 
             Random random = new Random();
             int amountOfTeams = playerAmount / size;
-            System.out.println("AmountOfTeams: " + amountOfTeams);
 
             for (int i = 0; i < amountOfTeams; i++) {
                 BattlePlayer player = players.get(random.nextInt(players.size()));
@@ -81,7 +78,6 @@ public class RandomTeamsCommand extends Command {
                 for (BattlePlayer player : team.getPlayers()) {
                     names.add(player.getName() + ", ");
                 }
-                System.out.println("Team " + team.getId() + ": " + names);
             }
         }
     }

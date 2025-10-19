@@ -9,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SettingsCommand extends Command {
+public class ConfigSettingsCommand extends Command {
 
-    public SettingsCommand() {
+    public ConfigSettingsCommand() {
         super(
-                "settings",
+                "configsettings",
                 List.of("menu"),
                 CallerType.PLAYER,
-                "/settings",
+                "/configsettings",
                 "forcebattle.settings",
                 "Command to open the settings menu"
         );
