@@ -57,6 +57,8 @@ public class SettingsGUI extends ForceBattleGUI {
                 "gui.simplified_objectives_name", "gui.simplified_objectives_lore", "notification.simplified_objectives_changed"),
         EXTRA_TEAM_OBJECTIVE(33, Material.ALLAY_SPAWN_EGG, SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE, false,
                 "gui.extra_team_objective_name", "gui.extra_team_objective_lore", "notification.extra_team_objective_changed"),
+        SHOW_SCOREBOARD(34, Material.ARMOR_STAND, SettingsManager.Setting.SHOW_SCOREBOARD, false,
+                "gui.show_scoreboard_name", "gui.show_scoreboard_lore", "notification.show_scoreboard_changed"),
 
         RESET(35, Material.BARRIER, null, false, ChatColor.RED + "RESET", null, null);
 

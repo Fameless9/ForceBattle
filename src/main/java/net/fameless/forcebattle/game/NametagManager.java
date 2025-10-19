@@ -5,6 +5,7 @@ import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.game.data.FBAdvancement;
 import net.fameless.forcebattle.player.BattlePlayer;
+import net.fameless.forcebattle.scoreboard.ScoreboardManager;
 import net.fameless.forcebattle.util.BattleType;
 import net.fameless.forcebattle.util.BukkitUtil;
 import net.fameless.forcebattle.util.StringUtility;
@@ -17,92 +18,75 @@ import org.jetbrains.annotations.NotNull;
 
 public class NametagManager {
 
-    private static Scoreboard scoreboard = null;
-
-    private static Scoreboard getCustomScoreboard() {
-        if (scoreboard == null) {
-            scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        }
-        return scoreboard;
-    }
-
     public static void runTask() {
-        Bukkit.getScheduler().runTaskTimer(ForceBattle.get(), () -> BattlePlayer.BATTLE_PLAYERS.forEach(NametagManager::updateNametag), 0, 3);
+        Bukkit.getScheduler().runTaskTimer(ForceBattle.get(), () ->
+                BattlePlayer.BATTLE_PLAYERS.forEach(NametagManager::updateNametag), 0, 3);
     }
 
     private static void updateNametag(@NotNull BattlePlayer battlePlayer) {
-        if (battlePlayer.isOffline()) {
-            Team team = getCustomScoreboard().getTeam(battlePlayer.getUuid().toString());
-            if (team != null) {
-                team.unregister();
+        Player player = battlePlayer.getPlayer();
+        if (player == null) return;
+
+        Scoreboard scoreboard = ScoreboardManager.getOrCreateScoreboard(battlePlayer);
+
+        for (BattlePlayer targetPlayer : BattlePlayer.BATTLE_PLAYERS) {
+            Player target = targetPlayer.getPlayer();
+            if (target == null) continue;
+
+            Team team = scoreboard.getTeam(targetPlayer.getUuid().toString());
+            if (team == null) {
+                team = scoreboard.registerNewTeam(targetPlayer.getUuid().toString());
+                team.addEntry(targetPlayer.getName());
             }
-            for (Player target : Bukkit.getOnlinePlayers()) {
-                Team targetTeam = target.getScoreboard().getTeam(battlePlayer.getUuid().toString());
-                if (targetTeam != null && targetTeam.hasEntry(battlePlayer.getName())) {
-                    targetTeam.removeEntry(battlePlayer.getName());
+
+            StringBuilder suffix = new StringBuilder(" ");
+
+            if (targetPlayer.isExcluded()) {
+                suffix.append(Caption.getAsLegacy("excluded"));
+            } else if (!ForceBattle.getTimer().isRunning()) {
+                suffix.append(Caption.getAsLegacy("waiting"));
+            } else {
+                var objective = targetPlayer.getObjective();
+                String objectiveString;
+
+                if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objective.getObjectiveString()) instanceof FBAdvancement advancement) {
+                    objectiveString = advancement.name;
+                } else {
+                    objectiveString = StringUtility.formatName(objective.getObjectiveString());
+                }
+
+                if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)) {
+                    suffix.append(" ")
+                            .append(ChatColor.GRAY)
+                            .append(objective.getBattleType().getPrefix())
+                            .append(ChatColor.DARK_GRAY)
+                            .append(" » ")
+                            .append(ChatColor.BLUE)
+                            .append(objectiveString);
+                }
+
+                if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)
+                        && !SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
+                    suffix.append(ChatColor.DARK_GRAY).append(" |");
+                }
+
+                if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
+                    suffix.append(" ").append(ChatColor.GRAY).append("Points")
+                            .append(ChatColor.DARK_GRAY).append(" » ")
+                            .append(ChatColor.BLUE).append(targetPlayer.getPoints());
+                }
+
+                var teamData = targetPlayer.getTeam();
+                if (teamData != null) {
+                    suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GRAY)
+                            .append("Team").append(ChatColor.DARK_GRAY).append(" » ")
+                            .append(ChatColor.BLUE).append(teamData.getId());
                 }
             }
-        }
 
-        Team team = getCustomScoreboard().getTeam(battlePlayer.getUuid().toString());
-        if (team == null) {
-            team = getCustomScoreboard().registerNewTeam(battlePlayer.getUuid().toString());
-        }
-        if (!team.hasEntry(battlePlayer.getName())) {
-            team.addEntry(battlePlayer.getName());
-        }
-        battlePlayer.setScoreboard(getCustomScoreboard());
-
-        StringBuilder suffix = new StringBuilder(" ");
-
-        if (battlePlayer.isExcluded()) {
-            suffix.append(Caption.getAsLegacy("excluded"));
             team.setSuffix(suffix.toString());
-            return;
         }
 
-        if (!ForceBattle.getTimer().isRunning()) {
-            suffix.append(Caption.getAsLegacy("waiting"));
-            team.setSuffix(suffix.toString());
-            return;
-        }
-
-        String objectiveString;
-        Objective objective = battlePlayer.getObjective();
-        if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objective.getObjectiveString()) instanceof FBAdvancement advancement) {
-            objectiveString = advancement.name;
-        } else {
-            objectiveString = StringUtility.formatName(objective.getObjectiveString());
-        }
-
-        if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)) {
-            suffix
-                    .append(" ")
-                    .append(ChatColor.GRAY)
-                    .append(objective.getBattleType().getPrefix())
-                    .append(ChatColor.DARK_GRAY)
-                    .append(" » ")
-                    .append(ChatColor.BLUE)
-                    .append(
-                            objectiveString);
-        }
-
-        if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES) && !SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
-            suffix.append(ChatColor.DARK_GRAY).append(" |");
-        }
-
-        if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
-            suffix.append(" ").append(ChatColor.GRAY).append("Points").append(ChatColor.DARK_GRAY).append(" » ")
-                    .append(ChatColor.BLUE).append(battlePlayer.getPoints());
-        }
-
-        net.fameless.forcebattle.game.Team playerTeam = battlePlayer.getTeam();
-        if (playerTeam != null) {
-            suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GRAY).append("Team").append(ChatColor.DARK_GRAY).append(" » ")
-                    .append(ChatColor.BLUE).append(playerTeam.getId());
-        }
-        String formattedSuffix = suffix.toString();
-        team.setSuffix(formattedSuffix);
+        player.setScoreboard(scoreboard);
     }
-
 }
