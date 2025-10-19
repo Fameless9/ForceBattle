@@ -76,10 +76,8 @@ public class GameListener implements Listener {
     }
 
     //TODO better tablist
-    //TODO scoreboard which shows teammate obj
-    //TODO click im chat fixen
     //TODO evtl /item => zeigt rezept an => wenn gui system done is
-    //TODO commands von cords ausführen
+    //TODO commands von cords ausführen (for spawn)
 
     @EventHandler
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {

@@ -87,6 +87,7 @@ public class SettingsManager {
         NO_DUPLICATE_OBJECTIVES,
         SIMPLIFIED_OBJECTIVES,
         EXTRA_TEAM_OBJECTIVE,
+        SHOW_SCOREBOARD,
 
         EXCLUDE_MUSIC_DISCS,
         EXCLUDE_BANNER_PATTERNS,

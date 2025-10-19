@@ -1,8 +1,10 @@
 package net.fameless.forcebattle.scoreboard;
 
 import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.game.Team;
 import net.fameless.forcebattle.player.BattlePlayer;
+import net.fameless.forcebattle.util.BattleType;
 import net.fameless.forcebattle.util.StringUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,29 +15,34 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class ScoreboardManager {
 
     private static final Map<BattlePlayer, Scoreboard> SCOREBOARDS = new HashMap<>();
+    private static final Map<BattlePlayer, Map<Integer, String>> LAST_LINES = new HashMap<>();
 
     public static void startUpdater() {
-        Bukkit.getLogger().info("[ForceBattle] Scoreboard updater started.");
-
-        Bukkit.getScheduler().runTaskTimer(ForceBattle.get(), ScoreboardManager::updateAll, 1L, 1L);
+        Bukkit.getScheduler().runTaskTimer(ForceBattle.get(), ScoreboardManager::updateAll, 20L, 20L);
     }
 
     public static void updateAll() {
         for (BattlePlayer battlePlayer : BattlePlayer.getOnlinePlayers()) {
-            if (battlePlayer.isExcluded() || !ForceBattle.getTimer().isRunning()) {
+            boolean shouldHaveScoreboard = !battlePlayer.isExcluded() && ForceBattle.getTimer().isRunning();
+
+            if (shouldHaveScoreboard && SettingsManager.isEnabled(SettingsManager.Setting.SHOW_SCOREBOARD)) {
+                updateScoreboard(battlePlayer);
+            } else if (SCOREBOARDS.containsKey(battlePlayer) && !SettingsManager.isEnabled(SettingsManager.Setting.SHOW_SCOREBOARD)) {
                 removeScoreboard(battlePlayer);
-                continue;
             }
-            updateScoreboard(battlePlayer);
         }
     }
 
+    public static Scoreboard getOrCreateScoreboard(BattlePlayer player) {
+        return SCOREBOARDS.computeIfAbsent(player, p -> Bukkit.getScoreboardManager().getNewScoreboard());
+    }
+
     public static void updateScoreboard(BattlePlayer player) {
-        Scoreboard scoreboard = SCOREBOARDS.computeIfAbsent(player,
-                p -> Bukkit.getScoreboardManager().getNewScoreboard());
+        Scoreboard scoreboard = getOrCreateScoreboard(player);
 
         Objective obj = scoreboard.getObjective("fb_info");
         if (obj == null) {
@@ -44,48 +51,85 @@ public class ScoreboardManager {
             obj.setDisplaySlot(DisplaySlot.SIDEBAR);
         }
 
-        scoreboard.getEntries().forEach(scoreboard::resetScores);
+        Map<Integer, String> last = LAST_LINES.computeIfAbsent(player, p -> new HashMap<>());
+        Map<Integer, String> newLines = new HashMap<>();
 
         int line = 15;
 
         var selfObjective = player.getObjective();
         if (selfObjective != null) {
-            obj.getScore(ChatColor.YELLOW + "Your Objective:").setScore(line--);
-            obj.getScore(ChatColor.WHITE + StringUtility.formatName(selfObjective.getObjectiveString())).setScore(line--);
+            newLines.put(line--, ChatColor.YELLOW + "Your Objective:");
+            newLines.put(line--, ChatColor.WHITE + getObjectiveDisplay(selfObjective));
         } else {
-            obj.getScore(ChatColor.GRAY + "No current objective").setScore(line--);
+            newLines.put(line--, ChatColor.GRAY + "No current objective");
         }
 
-        obj.getScore(" ").setScore(line--);
+        newLines.put(line--, " ");
 
         if (player.isInTeam()) {
             Team team = player.getTeam();
-            obj.getScore(ChatColor.AQUA + "Your Team: " + ChatColor.WHITE + team.getId()).setScore(line--);
+
+            var teamObjective = team.getObjective();
+            if (teamObjective != null && SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE)) {
+                newLines.put(line--, ChatColor.YELLOW + "Team Objective:");
+                newLines.put(line--, ChatColor.WHITE + getObjectiveDisplay(teamObjective));
+                newLines.put(line--, "  ");
+            }
+
+            if (team.getPlayers().size() > 1) {
+                newLines.put(line--, ChatColor.YELLOW + "Teammates:");
+            }
 
             for (BattlePlayer teammate : team.getPlayers()) {
                 if (teammate.equals(player)) continue;
 
+                newLines.put(line--, ChatColor.GRAY + "• " + ChatColor.AQUA + teammate.getName());
+
                 var teammateObjective = teammate.getObjective();
                 String objName = teammateObjective != null
-                        ? StringUtility.formatName(teammateObjective.getObjectiveString())
+                        ? getObjectiveDisplay(teammateObjective)
                         : "None";
 
-                String display = ChatColor.GRAY + "• " + ChatColor.YELLOW + teammate.getName() +
-                        ChatColor.WHITE + ": " +
-                        (objName.length() > 16 ? objName.substring(0, 13) + "..." : objName);
-
-                obj.getScore(display).setScore(line--);
+                newLines.put(line--, ChatColor.WHITE + "  " +
+                        (objName.length() > 24 ? objName.substring(0, 21) + "..." : objName));
             }
-        } else {
-            obj.getScore(ChatColor.GRAY + "Not in a team").setScore(line--);
         }
 
-        player.getPlayer().setScoreboard(scoreboard);
+        for (var entry : last.entrySet()) {
+            if (!newLines.containsValue(entry.getValue())) {
+                scoreboard.resetScores(entry.getValue());
+            }
+        }
+
+        for (var entry : newLines.entrySet()) {
+            if (!entry.getValue().equals(last.get(entry.getKey()))) {
+                obj.getScore(entry.getValue()).setScore(entry.getKey());
+            }
+        }
+
+        LAST_LINES.put(player, newLines);
+
+        if (player.getPlayer().getScoreboard() != scoreboard) {
+            player.getPlayer().setScoreboard(scoreboard);
+        }
+    }
+
+    private static String getObjectiveDisplay(net.fameless.forcebattle.game.Objective objective) {
+        String icon = switch (objective.getBattleType()) {
+            case BattleType.FORCE_ITEM -> "✦";
+            case BattleType.FORCE_MOB -> "☠";
+            case BattleType.FORCE_ADVANCEMENT -> "★";
+            case BattleType.FORCE_HEIGHT -> "⛰";
+            case BattleType.FORCE_COORDS -> "⚑";
+            case BattleType.FORCE_STRUCTURE -> "⌂";
+            case BattleType.FORCE_BIOME -> "☀";
+        };
+        return icon + " " + StringUtility.formatName(objective.getObjectiveString());
     }
 
     public static void removeScoreboard(BattlePlayer player) {
         player.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         SCOREBOARDS.remove(player);
-        Bukkit.getLogger().info("[ForceBattle] Removed scoreboard for " + player.getName());
+        LAST_LINES.remove(player);
     }
 }
