@@ -21,6 +21,7 @@ public class PermissionManager {
             Map.entry("forcebattle.result.animated", PermissionDefault.OP),
             Map.entry("forcebattle.backpack", PermissionDefault.TRUE),
             Map.entry("forcebattle.displayresults", PermissionDefault.OP),
+            Map.entry("forcebattle.recipe", PermissionDefault.TRUE),
             Map.entry("forcebattle.joker", PermissionDefault.OP),
             Map.entry("forcebattle.points", PermissionDefault.OP),
             Map.entry("forcebattle.help", PermissionDefault.TRUE),

@@ -18,6 +18,7 @@ commands:
         aliases: [ lang ]
     points:
     randomteams:
+    recipe:
     reset:
     result:
     settings:

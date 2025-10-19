@@ -15,7 +15,6 @@ import net.fameless.forcebattle.game.ObjectiveManager;
 import net.fameless.forcebattle.game.Timer;
 import net.fameless.forcebattle.gui.GUIListener;
 import net.fameless.forcebattle.scoreboard.ScoreboardManager;
-import net.fameless.forcebattle.tablist.TablistManager;
 import net.fameless.forcebattle.util.BukkitUtil;
 import net.fameless.forcebattle.util.ResourceUtil;
 import net.kyori.adventure.text.Component;
@@ -93,7 +92,6 @@ public final class ForceBattle extends JavaPlugin {
 
         Command.createInstances();
         BossbarManager.runTask();
-        TablistManager.startUpdating();
         ScoreboardManager.startUpdater();
         PluginUpdater.checkForUpdate();
     }
