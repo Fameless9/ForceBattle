@@ -6,9 +6,9 @@ import net.fameless.forcebattle.command.framework.CallerType;
 import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.CommandCaller;
 import net.fameless.forcebattle.game.Team;
-import net.fameless.forcebattle.gui.ResultGUI;
+import net.fameless.forcebattle.gui.impl.ResultGUI;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.StringUtil;
+import net.fameless.forcebattle.util.StringUtility;
 import net.fameless.forcebattle.util.TabCompletions;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class ResultCommand extends Command {
-
-    private final ResultGUI resultGUI;
 
     public ResultCommand() {
         super(
@@ -29,8 +27,6 @@ public class ResultCommand extends Command {
                 "forcebattle.result",
                 "Command to display the results of a battle"
         );
-
-        resultGUI = ForceBattle.get().getResultGUI();
     }
 
     @Override
@@ -45,7 +41,7 @@ public class ResultCommand extends Command {
         }
         BattlePlayer whoOpens = whoOpensOpt.get();
         if (args.length == 0) {
-            whoOpens.openInventory(resultGUI.getResultGUI(whoOpens, 1));
+            new ResultGUI().open(whoOpens);
             return;
         }
         if (args.length < 2 && !args[0].equals("animated")) {
@@ -56,7 +52,7 @@ public class ResultCommand extends Command {
             case "player" -> {
                 @NotNull Optional<BattlePlayer> targetOpt = BattlePlayer.adapt(args[1]);
                 targetOpt.ifPresentOrElse(
-                        target -> whoOpens.openInventory(resultGUI.getResultGUI(whoOpens, target, 1)),
+                        target -> new ResultGUI(target, false).open(whoOpens),
                         () -> caller.sendMessage(Caption.of("command.no_such_player"))
                 );
             }
@@ -70,7 +66,7 @@ public class ResultCommand extends Command {
                 }
                 Optional<Team> targetTeamOpt = Team.ofId(teamId);
                 targetTeamOpt.ifPresentOrElse(
-                        team -> whoOpens.openInventory(resultGUI.getResultGUI(whoOpens, team, 1)),
+                        team -> new ResultGUI(team, false).open(whoOpens),
                         () -> caller.sendMessage(Caption.of("command.no_such_team"))
                 );
             }
@@ -86,7 +82,7 @@ public class ResultCommand extends Command {
                 }
                 BattlePlayer battlePlayer = BattlePlayer.getPlaces().get(place);
                 for (BattlePlayer player : BattlePlayer.getOnlinePlayers()) {
-                    player.openInventory(resultGUI.getAnimatedPlayerGUI(player, battlePlayer));
+                    new ResultGUI(battlePlayer, true).open(player);
                 }
             }
             case "teamanimated" -> {
@@ -101,7 +97,7 @@ public class ResultCommand extends Command {
                 }
                 Team team = Team.getPlaces().get(place);
                 for (BattlePlayer player : BattlePlayer.getOnlinePlayers()) {
-                    player.openInventory(resultGUI.getAnimatedTeamGUI(player, team));
+                    new ResultGUI(team, true).open(player);
                 }
             }
         }
@@ -110,13 +106,13 @@ public class ResultCommand extends Command {
     @Override
     public List<String> tabComplete(CommandCaller caller, String @NotNull [] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("player", "team", "playeranimated", "teamanimated"), new ArrayList<>());
+            return StringUtility.copyPartialMatches(args[0], List.of("player", "team", "playeranimated", "teamanimated"), new ArrayList<>());
         } else if (args.length == 2) {
             return switch (args[0]) {
-                case "player" -> StringUtil.copyPartialMatches(args[1], TabCompletions.getPlayerNamesTabCompletions(), new ArrayList<>());
-                case "team" -> StringUtil.copyPartialMatches(args[1], TabCompletions.getTeamIdTabCompletions(), new ArrayList<>());
-                case "playeranimated" -> StringUtil.copyPartialMatches(args[1], TabCompletions.getPlayerPlaces(), new ArrayList<>());
-                case "teamanimated" -> StringUtil.copyPartialMatches(args[1], TabCompletions.getTeamPlaces(), new ArrayList<>());
+                case "player" -> StringUtility.copyPartialMatches(args[1], TabCompletions.getPlayerNamesTabCompletions(), new ArrayList<>());
+                case "team" -> StringUtility.copyPartialMatches(args[1], TabCompletions.getTeamIdTabCompletions(), new ArrayList<>());
+                case "playeranimated" -> StringUtility.copyPartialMatches(args[1], TabCompletions.getPlayerPlaces(), new ArrayList<>());
+                case "teamanimated" -> StringUtility.copyPartialMatches(args[1], TabCompletions.getTeamPlaces(), new ArrayList<>());
                 default -> List.of();
             };
         }

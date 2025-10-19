@@ -7,8 +7,8 @@ import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.CommandCaller;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.game.Timer;
-import net.fameless.forcebattle.util.Format;
-import net.fameless.forcebattle.util.StringUtil;
+import net.fameless.forcebattle.util.StringUtility;
+import net.fameless.forcebattle.util.StringUtility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -63,7 +63,7 @@ public class TimerCommand extends Command {
                     return;
                 }
                 timer.setTime(newTime);
-                caller.sendMessage(Caption.of("command.timer_set", TagResolver.resolver("time", Tag.inserting(Component.text(Format.formatTime(newTime))))));
+                caller.sendMessage(Caption.of("command.timer_set", TagResolver.resolver("time", Tag.inserting(Component.text(StringUtility.formatTime(newTime))))));
                 return;
             }
             case "duration" -> {
@@ -96,7 +96,7 @@ public class TimerCommand extends Command {
     @Override
     public List<String> tabComplete(CommandCaller caller, String @NotNull [] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("toggle", "set", "duration"), new ArrayList<>());
+            return StringUtility.copyPartialMatches(args[0], List.of("toggle", "set", "duration"), new ArrayList<>());
         }
         return List.of();
     }

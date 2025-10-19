@@ -8,7 +8,7 @@ import net.fameless.forcebattle.event.ObjectiveUpdateEvent;
 import net.fameless.forcebattle.event.PlayerTeamJoinEvent;
 import net.fameless.forcebattle.event.PlayerTeamLeaveEvent;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.Format;
+import net.fameless.forcebattle.util.StringUtility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -218,7 +218,7 @@ public class Team {
             for (BattlePlayer member : players) {
                 member.sendMessage(Caption.of(
                         "notification.next_objective",
-                        TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(newObjective.getObjectiveString())))),
+                        TagResolver.resolver("objective", Tag.inserting(Component.text(StringUtility.formatName(newObjective.getObjectiveString())))),
                         TagResolver.resolver("objective_type", Tag.inserting(Component.text(newObjective.getBattleType().getPrefix())))
                 ));
             }

@@ -13,9 +13,7 @@ import net.fameless.forcebattle.game.GameListener;
 import net.fameless.forcebattle.game.NametagManager;
 import net.fameless.forcebattle.game.ObjectiveManager;
 import net.fameless.forcebattle.game.Timer;
-import net.fameless.forcebattle.gui.LanguageGUI;
-import net.fameless.forcebattle.gui.ResultGUI;
-import net.fameless.forcebattle.gui.SettingsGUI;
+import net.fameless.forcebattle.gui.GUIListener;
 import net.fameless.forcebattle.tablist.TablistManager;
 import net.fameless.forcebattle.util.BukkitUtil;
 import net.fameless.forcebattle.util.ResourceUtil;
@@ -39,12 +37,6 @@ public final class ForceBattle extends JavaPlugin {
     private static Timer timer;
     @Getter
     private static ObjectiveManager objectiveManager;
-    @Getter
-    private LanguageGUI languageGUI;
-    @Getter
-    private ResultGUI resultGUI;
-    @Getter
-    private SettingsGUI settingsGUI;
 
     public static ForceBattle get() {
         return instance;
@@ -59,18 +51,12 @@ public final class ForceBattle extends JavaPlugin {
 
         Caption.setCurrentLanguage(Language.ofIdentifier(getConfig().getString("lang", "en")));
 
-        this.languageGUI = new LanguageGUI();
-        this.resultGUI = new ResultGUI();
-        this.settingsGUI = new SettingsGUI();
-
         initCore();
 
         NametagManager.runTask();
 
         Bukkit.getPluginManager().registerEvents(new GameListener(), this);
-        Bukkit.getPluginManager().registerEvents(languageGUI, this);
-        Bukkit.getPluginManager().registerEvents(resultGUI, this);
-        Bukkit.getPluginManager().registerEvents(settingsGUI, this);
+        Bukkit.getPluginManager().registerEvents(new GUIListener(), this);
 
         CommandHandler.registerAll(Command.COMMANDS);
         PermissionManager.registerPermissions();
@@ -107,6 +93,7 @@ public final class ForceBattle extends JavaPlugin {
         Command.createInstances();
         BossbarManager.runTask();
         TablistManager.startUpdating();
+        //ScoreboardManager.startUpdater();
         PluginUpdater.checkForUpdate();
     }
 

@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.bukkit.NamespacedKey;
 
 @Getter
-public enum Advancement {
+public enum FBAdvancement {
     STONE_AGE(NamespacedKey.minecraft("story/mine_stone"), "Stone Age", "Mine Stone with your new Pickaxe"),
     GETTING_AN_UPGRADE(NamespacedKey.minecraft("story/upgrade_tools"), "Getting an Upgrade", "Construct a better Pickaxe"),
     ACQUIRE_HARDWARE(NamespacedKey.minecraft("story/smelt_iron"), "Acquire Hardware", "Smelt an Iron Ingot"),
@@ -154,7 +154,7 @@ public enum Advancement {
     public final String name;
     public final String description;
 
-    Advancement(NamespacedKey key, String name, String description) {
+    FBAdvancement(NamespacedKey key, String name, String description) {
         this.key = key;
         this.name = name;
         this.description = description;

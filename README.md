@@ -12,6 +12,8 @@
 **ForceBattle** is a multiplayer gamemode where players compete to complete randomized objectives and earn points.  
 The player with the most points after the timer ends wins the battle!
 
+Current supported Minecraft version: 1.21.8
+
 **Objective types include:**
 - 🔹 Collect an item
 - 🔹 Kill a mob

@@ -3,8 +3,12 @@ package net.fameless.forcebattle.game.tasks;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
+import net.fameless.forcebattle.game.data.FBAdvancement;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.*;
+import net.fameless.forcebattle.util.BattleType;
+import net.fameless.forcebattle.util.BukkitUtil;
+import net.fameless.forcebattle.util.StringUtility;
+import net.fameless.forcebattle.util.Toast;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -66,7 +70,7 @@ public class AdvancementTask implements ForceTask {
 
     private boolean hasCompletedAdvancement(Player player, String objectiveString) {
         Object obj = BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objectiveString);
-        if (!(obj instanceof net.fameless.forcebattle.game.data.Advancement adv)) return false;
+        if (!(obj instanceof FBAdvancement adv)) return false;
 
         Optional<Advancement> advancementOpt = getAdvancement(adv.getKey());
         if (advancementOpt.isEmpty()) return false;
@@ -76,7 +80,7 @@ public class AdvancementTask implements ForceTask {
     }
 
     private void completeObjective(BattlePlayer player, String objective) {
-        String formattedObjective = Format.formatName(objective);
+        String formattedObjective = StringUtility.formatName(objective);
         Material toastIcon = Material.BREWING_STAND;
         ForceBattle plugin = ForceBattle.get();
 

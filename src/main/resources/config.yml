@@ -64,88 +64,80 @@ exclude:
         - SUSPICIOUS_SAND
         - FROGSPAWN
     mobs:
-        - EXPERIENCE_ORB
-        - AREA_EFFECT_CLOUD
-        - EGG
-        - LEASH_KNOT
-        - PAINTING
-        - ARROW
-        - SNOWBALL
-        - FIREBALL
-        - SMALL_FIREBALL
-        - ENDER_PEARL
-        - EYE_OF_ENDER
-        - POTION
-        - EXPERIENCE_BOTTLE
-        - ITEM_FRAME
-        - WITHER_SKULL
-        - TNT
-        - FALLING_BLOCK
-        - FIREWORK_ROCKET
-        - SPECTRAL_ARROW
-        - SHULKER_BULLET
-        - DRAGON_FIREBALL
-        - ZOMBIE_HORSE
-        - ARMOR_STAND
-        - EVOKER_FANGS
-        - ILLUSIONER
-        - COMMAND_BLOCK_MINECART
-        - MINECART
-        - CHEST_MINECART
-        - FURNACE_MINECART
-        - TNT_MINECART
-        - HOPPER_MINECART
-        - SPAWNER_MINECART
-        - GIANT
-        - LLAMA_SPIT
-        - END_CRYSTAL
-        - TRIDENT
-        - GLOW_ITEM_FRAME
-        - MARKER
-        - BLOCK_DISPLAY
-        - INTERACTION
-        - ITEM_DISPLAY
-        - TEXT_DISPLAY
-        - WIND_CHARGE
-        - BREEZE_WIND_CHARGE
-        - OMINOUS_ITEM_SPAWNER
         - ACACIA_BOAT
         - ACACIA_CHEST_BOAT
-        - BAMBOO_RAFT
+        - AREA_EFFECT_CLOUD
+        - ARMOR_STAND
+        - ARROW
         - BAMBOO_CHEST_RAFT
+        - BAMBOO_RAFT
         - BIRCH_BOAT
         - BIRCH_CHEST_BOAT
+        - BLOCK_DISPLAY
+        - BREEZE_WIND_CHARGE
         - CHERRY_BOAT
         - CHERRY_CHEST_BOAT
+        - CHEST_MINECART
+        - COMMAND_BLOCK_MINECART
         - DARK_OAK_BOAT
         - DARK_OAK_CHEST_BOAT
+        - DRAGON_FIREBALL
+        - EGG
+        - END_CRYSTAL
+        - ENDER_PEARL
+        - EVOKER_FANGS
+        - EXPERIENCE_BOTTLE
+        - EXPERIENCE_ORB
+        - EYE_OF_ENDER
+        - FALLING_BLOCK
+        - FIREBALL
+        - FIREWORK_ROCKET
+        - FISHING_BOBBER
+        - FURNACE_MINECART
+        - GIANT
+        - GLOW_ITEM_FRAME
+        - HOPPER_MINECART
+        - ILLUSIONER
+        - INTERACTION
+        - ITEM
+        - ITEM_DISPLAY
+        - ITEM_FRAME
         - JUNGLE_BOAT
         - JUNGLE_CHEST_BOAT
+        - LEASH_KNOT
+        - LIGHTNING_BOLT
+        - LINGERING_POTION
+        - LLAMA_SPIT
         - MANGROVE_BOAT
         - MANGROVE_CHEST_BOAT
+        - MARKER
+        - MINECART
         - OAK_BOAT
         - OAK_CHEST_BOAT
+        - OMINOUS_ITEM_SPAWNER
+        - PAINTING
         - PALE_OAK_BOAT
         - PALE_OAK_CHEST_BOAT
+        - SHULKER_BULLET
+        - SMALL_FIREBALL
+        - SNOWBALL
+        - SPAWNER_MINECART
+        - SPECTRAL_ARROW
+        - SPLASH_POTION
         - SPRUCE_BOAT
         - SPRUCE_CHEST_BOAT
-        - FISHING_BOBBER
-        - LIGHTNING_BOLT
+        - TEXT_DISPLAY
+        - TNT
+        - TNT_MINECART
+        - TRIDENT
         - UNKNOWN
-        - ITEM
+        - WIND_CHARGE
+        - WITHER_SKULL
+        - ZOMBIE_HORSE
     biomes:
         - THE_VOID
 
     # default height range: -63 - 320
     heights:
     advancements:
-
-    # Most unobtainable items are excluded by default
-    # after changing values, you don't have to restart anything or rejoin. Just use /skip <player> if they have an unwanted objective and new items will not contain excluded items
-    exclude_spawn_eggs: true # unobtainable in survival
-    exclude_music_discs: true # obtainable in survival
-    exclude_banner_patterns: true # obtainable in survival
-    exclude_banners: false # obtainable in survival
-    exclude_armor_templates: true # obtainable in survival
-    exclude_pottery_sherds: true # obtainable in survival
-    exclude_ores: true # obtainable in survival (silk touch needed)
+    structures:

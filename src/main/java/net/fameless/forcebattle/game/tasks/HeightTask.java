@@ -4,7 +4,10 @@ import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.*;
+import net.fameless.forcebattle.util.BattleType;
+import net.fameless.forcebattle.util.BukkitUtil;
+import net.fameless.forcebattle.util.StringUtility;
+import net.fameless.forcebattle.util.Toast;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -60,7 +63,7 @@ public class HeightTask implements ForceTask {
 
     private void completeObjective(BattlePlayer player, String objective) {
         Object obj = BukkitUtil.convertObjective(BattleType.FORCE_HEIGHT, objective);
-        String heightDisplay = obj instanceof Integer height ? String.valueOf(height) : Format.formatName(objective);
+        String heightDisplay = obj instanceof Integer height ? String.valueOf(height) : StringUtility.formatName(objective);
 
         Material toastIcon = Material.SCAFFOLDING;
         ForceBattle plugin = ForceBattle.get();

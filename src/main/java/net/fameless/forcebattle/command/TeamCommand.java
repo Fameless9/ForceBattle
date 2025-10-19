@@ -6,7 +6,7 @@ import net.fameless.forcebattle.command.framework.CallerType;
 import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.CommandCaller;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.StringUtil;
+import net.fameless.forcebattle.util.StringUtility;
 import net.fameless.forcebattle.util.TabCompletions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -137,10 +137,10 @@ public class TeamCommand extends Command {
     @Override
     public List<String> tabComplete(CommandCaller caller, String @NotNull [] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("create", "list", "join", "leave", "accept", "reject"), new ArrayList<>());
+            return StringUtility.copyPartialMatches(args[0], List.of("create", "list", "join", "leave", "accept", "reject"), new ArrayList<>());
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("join")) {
-            return StringUtil.copyPartialMatches(args[1], TabCompletions.getTeamIdTabCompletions(), new ArrayList<>());
+            return StringUtility.copyPartialMatches(args[1], TabCompletions.getTeamIdTabCompletions(), new ArrayList<>());
         }
         return List.of();
     }

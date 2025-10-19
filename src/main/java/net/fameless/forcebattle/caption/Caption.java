@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.event.LanguageChangeEvent;
-import net.fameless.forcebattle.util.Format;
+import net.fameless.forcebattle.util.StringUtility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -45,7 +45,7 @@ public final class Caption {
 
     private static @NotNull String replaceDefaults(String input) {
         input = input.replace("<prefix>", getString("prefix"))
-                .replace("<time>", Format.formatTime(ForceBattle.getTimer().getTime()))
+                .replace("<time>", StringUtility.formatTime(ForceBattle.getTimer().getTime()))
         ;
         return input;
     }

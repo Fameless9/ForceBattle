@@ -7,13 +7,12 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-public final class Format {
-
-    private Format() {
-    }
+public final class StringUtility {
 
     /**
      * Converts a given time in seconds to a human-readable string.
@@ -64,6 +63,25 @@ public final class Format {
         return formatted.toString().trim();
     }
 
+    public static List<String> splitByWordAndLength(String text, int maxLength) {
+        List<String> lines = new ArrayList<>();
+        if (text == null || text.isEmpty()) return lines;
+
+        String[] words = text.split(" ");
+        StringBuilder line = new StringBuilder();
+
+        for (String word : words) {
+            if (line.length() + word.length() > maxLength) {
+                lines.add(line.toString());
+                line = new StringBuilder();
+            }
+            if (!line.isEmpty()) line.append(" ");
+            line.append(word);
+        }
+        if (!line.isEmpty()) lines.add(line.toString());
+        return lines;
+    }
+
     public static @NotNull String applyMiniMessageFormat(String input, TagResolver... replacements) {
         Component miniMessageComponent = MiniMessage.miniMessage().deserialize(input, replacements);
         return LegacyComponentSerializer.legacySection().serialize(miniMessageComponent);
@@ -77,6 +95,26 @@ public final class Format {
      */
     public static @Unmodifiable List<String> formatLineBreaks(@NotNull String input) {
         return Arrays.asList(input.split("\n"));
+    }
+
+    @NotNull public static <T extends Collection<? super String>> T copyPartialMatches(
+            @NotNull final String token,
+            @NotNull final Iterable<String> originals,
+            @NotNull final T collection
+    ) throws UnsupportedOperationException, IllegalArgumentException {
+        for (String string : originals) {
+            if (startsWithIgnoreCase(string, token)) {
+                collection.add(string);
+            }
+        }
+        return collection;
+    }
+
+    public static boolean startsWithIgnoreCase(@NotNull final String string, @NotNull final String prefix) throws IllegalArgumentException, NullPointerException {
+        if (string.length() < prefix.length()) {
+            return false;
+        }
+        return string.regionMatches(true, 0, prefix, 0, prefix.length());
     }
 
 }

@@ -6,7 +6,7 @@ import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.CommandCaller;
 import net.fameless.forcebattle.game.Team;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.StringUtil;
+import net.fameless.forcebattle.util.StringUtility;
 import net.fameless.forcebattle.util.TabCompletions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -52,7 +52,7 @@ public class SkipCommand extends Command {
                 }
                 case "team" -> {
                     try {
-                        @NotNull Optional<Team> teamOpt = Team.ofId(Integer.parseInt(args[3]));
+                        @NotNull Optional<Team> teamOpt = Team.ofId(Integer.parseInt(args[1]));
                         teamOpt.ifPresentOrElse(
                                 team -> {
                                     team.updateObjective(null, false, false);
@@ -76,11 +76,11 @@ public class SkipCommand extends Command {
     @Override
     public List<String> tabComplete(CommandCaller caller, String @NotNull [] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("player", "team"), new ArrayList<>());
+            return StringUtility.copyPartialMatches(args[0], List.of("player", "team"), new ArrayList<>());
         } else if (args.length == 2) {
             return switch (args[0]) {
-                case "player" -> StringUtil.copyPartialMatches(args[1], TabCompletions.getPlayerNamesTabCompletions(), new ArrayList<>());
-                case "team" -> StringUtil.copyPartialMatches(args[1], TabCompletions.getTeamIdTabCompletions(), new ArrayList<>());
+                case "player" -> StringUtility.copyPartialMatches(args[1], TabCompletions.getPlayerNamesTabCompletions(), new ArrayList<>());
+                case "team" -> StringUtility.copyPartialMatches(args[1], TabCompletions.getTeamIdTabCompletions(), new ArrayList<>());
                 default -> List.of();
             };
         }

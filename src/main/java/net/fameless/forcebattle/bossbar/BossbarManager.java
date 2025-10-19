@@ -6,7 +6,7 @@ import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.game.Objective;
 import net.fameless.forcebattle.game.Team;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.util.Format;
+import net.fameless.forcebattle.util.StringUtility;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -96,14 +96,14 @@ public class BossbarManager {
             return Caption.of(
                     "bossbar.format_hide_points",
                     TagResolver.resolver("battletype", Tag.inserting(Component.text(playerObjective.getBattleType().getPrefix()))),
-                    TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(playerObjective.getObjectiveString()))))
+                    TagResolver.resolver("objective", Tag.inserting(Component.text(StringUtility.formatName(playerObjective.getObjectiveString()))))
             );
         }
 
         return Caption.of(
                 "bossbar.format",
                 TagResolver.resolver("battletype", Tag.inserting(Component.text(playerObjective.getBattleType().getPrefix()))),
-                TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(playerObjective.getObjectiveString())))),
+                TagResolver.resolver("objective", Tag.inserting(Component.text(StringUtility.formatName(playerObjective.getObjectiveString())))),
                 TagResolver.resolver("pointstype", Tag.inserting(Component.text(isPlayerInTeam ? "Team-Points" : "Points"))),
                 TagResolver.resolver("points", Tag.inserting(Component.text(points)))
         );
@@ -117,14 +117,14 @@ public class BossbarManager {
             return Caption.of(
                     "bossbar.team_format_hide_points",
                     TagResolver.resolver("battletype", Tag.inserting(Component.text(teamObjective.getBattleType().getPrefix()))),
-                    TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(teamObjective.getObjectiveString()))))
+                    TagResolver.resolver("objective", Tag.inserting(Component.text(StringUtility.formatName(teamObjective.getObjectiveString()))))
             );
         }
 
         return Caption.of(
                 "bossbar.team_format",
                 TagResolver.resolver("battletype", Tag.inserting(Component.text(teamObjective.getBattleType().getPrefix()))),
-                TagResolver.resolver("objective", Tag.inserting(Component.text(Format.formatName(teamObjective.getObjectiveString())))),
+                TagResolver.resolver("objective", Tag.inserting(Component.text(StringUtility.formatName(teamObjective.getObjectiveString())))),
                 TagResolver.resolver("pointstype", Tag.inserting(Component.text("Team-Points"))),
                 TagResolver.resolver("points", Tag.inserting(Component.text(team.getPoints())))
         );

@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.bukkit.NamespacedKey;
 
 @Getter
-public enum Structure {
+public enum FBStructure {
     VILLAGE_PLAINS(NamespacedKey.minecraft("village_plains"), "Village Plains"),
     VILLAGE_SAVANNA(NamespacedKey.minecraft("village_savanna"), "Village Savanna"),
     VILLAGE_SNOWY(NamespacedKey.minecraft("village_snowy"), "Village Snowy"),
@@ -41,7 +41,7 @@ public enum Structure {
     public final NamespacedKey key;
     public final String name;
 
-    Structure(NamespacedKey key, String name) {
+    FBStructure(NamespacedKey key, String name) {
         this.key = key;
         this.name = name;
     }

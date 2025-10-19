@@ -3,23 +3,32 @@ package net.fameless.forcebattle.game.tasks;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
-import net.fameless.forcebattle.game.data.Structure;
+import net.fameless.forcebattle.game.data.FBStructure;
 import net.fameless.forcebattle.game.data.StructureSimplified;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.util.BattleType;
 import net.fameless.forcebattle.util.BukkitUtil;
-import net.fameless.forcebattle.util.Format;
+import net.fameless.forcebattle.util.StringUtility;
 import net.fameless.forcebattle.util.Toast;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Registry;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.structure.GeneratedStructure;
+import org.bukkit.generator.structure.Structure;
 import org.bukkit.generator.structure.StructurePiece;
 import org.bukkit.util.BoundingBox;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StructureTask implements ForceTask {
@@ -31,7 +40,7 @@ public class StructureTask implements ForceTask {
         if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) return;
         if (!ForceBattle.getTimer().isRunning()) return;
 
-        Registry<org.bukkit.generator.structure.Structure> registry = Bukkit.getRegistry(org.bukkit.generator.structure.Structure.class);
+        Registry<Structure> registry = Bukkit.getRegistry(Structure.class);
         if (registry == null) return;
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -43,7 +52,7 @@ public class StructureTask implements ForceTask {
         }
     }
 
-    private void checkPlayerObjective(BattlePlayer battlePlayer, Player player, Registry<org.bukkit.generator.structure.Structure> registry) {
+    private void checkPlayerObjective(BattlePlayer battlePlayer, Player player, Registry<Structure> registry) {
         if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_STRUCTURE) return;
 
         String objectiveString = battlePlayer.getObjective().getObjectiveString();
@@ -53,7 +62,7 @@ public class StructureTask implements ForceTask {
         }
     }
 
-    private void checkTeamObjective(BattlePlayer battlePlayer, Player player, Registry<org.bukkit.generator.structure.Structure> registry) {
+    private void checkTeamObjective(BattlePlayer battlePlayer, Player player, Registry<Structure> registry) {
         if (!battlePlayer.isInTeam()) return;
         if (battlePlayer.getTeam().getObjective() == null) return;
         if (battlePlayer.getTeam().getObjective().getBattleType() != BattleType.FORCE_STRUCTURE) return;
@@ -65,12 +74,12 @@ public class StructureTask implements ForceTask {
         }
     }
 
-    private boolean isInsideStructure(Player player, String objectiveString, Registry<org.bukkit.generator.structure.Structure> registry) {
+    private boolean isInsideStructure(Player player, String objectiveString, Registry<Structure> registry) {
         Object parsed = BukkitUtil.convertObjective(BattleType.FORCE_STRUCTURE, objectiveString);
 
         if (parsed instanceof StructureSimplified simplified) {
-            for (Structure structure : simplified.getStructures()) {
-                org.bukkit.generator.structure.Structure bukkitStruct = registry.get(structure.getKey());
+            for (FBStructure structure : simplified.getStructures()) {
+                Structure bukkitStruct = registry.get(structure.getKey());
                 if (bukkitStruct != null && checkPlayerLocationInStructure(player, bukkitStruct)) {
                     return true;
                 }
@@ -78,15 +87,15 @@ public class StructureTask implements ForceTask {
             return false;
         }
 
-        if (parsed instanceof Structure structure) {
-            org.bukkit.generator.structure.Structure bukkitStruct = registry.get(structure.getKey());
+        if (parsed instanceof FBStructure structure) {
+            Structure bukkitStruct = registry.get(structure.getKey());
             return bukkitStruct != null && checkPlayerLocationInStructure(player, bukkitStruct);
         }
 
         return false;
     }
 
-    private boolean checkPlayerLocationInStructure(Player player, org.bukkit.generator.structure.Structure bukkitStruct) {
+    private boolean checkPlayerLocationInStructure(Player player, Structure bukkitStruct) {
         String worldName = player.getWorld().getName();
         String cacheKey = worldName + ":" + bukkitStruct.getKey().getKey();
         Set<BoundingBox> cachedBoxes = STRUCTURE_CACHE.get(cacheKey);
@@ -137,7 +146,7 @@ public class StructureTask implements ForceTask {
     }
 
     private void completeObjective(BattlePlayer player, String objective) {
-        String formattedObjective = Format.formatName(objective);
+        String formattedObjective = StringUtility.formatName(objective);
         Material toastIcon = Material.STRUCTURE_BLOCK;
         ForceBattle plugin = ForceBattle.get();
 

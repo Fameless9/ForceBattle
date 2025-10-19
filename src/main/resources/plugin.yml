@@ -22,6 +22,7 @@ commands:
     result:
     settings:
         aliases: [ menu ]
+    configsettings:
     skip:
     team:
     timer:

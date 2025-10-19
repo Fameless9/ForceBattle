@@ -3,11 +3,11 @@ package net.fameless.forcebattle.game;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.SettingsManager;
+import net.fameless.forcebattle.game.data.FBAdvancement;
 import net.fameless.forcebattle.player.BattlePlayer;
-import net.fameless.forcebattle.game.data.Advancement;
 import net.fameless.forcebattle.util.BattleType;
 import net.fameless.forcebattle.util.BukkitUtil;
-import net.fameless.forcebattle.util.Format;
+import net.fameless.forcebattle.util.StringUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -69,10 +69,10 @@ public class NametagManager {
 
         String objectiveString;
         Objective objective = battlePlayer.getObjective();
-        if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objective.getObjectiveString()) instanceof Advancement advancement) {
+        if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objective.getObjectiveString()) instanceof FBAdvancement advancement) {
             objectiveString = advancement.name;
         } else {
-            objectiveString = Format.formatName(objective.getObjectiveString());
+            objectiveString = StringUtility.formatName(objective.getObjectiveString());
         }
 
         if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)) {

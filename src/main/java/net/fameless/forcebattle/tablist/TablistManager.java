@@ -3,7 +3,7 @@ package net.fameless.forcebattle.tablist;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.util.BattleType;
-import net.fameless.forcebattle.util.Format;
+import net.fameless.forcebattle.util.StringUtility;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -67,7 +67,7 @@ public class TablistManager {
     private static String formatPlayerLineString(BattlePlayer player) {
         String name = player.getName();
         String objective = player.getObjective() != null
-                ? Format.formatName(player.getObjective().getObjectiveString())
+                ? StringUtility.formatName(player.getObjective().getObjectiveString())
                 : "None";
 
         String color = "§f"; // white by default
