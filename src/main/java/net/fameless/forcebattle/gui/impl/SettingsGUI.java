@@ -124,7 +124,7 @@ public class SettingsGUI extends ForceBattleGUI {
 
     @Override
     public void setItems(BattlePlayer player) {
-        fill(ItemStackCreator.createNamedItemStack(Material.GRAY_STAINED_GLASS_PANE, " "));
+        fill(ItemStackCreator.fillerItem());
         set(GUIClickableItem.getGoForthItem(8, new ConfigSettingsGUI()));
 
         for (SettingButton button : SettingButton.values()) {
@@ -143,7 +143,7 @@ public class SettingsGUI extends ForceBattleGUI {
     }
 
     @Override
-    public boolean allowHotkeying() {
+    public boolean allowItemMoving() {
         return false;
     }
 }

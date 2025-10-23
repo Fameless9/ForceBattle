@@ -7,6 +7,7 @@ import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.event.ObjectiveUpdateEvent;
 import net.fameless.forcebattle.event.PlayerTeamJoinEvent;
 import net.fameless.forcebattle.event.PlayerTeamLeaveEvent;
+import net.fameless.forcebattle.gui.impl.TeamBackpackGUI;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.util.StringUtility;
 import net.kyori.adventure.text.Component;
@@ -32,6 +33,10 @@ public class Team {
     private final List<BattlePlayer> players;
     private final int ID;
     private boolean privateTeam = false;
+    private static final int SLOTS_PER_MEMBER = 45;
+    private static final int MAX_PAGE_SIZE = 54;
+    @Getter
+    private List<TeamBackpackGUI> BACKPACK_INVENTORIES = new ArrayList<>();
     @Getter
     @Setter
     private Objective objective;
@@ -197,6 +202,16 @@ public class Team {
         return -1;
     }
 
+    public void createBackpackGUIs() {
+        int requiredSlots = getPlayers().size() * SLOTS_PER_MEMBER;
+        int requiredPages = (int) Math.ceil(requiredSlots / (double) MAX_PAGE_SIZE);
+
+        for (int i = 0; i < requiredPages; i++) {
+            int pageSize = Math.min(MAX_PAGE_SIZE, requiredSlots - (i * MAX_PAGE_SIZE));
+
+            BACKPACK_INVENTORIES.add(new TeamBackpackGUI(i, pageSize));
+        }
+    }
 
     public void updateObjective(BattlePlayer finisher, boolean finishLast, boolean hasBeenSkipped) {
         if (finishLast && this.objective != null) {

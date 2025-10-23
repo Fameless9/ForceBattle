@@ -72,13 +72,6 @@ public class RandomTeamsCommand extends Command {
 
             caller.sendMessage(Caption.of("notification.randomteams_successfully_created",
                     TagResolver.resolver("amount", Tag.inserting(Component.text(String.valueOf(amountOfTeams))))));
-
-            for (Team team : Team.teams) {
-                List<String> names = new ArrayList<>();
-                for (BattlePlayer player : team.getPlayers()) {
-                    names.add(player.getName() + ", ");
-                }
-            }
         }
     }
 

@@ -20,6 +20,7 @@ public class ScoreboardManager {
 
     private static final Map<BattlePlayer, Scoreboard> SCOREBOARDS = new HashMap<>();
     private static final Map<BattlePlayer, Map<Integer, String>> LAST_LINES = new HashMap<>();
+    private static final int maxStringLength = 30;
 
     public static void startUpdater() {
         Bukkit.getScheduler().runTaskTimer(ForceBattle.get(), ScoreboardManager::updateAll, 20L, 20L);
@@ -59,7 +60,8 @@ public class ScoreboardManager {
         var selfObjective = player.getObjective();
         if (selfObjective != null) {
             newLines.put(line--, ChatColor.YELLOW + "Your Objective:");
-            newLines.put(line--, ChatColor.WHITE + getObjectiveDisplay(selfObjective));
+            String objName = getObjectiveDisplay(selfObjective);
+            newLines.put(line--, ChatColor.WHITE + (objName.length() > maxStringLength ? objName.substring(0, 21) + "..." : objName));
         } else {
             newLines.put(line--, ChatColor.GRAY + "No current objective");
         }
@@ -72,7 +74,8 @@ public class ScoreboardManager {
             var teamObjective = team.getObjective();
             if (teamObjective != null && SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE)) {
                 newLines.put(line--, ChatColor.YELLOW + "Team Objective:");
-                newLines.put(line--, ChatColor.WHITE + getObjectiveDisplay(teamObjective));
+                String objName = getObjectiveDisplay(teamObjective);
+                newLines.put(line--, ChatColor.WHITE + (objName.length() > maxStringLength ? objName.substring(0, 21) + "..." : objName));
                 newLines.put(line--, "  ");
             }
 
@@ -90,8 +93,7 @@ public class ScoreboardManager {
                         ? getObjectiveDisplay(teammateObjective)
                         : "None";
 
-                newLines.put(line--, ChatColor.WHITE + "  " +
-                        (objName.length() > 24 ? objName.substring(0, 21) + "..." : objName));
+                newLines.put(line--, ChatColor.WHITE + "  " + (objName.length() > maxStringLength ? objName.substring(0, 21) + "..." : objName));
             }
         }
 

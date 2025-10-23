@@ -84,7 +84,6 @@ public final class ItemUtils {
         return stack;
     }
 
-    @SuppressWarnings("unchecked")
     private static <P, C> void apply(ItemMeta meta, ItemData<P, C> data) {
         meta.getPersistentDataContainer().set(
                 data.namespacedKey(),

@@ -37,8 +37,8 @@ public class ConfigSettingsGUI extends ForceBattleGUI {
                 "gui.exclude_pottery_sherds_name", "gui.exclude_pottery_sherds_lore", "notification.exclude_pottery_sherds_changed"),
         ORES(14, Material.DIAMOND_ORE, SettingsManager.Setting.EXCLUDE_ORES,
                 "gui.exclude_ores_name", "gui.exclude_ores_lore", "notification.exclude_ores_changed"),
-        END_ITEMS(15, Material.END_STONE, SettingsManager.Setting.EXCLUDE_END_ITEMS,
-                "gui.exclude_end_items_name", "gui.exclude_end_items_lore", "notification.exclude_end_items_changed"),
+        END(15, Material.END_STONE, SettingsManager.Setting.EXCLUDE_END,
+                "gui.exclude_end_name", "gui.exclude_end_lore", "notification.exclude_end_changed"),
         TRIAL_ITEMS(16, Material.TRIAL_SPAWNER, SettingsManager.Setting.EXCLUDE_TRIAL_ITEMS,
                 "gui.exclude_trial_items_name", "gui.exclude_trial_items_lore", "notification.exclude_trial_items_changed");
 
@@ -94,7 +94,7 @@ public class ConfigSettingsGUI extends ForceBattleGUI {
 
     @Override
     public void setItems(BattlePlayer player) {
-        fill(ItemStackCreator.createNamedItemStack(Material.GRAY_STAINED_GLASS_PANE, " "));
+        fill(ItemStackCreator.fillerItem());
         set(GUIClickableItem.getGoBackItem(0, new SettingsGUI()));
 
         for (ConfigSettingButton button : ConfigSettingButton.values()) {
@@ -113,7 +113,7 @@ public class ConfigSettingsGUI extends ForceBattleGUI {
     }
 
     @Override
-    public boolean allowHotkeying() {
+    public boolean allowItemMoving() {
         return false;
     }
 }

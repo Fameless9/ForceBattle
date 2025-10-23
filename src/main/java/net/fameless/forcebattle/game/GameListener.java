@@ -60,7 +60,7 @@ public class GameListener implements Listener {
     private final List<BattlePlayer> teamSkipCooldown = new ArrayList<>();
     private final List<BattlePlayer> swapCooldown = new ArrayList<>();
     private boolean sentUpdateMessage = false;
-    private boolean startPhase = true;
+    public static boolean startPhase = true;
     public static boolean spawnCreated = false;
     public static Location spawn = new Location(Bukkit.getWorld("world"), 0.5, 201, 0.5);
 
@@ -75,9 +75,8 @@ public class GameListener implements Listener {
         TaskManager.startAll();
     }
 
-    //TODO better tablist
-    //TODO evtl /item => zeigt rezept an => wenn gui system done is
-    //TODO commands von cords ausführen (for spawn)
+    //TODO does chain mode work with team objective?
+    //TODO support only team objective if not already possible
 
     @EventHandler
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
@@ -192,6 +191,10 @@ public class GameListener implements Listener {
             }
 
             player.getPlayer().teleport(world.getSpawnLocation());
+        }
+
+        for (Team team : Team.teams) {
+            team.createBackpackGUIs();
         }
     }
 

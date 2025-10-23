@@ -8,8 +8,7 @@ import java.util.List;
 public enum StructureSimplified {
     VILLAGE("Village", List.of(FBStructure.VILLAGE_PLAINS, FBStructure.VILLAGE_SAVANNA, FBStructure.VILLAGE_SNOWY, FBStructure.VILLAGE_TAIGA, FBStructure.VILLAGE_DESERT)),
     PILLAGER_OUTPOST("Pillager Outpost", List.of(FBStructure.PILLAGER_OUTPOST)),
-    RUINED_PORTAL("Ruined Portal", List.of(
-            FBStructure.RUINED_PORTAL_MOUNTAIN, FBStructure.RUINED_PORTAL_DESERT, FBStructure.RUINED_PORTAL_JUNGLE,
+    RUINED_PORTAL("Ruined Portal", List.of(FBStructure.RUINED_PORTAL_MOUNTAIN, FBStructure.RUINED_PORTAL_DESERT, FBStructure.RUINED_PORTAL_JUNGLE,
             FBStructure.RUINED_PORTAL_OCEAN, FBStructure.RUINED_PORTAL_SWAMP, FBStructure.RUINED_PORTAL_NETHER)),
     OCEAN_RUIN("Ocean Ruin", List.of(FBStructure.OCEAN_RUIN_COLD, FBStructure.OCEAN_RUIN_WARM)),
     TRIAL_CHAMBERS("Trial Chambers", List.of(FBStructure.TRIAL_CHAMBERS)),
