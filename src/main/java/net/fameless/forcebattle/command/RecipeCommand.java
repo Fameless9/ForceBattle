@@ -1,5 +1,6 @@
 package net.fameless.forcebattle.command;
 
+import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.command.framework.CallerType;
 import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.CommandCaller;
@@ -30,7 +31,7 @@ public class RecipeCommand extends Command {
         if (!(caller instanceof BattlePlayer player)) return;
 
         if (args.length == 0) {
-            player.getPlayer().sendMessage("§cUsage: /item <item>");
+            sendUsage(caller);
             return;
         }
 
@@ -38,7 +39,7 @@ public class RecipeCommand extends Command {
         Material material = Material.matchMaterial(input);
 
         if (material == null) {
-            player.getPlayer().sendMessage("§cInvalid item: " + args[0]);
+            caller.sendMessage(Caption.of("command.no_such_material"));
             return;
         }
 

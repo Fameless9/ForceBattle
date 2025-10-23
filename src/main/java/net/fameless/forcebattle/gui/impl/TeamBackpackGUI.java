@@ -1,16 +1,22 @@
 package net.fameless.forcebattle.gui.impl;
 
+import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.game.Team;
 import net.fameless.forcebattle.gui.ForceBattleGUI;
 import net.fameless.forcebattle.gui.GUIClickableItem;
 import net.fameless.forcebattle.player.BattlePlayer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 public class TeamBackpackGUI extends ForceBattleGUI {
 
     private final int index;
 
+
     public TeamBackpackGUI(int index, int size) {
-        super("Team Backpack Page: " + (index + 1), size);
+        super(Caption.getAsLegacy("gui.team_backpack_title",
+                        TagResolver.resolver("page", Tag.inserting(Component.text(String.valueOf(index + 1))))), size);
         this.index = index;
     }
 
