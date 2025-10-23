@@ -30,7 +30,6 @@ import java.util.*;
 public class ResultGUI extends ForceBattleGUI {
 
     private static final int SPACES_ON_PAGE = 45;
-    private final int animationDelayTicks = 15;
 
     private final ResultType resultType;
     private final int page;
@@ -86,7 +85,7 @@ public class ResultGUI extends ForceBattleGUI {
     }
 
     private void startAnimation(BattlePlayer viewer, List<Objective> objectives) {
-        fill(ItemStackCreator.createNamedItemStack(Material.GRAY_STAINED_GLASS_PANE, " "));
+        fill(ItemStackCreator.fillerItem());
 
         BukkitRunnable task = new BukkitRunnable() {
             int index = 0;
@@ -134,6 +133,7 @@ public class ResultGUI extends ForceBattleGUI {
             }
         };
 
+        final int animationDelayTicks = 15;
         task.runTaskTimer(ForceBattle.get(), 0L, animationDelayTicks);
         activeAnimations.put(viewer, task);
     }
@@ -146,7 +146,7 @@ public class ResultGUI extends ForceBattleGUI {
         List<Objective> objectives = objectiveList.get(viewer);
         if (objectives == null) return;
 
-        fill(ItemStackCreator.createNamedItemStack(Material.GRAY_STAINED_GLASS_PANE, " "));
+        fill(ItemStackCreator.fillerItem());
 
         int totalPages = (int) Math.ceil((double) objectives.size() / SPACES_ON_PAGE);
 
@@ -209,7 +209,7 @@ public class ResultGUI extends ForceBattleGUI {
     }
 
     @Override
-    public boolean allowHotkeying() {
+    public boolean allowItemMoving() {
         return false;
     }
 

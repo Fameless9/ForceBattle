@@ -34,6 +34,10 @@ public class ItemStackCreator {
         return item;
     }
 
+    public static ItemStack fillerItem() {
+        return createNamedItemStack(Material.GRAY_STAINED_GLASS_PANE, " ");
+    }
+
     /**
      * Creates an {@link ItemStack} with a custom name and lore list.
      *

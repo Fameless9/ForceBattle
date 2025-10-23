@@ -53,6 +53,16 @@ public abstract class ForceBattleGUI implements Listener, InventoryHolder {
         }
     }
 
+    public void clear() {
+        synchronized (items) {
+            items.clear();
+        }
+
+        if (inventory != null) {
+            inventory.clear();
+        }
+    }
+
     public int firstEmpty() {
         for (int i = 0; i < size; i++) {
             int finalI = i;
@@ -121,7 +131,9 @@ public abstract class ForceBattleGUI implements Listener, InventoryHolder {
             GUI_MAP.remove(p.getUniqueId());
         }
 
-        this.inventory = Bukkit.createInventory(this, size, title);
+        if (this.inventory == null) {
+            this.inventory = Bukkit.createInventory(this, size, title);
+        }
         GUI_MAP.put(p.getUniqueId(), this);
 
         try {
@@ -164,7 +176,7 @@ public abstract class ForceBattleGUI implements Listener, InventoryHolder {
 
     public abstract void setItems(BattlePlayer player);
 
-    public abstract boolean allowHotkeying();
+    public abstract boolean allowItemMoving();
 
     public void onOpen(BattlePlayer player) {
     }

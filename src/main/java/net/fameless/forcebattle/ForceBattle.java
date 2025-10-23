@@ -9,13 +9,12 @@ import net.fameless.forcebattle.command.framework.Command;
 import net.fameless.forcebattle.command.framework.PermissionManager;
 import net.fameless.forcebattle.configuration.PluginUpdater;
 import net.fameless.forcebattle.configuration.SettingsFile;
-import net.fameless.forcebattle.game.GameListener;
 import net.fameless.forcebattle.game.NametagManager;
 import net.fameless.forcebattle.game.ObjectiveManager;
 import net.fameless.forcebattle.game.Timer;
-import net.fameless.forcebattle.gui.GUIListener;
 import net.fameless.forcebattle.scoreboard.ScoreboardManager;
 import net.fameless.forcebattle.util.BukkitUtil;
+import net.fameless.forcebattle.util.EventRegistrar;
 import net.fameless.forcebattle.util.ResourceUtil;
 import net.kyori.adventure.text.Component;
 import org.bstats.bukkit.Metrics;
@@ -55,8 +54,7 @@ public final class ForceBattle extends JavaPlugin {
 
         NametagManager.runTask();
 
-        Bukkit.getPluginManager().registerEvents(new GameListener(), this);
-        Bukkit.getPluginManager().registerEvents(new GUIListener(), this);
+        EventRegistrar.registerAll(this, "net.fameless.forcebattle");
 
         CommandHandler.registerAll(Command.COMMANDS);
         PermissionManager.registerPermissions();

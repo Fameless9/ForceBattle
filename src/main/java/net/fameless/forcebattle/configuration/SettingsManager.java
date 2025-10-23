@@ -94,7 +94,7 @@ public class SettingsManager {
         EXCLUDE_ARMOR_TEMPLATES,
         EXCLUDE_POTTERY_SHERDS,
         EXCLUDE_ORES,
-        EXCLUDE_END_ITEMS,
+        EXCLUDE_END,
         EXCLUDE_TRIAL_ITEMS,
     }
 

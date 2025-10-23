@@ -21,7 +21,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -117,25 +116,25 @@ public class ObjectiveManager {
     private List<String> getAllPossibleObjectives(BattleType battleType, BattlePlayer battlePlayer) {
         List<String> list = new ArrayList<>();
         switch (battleType) {
-            case FORCE_ITEM -> getAvailableItems().forEach(i -> list.add(i.name()));
-            case FORCE_MOB -> getAvailableMobs().forEach(m -> list.add(m.name()));
+            case FORCE_ITEM -> getAvailableItems().forEach(material -> list.add(material.name()));
+            case FORCE_MOB -> getAvailableMobs().forEach(entityType -> list.add(entityType.name()));
             case FORCE_BIOME -> {
                 if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES))
-                    getAvailableBiomesSimplified().forEach(b -> list.add(b.getName()));
+                    getAvailableBiomesSimplified().forEach(biomeSimplified -> list.add(biomeSimplified.getName()));
                 else
-                    getAvailableBiomes().forEach(b -> list.add(b.name()));
+                    getAvailableBiomes().forEach(biome -> list.add(biome.name()));
             }
-            case FORCE_ADVANCEMENT -> getAvailableAdvancements().forEach(a -> list.add(a.toString()));
-            case FORCE_HEIGHT -> getAvailableHeights().forEach(h -> list.add(String.valueOf(h)));
+            case FORCE_ADVANCEMENT -> getAvailableAdvancements().forEach(advancement -> list.add(advancement.toString()));
+            case FORCE_HEIGHT -> getAvailableHeights().forEach(height -> list.add(String.valueOf(height)));
             case FORCE_COORDS -> {
                 Location coords = getRandomLocation(battlePlayer);
                 list.add(coords.getX() + "," + coords.getZ());
             }
             case FORCE_STRUCTURE -> {
                 if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES))
-                    getAvailableStructuresSimplified().forEach(s -> list.add(s.getName()));
+                    getAvailableStructuresSimplified().forEach(structureSimplified -> list.add(structureSimplified.getName()));
                 else
-                    getAvailableStructures().forEach(s -> list.add(s.toString()));
+                    getAvailableStructures().forEach(structure -> list.add(structure.toString()));
             }
         }
         return list;
@@ -150,7 +149,7 @@ public class ObjectiveManager {
         boolean excludeArmorTemplates = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_ARMOR_TEMPLATES);
         boolean excludePotteryShreds = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_POTTERY_SHERDS);
         boolean excludeOres = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_ORES);
-        boolean excludeEndItems = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_END_ITEMS);
+        boolean excludeEndItems = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_END);
 
         for (Material material : Material.values()) {
             if (!material.isItem()) continue;
@@ -181,13 +180,14 @@ public class ObjectiveManager {
 
     public List<EntityType> getAvailableMobs() {
         List<EntityType> availableMobs = new ArrayList<>();
+        boolean excludeEndMobs = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_END);
 
         List<String> mobsToExclude = ForceBattle.get().getConfig().getStringList("exclude.mobs");
 
         for (EntityType entity : EntityType.values()) {
-            if (mobsToExclude.contains(entity.name())) {
-                continue;
-            }
+            if (mobsToExclude.contains(entity.name())) continue;
+            if (excludeEndMobs && ENDMOBS.contains(entity)) continue;
+
             availableMobs.add(entity);
         }
         return availableMobs;
@@ -195,23 +195,32 @@ public class ObjectiveManager {
 
     public List<Biome> getAvailableBiomes() {
         List<Biome> availableBiomes = new ArrayList<>();
+        boolean excludeBiomes = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_END);
 
         List<String> biomesToExclude = ForceBattle.get().getConfig().getStringList("exclude.biomes");
 
         for (Biome biome : Biome.values()) {
-            if (biomesToExclude.contains(biome.name())) {
-                continue;
-            }
+            if (biomesToExclude.contains(biome.name())) continue;
+            if (excludeBiomes && ENDBIOMES.contains(biome)) continue;
+
             availableBiomes.add(biome);
         }
         return availableBiomes;
     }
 
     public List<BiomeSimplified> getAvailableBiomesSimplified() {
-        List<BiomeSimplified> list = new ArrayList<>(Arrays.asList(BiomeSimplified.values()));
+        List<BiomeSimplified> availableBiomes = new ArrayList<>();
+        boolean excludeBiomes = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_END);
+
         List<String> biomesToExclude = ForceBattle.get().getConfig().getStringList("exclude.biomes");
-        list.removeIf(b -> biomesToExclude.contains(b.getName().toUpperCase(Locale.ROOT)));
-        return list;
+
+        for (BiomeSimplified simplified : BiomeSimplified.values()) {
+            if (biomesToExclude.contains(simplified.getName().toUpperCase(Locale.ROOT))) continue;
+            if (excludeBiomes && ENDBIOMESSIMPLIFIED.contains(simplified)) continue;
+
+            availableBiomes.add(simplified);
+        }
+        return availableBiomes;
     }
 
     public List<FBAdvancement> getAvailableAdvancements() {
@@ -220,9 +229,8 @@ public class ObjectiveManager {
         List<String> advancementsToExclude = ForceBattle.get().getConfig().getStringList("exclude.advancements");
 
         for (FBAdvancement advancement : FBAdvancement.values()) {
-            if (advancementsToExclude.contains(advancement.name())) {
-                continue;
-            }
+            if (advancementsToExclude.contains(advancement.name())) continue;
+
             availableAdvancements.add(advancement);
         }
         return availableAdvancements;
@@ -234,9 +242,8 @@ public class ObjectiveManager {
         List<String> heightsToExclude = ForceBattle.get().getConfig().getStringList("exclude.heights");
 
         for (int i = -63; i < 321; i++) {
-            if (heightsToExclude.contains(String.valueOf(i))) {
-                continue;
-            }
+            if (heightsToExclude.contains(String.valueOf(i))) continue;
+
             availableHeights.add(i);
         }
         return availableHeights;
@@ -263,13 +270,13 @@ public class ObjectiveManager {
 
     public List<FBStructure> getAvailableStructures() {
         List<FBStructure> availableStructures = new ArrayList<>();
+        boolean excludeEndStructures = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_END);
 
         List<String> structuresToExclude = ForceBattle.get().getConfig().getStringList("exclude.structures");
 
         for (FBStructure structure : FBStructure.values()) {
-            if (structuresToExclude.contains(structure.getKey())) {
-                continue;
-            }
+            if (structuresToExclude.contains(structure.getKey())) continue;
+            if (excludeEndStructures && ENDSTRUCTURES.contains(structure)) continue;
 
             availableStructures.add(structure);
         }
@@ -277,10 +284,18 @@ public class ObjectiveManager {
     }
 
     public List<StructureSimplified> getAvailableStructuresSimplified() {
-        List<StructureSimplified> list = new ArrayList<>(Arrays.asList(StructureSimplified.values()));
+        List<StructureSimplified> availableStructures = new ArrayList<>();
+        boolean excludeEndStructures = SettingsManager.isEnabled(SettingsManager.Setting.EXCLUDE_END);
+
         List<String> structuresToExclude = ForceBattle.get().getConfig().getStringList("exclude.structures");
-        list.removeIf(s -> structuresToExclude.contains(s.name().toUpperCase(Locale.ROOT)));
-        return list;
+
+        for (StructureSimplified simplified : StructureSimplified.values()) {
+            if (structuresToExclude.contains(simplified.name().toUpperCase(Locale.ROOT))) continue;
+            if (excludeEndStructures && ENDSTRUCTURESSIMPLIFIED.contains(simplified)) continue;
+
+            availableStructures.add(simplified);
+        }
+        return availableStructures;
     }
 
     public List<String> getChainList() {
@@ -332,5 +347,20 @@ public class ObjectiveManager {
             Material.GREEN_SHULKER_BOX, Material.LIGHT_BLUE_SHULKER_BOX, Material.LIGHT_GRAY_SHULKER_BOX, Material.LIME_SHULKER_BOX, Material.MAGENTA_SHULKER_BOX,
             Material.ORANGE_SHULKER_BOX, Material.PINK_SHULKER_BOX, Material.PURPLE_SHULKER_BOX, Material.RED_SHULKER_BOX, Material.WHITE_SHULKER_BOX,
             Material.YELLOW_SHULKER_BOX, Material.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE
+    );
+    private final List<EntityType> ENDMOBS = List.of(
+            EntityType.ENDER_DRAGON, EntityType.SHULKER, EntityType.SHULKER_BULLET, EntityType.DRAGON_FIREBALL
+    );
+    private final List<Biome> ENDBIOMES = List.of(
+            Biome.THE_END, Biome.END_BARRENS, Biome.END_HIGHLANDS, Biome.END_MIDLANDS, Biome.SMALL_END_ISLANDS
+    );
+    private final List<BiomeSimplified> ENDBIOMESSIMPLIFIED = List.of(
+            BiomeSimplified.END
+    );
+    private final List<FBStructure> ENDSTRUCTURES = List.of(
+            FBStructure.END_CITY
+    );
+    private final List<StructureSimplified> ENDSTRUCTURESSIMPLIFIED = List.of(
+            StructureSimplified.END_CITY
     );
 }

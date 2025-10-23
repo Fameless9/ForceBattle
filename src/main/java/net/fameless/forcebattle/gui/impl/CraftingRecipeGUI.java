@@ -35,7 +35,7 @@ public class CraftingRecipeGUI extends ForceBattleGUI {
 
     @Override
     public void setItems(BattlePlayer player) {
-        fill(ItemStackCreator.createNamedItemStack(Material.GRAY_STAINED_GLASS_PANE, " "));
+        fill(ItemStackCreator.fillerItem());
 
         set(new GUIItem(16) {
             @Override
@@ -156,7 +156,7 @@ public class CraftingRecipeGUI extends ForceBattleGUI {
     }
 
     @Override
-    public boolean allowHotkeying() {
+    public boolean allowItemMoving() {
         return false;
     }
 }

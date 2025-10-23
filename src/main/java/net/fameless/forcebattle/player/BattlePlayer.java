@@ -13,7 +13,6 @@ import net.fameless.forcebattle.event.PlayerResetEvent;
 import net.fameless.forcebattle.game.GameListener;
 import net.fameless.forcebattle.game.Objective;
 import net.fameless.forcebattle.game.Team;
-import net.fameless.forcebattle.util.BackpackInventoryHolder;
 import net.fameless.forcebattle.util.BukkitUtil;
 import net.fameless.forcebattle.util.StringUtility;
 import net.fameless.forcebattle.util.ItemUtils;
@@ -66,11 +65,8 @@ public class BattlePlayer implements CommandCaller {
     public BattlePlayer(@NotNull Player player) {
         this.uuid = player.getUniqueId();
         this.name = player.getName();
-        BACKPACK_INVENTORY = Bukkit.createInventory(
-                new BackpackInventoryHolder(), 27, Caption.getAsLegacy(
-                        "gui.backpack_title",
-                        TagResolver.resolver("player", Tag.inserting(Component.text(player.getName())))
-                )
+        BACKPACK_INVENTORY = Bukkit.createInventory(null, 27, Caption.getAsLegacy(
+                        "gui.backpack_title", TagResolver.resolver("player", Tag.inserting(Component.text(player.getName()))))
         );
         BATTLE_PLAYERS.add(this);
     }
@@ -183,9 +179,6 @@ public class BattlePlayer implements CommandCaller {
     }
 
     public Audience getAudience() {
-        if (BukkitUtil.BUKKIT_AUDIENCES == null) {
-            logger.warn("[ForceBattle] Bukkit audiences not initialized!");
-        }
         if (getPlayer() == null) {
             return Audience.empty();
         }
@@ -306,7 +299,12 @@ public class BattlePlayer implements CommandCaller {
     }
 
     public void openBackpack() {
-        openInventory(getBackpack());
+        if (isInTeam()) {
+            Team team = getTeam();
+            team.getBACKPACK_INVENTORIES().getFirst().open(this);
+        } else {
+            openInventory(getBackpack());
+        }
     }
 
     public void openBackpack(BattlePlayer viewer) {
@@ -415,7 +413,6 @@ public class BattlePlayer implements CommandCaller {
         getPlayer().teleport(location);
     }
 
-    @SuppressWarnings("unchecked")
     public Inventory getInventory() {
         if (getPlayer() == null) {
             return null;
@@ -423,7 +420,6 @@ public class BattlePlayer implements CommandCaller {
         return getPlayer().getInventory();
     }
 
-    @SuppressWarnings("unchecked")
     public World getWorld() {
         if (getPlayer() == null) {
             return null;
@@ -431,7 +427,6 @@ public class BattlePlayer implements CommandCaller {
         return getPlayer().getWorld();
     }
 
-    @SuppressWarnings("unchecked")
     public Inventory getBackpack() {
         return BACKPACK_INVENTORY;
     }

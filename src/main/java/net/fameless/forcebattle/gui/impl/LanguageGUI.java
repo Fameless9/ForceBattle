@@ -85,7 +85,7 @@ public class LanguageGUI extends ForceBattleGUI {
     }
 
     @Override
-    public boolean allowHotkeying() {
+    public boolean allowItemMoving() {
         return false;
     }
 }
