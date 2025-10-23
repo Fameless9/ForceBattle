@@ -31,7 +31,10 @@ public class BackpackCommand extends Command {
             caller.sendMessage(Caption.of("error.backpacks_disabled"));
             return;
         }
-        if (GameListener.startPhase) return;
+        if (GameListener.startPhase) {
+            caller.sendMessage(Caption.of("error.game_not_started"));
+            return;
+        };
 
         Optional<BattlePlayer> senderOpt = BattlePlayer.adapt(caller.getName());
 

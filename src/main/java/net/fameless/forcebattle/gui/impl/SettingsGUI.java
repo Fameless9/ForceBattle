@@ -11,7 +11,6 @@ import net.fameless.forcebattle.util.ItemStackCreator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -84,9 +83,8 @@ public class SettingsGUI extends ForceBattleGUI {
         public ItemStack createItem() {
             if (lore != null && setting != null) {
                 String state = SettingsManager.getState(setting).getDisplayName(SettingsManager.isMultiState(setting));
-                Component componentLore = Caption.of(lore, TagResolver.resolver("state", Tag.inserting(Component.text(state))));
 
-                String rawLore = LegacyComponentSerializer.legacySection().serialize(componentLore);
+                String rawLore = Caption.getAsLegacy(lore, TagResolver.resolver("state", Tag.inserting(Component.text(state))));
                 List<String> loreLines = new ArrayList<>(List.of(rawLore.split("\n")));
 
                 return ItemStackCreator.getStack(
