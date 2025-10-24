@@ -32,8 +32,21 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ObjectiveManager {
 
     private final List<String> chainList = new ArrayList<>();
+    private final List<String> teamChainList = new ArrayList<>();
 
     public Objective getNewObjective(Team team) {
+        if (SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)) {
+            int progress = team.getChainProgress();
+            String objective;
+            try {
+                objective = getTeamChainList().get(progress);
+            } catch (IndexOutOfBoundsException e) {
+                progress = 0;
+                objective = getTeamChainList().get(progress);
+            }
+            return new Objective(BukkitUtil.getBattleType(objective), objective);
+        }
+
         List<BattlePlayer> players = team.getPlayers();
         if (players.isEmpty()) return null;
 
@@ -102,7 +115,7 @@ public class ObjectiveManager {
             battlePlayer.sendMessage(Caption.of(
                     "error.no_objective_available", TagResolver.resolver("type", Tag.inserting(Component.text(battleType.name())))
             ));
-            if (team != null) {
+            if (team != null && SettingsManager.isEnabled(SettingsManager.Setting.EXTRA_TEAM_OBJECTIVE)) {
                 return getNewObjective(team);
             } else {
                 return getNewObjective(battlePlayer);
@@ -305,37 +318,117 @@ public class ObjectiveManager {
         return chainList;
     }
 
+    public List<String> getTeamChainList() {
+        if (teamChainList.isEmpty()) {
+            updateTeamChainList();
+        }
+        return teamChainList;
+    }
+
     public void updateChainList() {
         chainList.clear();
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM))
-            getAvailableItems().forEach(m -> chainList.add(m.name()));
 
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB))
-            getAvailableMobs().forEach(e -> chainList.add(e.name()));
+        for (BattleType type : BattleType.values()) {
+            SettingsManager.SettingState state = type.getSettingState();
 
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) {
-            if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
-                getAvailableBiomesSimplified().forEach(b -> chainList.add(b.getName()));
-            } else {
-                getAvailableBiomes().forEach(b -> chainList.add(b.name()));
-            }
-        }
+            if (state != SettingsManager.SettingState.PLAYER && state != SettingsManager.SettingState.BOTH) continue;
 
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT))
-            getAvailableAdvancements().forEach(a -> chainList.add(a.name()));
-
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT))
-            getAvailableHeights().forEach(h -> chainList.add(String.valueOf(h)));
-
-        if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) {
-            if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
-                getAvailableStructuresSimplified().forEach(s -> chainList.add(s.name()));
-            } else {
-                getAvailableStructures().forEach(s -> chainList.add(s.name()));
+            switch (type) {
+                case BattleType.FORCE_ITEM -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) {
+                        getAvailableItems().forEach(m -> chainList.add(m.name()));
+                    }
+                }
+                case BattleType.FORCE_MOB -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) {
+                        getAvailableMobs().forEach(e -> chainList.add(e.name()));
+                    }
+                }
+                case BattleType.FORCE_ADVANCEMENT -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) {
+                        getAvailableAdvancements().forEach(a -> chainList.add(a.name()));
+                    }
+                }
+                case BattleType.FORCE_HEIGHT -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) {
+                        getAvailableHeights().forEach(h -> chainList.add(String.valueOf(h)));
+                    }
+                }
+                case BattleType.FORCE_BIOME -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) {
+                        if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
+                            getAvailableBiomesSimplified().forEach(b -> chainList.add(b.getName()));
+                        } else {
+                            getAvailableBiomes().forEach(b -> chainList.add(b.name()));
+                        }
+                    }
+                }
+                case BattleType.FORCE_STRUCTURE -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) {
+                        if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
+                            getAvailableStructuresSimplified().forEach(s -> chainList.add(s.name()));
+                        } else {
+                            getAvailableStructures().forEach(s -> chainList.add(s.name()));
+                        }
+                    }
+                }
             }
         }
 
         Collections.shuffle(chainList);
+    }
+
+    public void updateTeamChainList() {
+        teamChainList.clear();
+
+        for (BattleType type : BattleType.values()) {
+            SettingsManager.SettingState state = type.getSettingState();
+
+            if (state != SettingsManager.SettingState.TEAM && state != SettingsManager.SettingState.BOTH) continue;
+
+            switch (type) {
+                case BattleType.FORCE_ITEM -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ITEM)) {
+                        getAvailableItems().forEach(m -> teamChainList.add(m.name()));
+                    }
+                }
+                case BattleType.FORCE_MOB -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) {
+                        getAvailableMobs().forEach(e -> teamChainList.add(e.name()));
+                    }
+                }
+                case BattleType.FORCE_ADVANCEMENT -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_ADVANCEMENT)) {
+                        getAvailableAdvancements().forEach(a -> teamChainList.add(a.name()));
+                    }
+                }
+                case BattleType.FORCE_HEIGHT -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_HEIGHT)) {
+                        getAvailableHeights().forEach(h -> teamChainList.add(String.valueOf(h)));
+                    }
+                }
+                case BattleType.FORCE_BIOME -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_BIOME)) {
+                        if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
+                            getAvailableBiomesSimplified().forEach(b -> teamChainList.add(b.getName()));
+                        } else {
+                            getAvailableBiomes().forEach(b -> teamChainList.add(b.name()));
+                        }
+                    }
+                }
+                case BattleType.FORCE_STRUCTURE -> {
+                    if (SettingsManager.isEnabled(SettingsManager.Setting.FORCE_STRUCTURE)) {
+                        if (SettingsManager.isEnabled(SettingsManager.Setting.SIMPLIFIED_OBJECTIVES)) {
+                            getAvailableStructuresSimplified().forEach(s -> teamChainList.add(s.name()));
+                        } else {
+                            getAvailableStructures().forEach(s -> teamChainList.add(s.name()));
+                        }
+                    }
+                }
+            }
+        }
+
+        Collections.shuffle(teamChainList);
     }
 
     private final List<Material> ENDITEMS = List.of(
