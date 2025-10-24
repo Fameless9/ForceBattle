@@ -83,6 +83,7 @@ public class SettingsManager {
         FORCE_STRUCTURE,
 
         NO_HUNGER,
+        NO_DAMAGE,
         BACKPACK,
         CHAIN_MODE,
         HIDE_POINTS,

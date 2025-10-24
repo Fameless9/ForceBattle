@@ -44,6 +44,8 @@ public class SettingsGUI extends ForceBattleGUI {
 
         NO_HUNGER(18, Material.COOKED_BEEF, SettingsManager.Setting.NO_HUNGER, false,
                 "gui.no_hunger_name", "gui.no_hunger_lore", "notification.no_hunger_changed"),
+        NO_DAMAGE(19, Material.IRON_SWORD, SettingsManager.Setting.NO_DAMAGE, false,
+                "gui.no_damage_name", "gui.no_damage_lore", "notification.no_damage_changed"),
         CHAIN_MODE(27, Material.CHAIN, SettingsManager.Setting.CHAIN_MODE, false,
                 "gui.chain_mode_name", "gui.chain_mode_lore", "notification.chain_mode_changed"),
         BACKPACK(28, Material.CHEST, SettingsManager.Setting.BACKPACK, false,

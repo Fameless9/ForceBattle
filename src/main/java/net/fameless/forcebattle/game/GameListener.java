@@ -39,6 +39,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -224,11 +225,6 @@ public class GameListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!ForceBattle.getTimer().isRunning() && event.getEntity() instanceof Player) {
-            event.setCancelled(true);
-            return;
-        }
-
         if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) return;
 
         if (!(event.getDamager() instanceof Player damager)) return;
@@ -241,6 +237,14 @@ public class GameListener implements Listener {
 
         checkPlayerObjective(battlePlayer, target);
         checkTeamObjective(battlePlayer, target);
+    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        if (!ForceBattle.getTimer().isRunning() || SettingsManager.isEnabled(SettingsManager.Setting.NO_DAMAGE)) {
+            event.setCancelled(true);
+        }
     }
 
     private void checkPlayerObjective(BattlePlayer battlePlayer, LivingEntity target) {
