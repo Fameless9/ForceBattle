@@ -214,7 +214,7 @@ public class GameListener implements Listener {
     public void onHungerChange(FoodLevelChangeEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
-        if (!ForceBattle.getTimer().isRunning()) {
+        if (!ForceBattle.getTimer().isRunning() || SettingsManager.isEnabled(SettingsManager.Setting.NO_HUNGER)) {
             event.setCancelled(true);
 
             player.setFoodLevel(20);

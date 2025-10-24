@@ -82,6 +82,7 @@ public class SettingsManager {
         FORCE_COORDS,
         FORCE_STRUCTURE,
 
+        NO_HUNGER,
         BACKPACK,
         CHAIN_MODE,
         HIDE_POINTS,
