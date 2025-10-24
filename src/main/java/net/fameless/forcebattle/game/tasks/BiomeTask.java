@@ -36,6 +36,7 @@ public class BiomeTask implements ForceTask {
     }
 
     private void checkPlayerObjective(BattlePlayer battlePlayer, Biome currentBiome) {
+        if (battlePlayer.getObjective() == null) return;
         if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_BIOME) return;
 
         String objectiveString = battlePlayer.getObjective().getObjectiveString();

@@ -226,7 +226,6 @@ public class Team {
         }
 
         Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
-        if (newObjective == null) return;
 
         ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
         Bukkit.getPluginManager().callEvent(updateEvent);

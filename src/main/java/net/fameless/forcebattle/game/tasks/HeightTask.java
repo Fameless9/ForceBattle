@@ -33,6 +33,7 @@ public class HeightTask implements ForceTask {
     }
 
     private void checkPlayerObjective(BattlePlayer battlePlayer, Player player) {
+        if (battlePlayer.getObjective() == null) return;
         if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_HEIGHT) return;
 
         String objective = battlePlayer.getObjective().getObjectiveString();

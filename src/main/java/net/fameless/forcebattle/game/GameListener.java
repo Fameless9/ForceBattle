@@ -75,9 +75,6 @@ public class GameListener implements Listener {
         TaskManager.startAll();
     }
 
-    //TODO does chain mode work with team objective?
-    //TODO support only team objective if not already possible
-
     @EventHandler
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
         if (ForceBattle.getTimer().isRunning()) {
@@ -205,6 +202,8 @@ public class GameListener implements Listener {
         for (BattlePlayer player : BattlePlayer.getOnlinePlayers()) {
             if (player.getPlayer() == null) return;
 
+            if (player.isInTeam()) player.getTeam().setObjective(null);
+            player.setCurrentObjective(null, false, false);
             player.getPlayer().teleport(Bukkit.getWorld("world").getSpawnLocation());
             player.getPlayer().setHealth(20);
             player.getPlayer().setSaturation(20);

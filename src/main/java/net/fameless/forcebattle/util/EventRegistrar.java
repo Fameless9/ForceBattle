@@ -15,10 +15,7 @@ public final class EventRegistrar {
         try {
             String path = basePackage.replace('.', '/');
             URL resource = plugin.getClass().getClassLoader().getResource(path);
-            if (resource == null) {
-                plugin.getLogger().warning("No resource found for package: " + basePackage);
-                return;
-            }
+            if (resource == null) return;
 
             String jarPath = resource.getPath().substring(5, resource.getPath().indexOf("!"));
             try (JarFile jar = new JarFile(jarPath)) {
@@ -35,7 +32,6 @@ public final class EventRegistrar {
                             if (Listener.class.isAssignableFrom(clazz)) {
                                 Listener listener = (Listener) clazz.getDeclaredConstructor().newInstance();
                                 Bukkit.getPluginManager().registerEvents(listener, plugin);
-                                plugin.getLogger().info("Registered listener: " + className);
                             }
                         } catch (Exception ignored) {
                         }
@@ -43,7 +39,6 @@ public final class EventRegistrar {
                 }
             }
         } catch (IOException e) {
-            plugin.getLogger().severe("Error while registering listeners: " + e.getMessage());
             e.printStackTrace();
         }
     }

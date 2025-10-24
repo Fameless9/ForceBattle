@@ -45,17 +45,25 @@ public class NametagManager {
                 suffix.append(Caption.getAsLegacy("excluded"));
             } else if (!ForceBattle.getTimer().isRunning()) {
                 suffix.append(Caption.getAsLegacy("waiting"));
-            } else {
-                var objective = targetPlayer.getObjective();
-                String objectiveString;
+            }
 
+            Objective objective = targetPlayer.getObjective();
+            if (objective == null && targetPlayer.isInTeam()) {
+                objective = targetPlayer.getTeam().getObjective();
+            }
+
+            if (objective != null) {
+                String objectiveString;
                 if (BukkitUtil.convertObjective(BattleType.FORCE_ADVANCEMENT, objective.getObjectiveString()) instanceof FBAdvancement advancement) {
                     objectiveString = advancement.name;
                 } else {
                     objectiveString = StringUtility.formatName(objective.getObjectiveString());
                 }
 
-                if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)) {
+                boolean hideObjectives = SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES);
+                boolean hidePoints = SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS);
+
+                if (!hideObjectives) {
                     suffix.append(" ")
                             .append(ChatColor.GRAY)
                             .append(objective.getBattleType().getPrefix())
@@ -65,23 +73,22 @@ public class NametagManager {
                             .append(objectiveString);
                 }
 
-                if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_OBJECTIVES)
-                        && !SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
+                if (!hideObjectives && !hidePoints) {
                     suffix.append(ChatColor.DARK_GRAY).append(" |");
                 }
 
-                if (!SettingsManager.isEnabled(SettingsManager.Setting.HIDE_POINTS)) {
+                if (!hidePoints) {
                     suffix.append(" ").append(ChatColor.GRAY).append("Points")
                             .append(ChatColor.DARK_GRAY).append(" » ")
                             .append(ChatColor.BLUE).append(targetPlayer.getPoints());
                 }
+            }
 
-                var teamData = targetPlayer.getTeam();
-                if (teamData != null) {
-                    suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GRAY)
-                            .append("Team").append(ChatColor.DARK_GRAY).append(" » ")
-                            .append(ChatColor.BLUE).append(teamData.getId());
-                }
+            var teamData = targetPlayer.getTeam();
+            if (teamData != null) {
+                suffix.append(ChatColor.DARK_GRAY).append(" | ").append(ChatColor.GRAY)
+                        .append("Team").append(ChatColor.DARK_GRAY).append(" » ")
+                        .append(ChatColor.BLUE).append(teamData.getId());
             }
 
             team.setSuffix(suffix.toString());

@@ -1,6 +1,7 @@
 package net.fameless.forcebattle.configuration;
 
 import net.fameless.forcebattle.ForceBattle;
+import net.fameless.forcebattle.game.Team;
 import net.fameless.forcebattle.gui.impl.SettingsGUI;
 import net.fameless.forcebattle.player.BattlePlayer;
 import net.fameless.forcebattle.util.BattleType;
@@ -56,10 +57,11 @@ public class SettingsManager {
     }
 
     private static void updateSetting(Setting setting) {
-        if (setting == Setting.CHAIN_MODE || setting.name().startsWith("FORCE_")) {
+        if (setting == Setting.CHAIN_MODE) {
             ForceBattle.getObjectiveManager().updateChainList();
         }
         BattlePlayer.BATTLE_PLAYERS.forEach(player -> player.updateObjective(false, false));
+        Team.teams.forEach(team -> team.updateObjective(null, false, false));
     }
 
     public static boolean isMultiState(Setting setting) {
