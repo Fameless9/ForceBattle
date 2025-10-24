@@ -27,12 +27,15 @@ public class ScoreboardManager {
     }
 
     public static void updateAll() {
-        for (BattlePlayer battlePlayer : BattlePlayer.getOnlinePlayers()) {
-            boolean shouldHaveScoreboard = !battlePlayer.isExcluded() && ForceBattle.getTimer().isRunning();
+        boolean timerRunning = ForceBattle.getTimer().isRunning();
 
-            if (shouldHaveScoreboard && SettingsManager.isEnabled(SettingsManager.Setting.SHOW_SCOREBOARD)) {
+        for (BattlePlayer battlePlayer : BattlePlayer.getOnlinePlayers()) {
+            boolean shouldHaveScoreboard = !battlePlayer.isExcluded() && timerRunning;
+            boolean showScoreboard = SettingsManager.isEnabled(SettingsManager.Setting.SHOW_SCOREBOARD);
+
+            if (shouldHaveScoreboard && showScoreboard) {
                 updateScoreboard(battlePlayer);
-            } else if (SCOREBOARDS.containsKey(battlePlayer) && !SettingsManager.isEnabled(SettingsManager.Setting.SHOW_SCOREBOARD)) {
+            } else if (SCOREBOARDS.containsKey(battlePlayer)) {
                 removeScoreboard(battlePlayer);
             }
         }

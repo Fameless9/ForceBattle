@@ -34,17 +34,25 @@ public class BossbarManager {
                         continue;
                     }
 
-                    BossBar playerBar = BossBar.bossBar(
-                            getPlayerObjectiveTitle(battlePlayer),
-                            1,
-                            BossBar.Color.BLUE,
-                            BossBar.Overlay.PROGRESS
-                    );
-                    updateBossBar(battlePlayer, playerBar, lastPlayerBarMap);
-
                     if (!timerRunning) {
+                        showWaitingBossbar(battlePlayer);
                         hideBossBar(battlePlayer, lastTeamBarMap);
                         continue;
+                    } else {
+                        hideBossBar(battlePlayer, lastPlayerBarMap);
+                    }
+
+                    Objective playerObjective = battlePlayer.getObjective();
+                    if (playerObjective != null) {
+                        BossBar playerBar = BossBar.bossBar(
+                                getPlayerObjectiveTitle(battlePlayer),
+                                1,
+                                BossBar.Color.BLUE,
+                                BossBar.Overlay.PROGRESS
+                        );
+                        updateBossBar(battlePlayer, playerBar, lastPlayerBarMap);
+                    } else {
+                        hideBossBar(battlePlayer, lastPlayerBarMap);
                     }
 
                     if (battlePlayer.isInTeam()) {
@@ -71,23 +79,31 @@ public class BossbarManager {
         new Timer("forcebattle/bossbar").scheduleAtFixedRate(task, 150, 150);
     }
 
+    private static void showWaitingBossbar(BattlePlayer battlePlayer) {
+        BossBar waitingBar = BossBar.bossBar(
+                Caption.of("waiting"),
+                1,
+                BossBar.Color.YELLOW,
+                BossBar.Overlay.PROGRESS
+        );
+        updateBossBar(battlePlayer, waitingBar, lastPlayerBarMap);
+    }
+
     private static void hideBossBars(BattlePlayer battlePlayer) {
         hideBossBar(battlePlayer, lastPlayerBarMap);
         hideBossBar(battlePlayer, lastTeamBarMap);
     }
 
     private static void hideBossBar(BattlePlayer battlePlayer, HashMap<BattlePlayer, BossBar> map) {
-        if (map.containsKey(battlePlayer)) {
-            battlePlayer.getAudience().hideBossBar(map.get(battlePlayer));
-            map.remove(battlePlayer);
+        BossBar existing = map.remove(battlePlayer);
+        if (existing != null) {
+            battlePlayer.getAudience().hideBossBar(existing);
         }
     }
 
     private static @NotNull Component getPlayerObjectiveTitle(BattlePlayer battlePlayer) {
-        if (!ForceBattle.getTimer().isRunning()) return Caption.of("waiting");
-
         Objective playerObjective = battlePlayer.getObjective();
-        if (playerObjective == null) return Caption.of("waiting");
+        if (playerObjective == null) return Component.empty();
 
         boolean isPlayerInTeam = battlePlayer.isInTeam();
         int points = isPlayerInTeam ? battlePlayer.getTeam().getPoints() : battlePlayer.getPoints();
@@ -131,9 +147,7 @@ public class BossbarManager {
     }
 
     private static void updateBossBar(BattlePlayer battlePlayer, BossBar bossBar, HashMap<BattlePlayer, BossBar> map) {
-        if (map.containsKey(battlePlayer)) {
-            battlePlayer.getAudience().hideBossBar(map.get(battlePlayer));
-        }
+        hideBossBar(battlePlayer, map);
         battlePlayer.getAudience().showBossBar(bossBar);
         map.put(battlePlayer, bossBar);
     }

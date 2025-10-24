@@ -207,7 +207,6 @@ public class BattlePlayer implements CommandCaller {
         }
 
         Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
-        if (newObjective == null) return;
 
         ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
         Bukkit.getPluginManager().callEvent(updateEvent);
@@ -278,6 +277,9 @@ public class BattlePlayer implements CommandCaller {
 
         this.points = 0;
         this.chainProgress = 0;
+        if (this.isInTeam()) {
+            this.getTeam().setChainProgress(0);
+        }
         Objective.finished().forEach(objective -> {
             if (objective.getWhoFinished().equals(this)) {
                 objective.delete();

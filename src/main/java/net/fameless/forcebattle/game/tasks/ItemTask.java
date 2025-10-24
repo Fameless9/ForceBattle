@@ -33,6 +33,7 @@ public class ItemTask implements ForceTask {
     }
 
     private void checkPlayerObjective(BattlePlayer battlePlayer, Player player) {
+        if (battlePlayer.getObjective() == null) return;
         if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_ITEM) return;
 
         String objective = battlePlayer.getObjective().getObjectiveString();

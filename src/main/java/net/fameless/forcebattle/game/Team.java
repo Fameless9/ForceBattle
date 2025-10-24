@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
+import net.fameless.forcebattle.configuration.SettingsManager;
 import net.fameless.forcebattle.event.ObjectiveUpdateEvent;
 import net.fameless.forcebattle.event.PlayerTeamJoinEvent;
 import net.fameless.forcebattle.event.PlayerTeamLeaveEvent;
@@ -40,6 +41,9 @@ public class Team {
     @Getter
     @Setter
     private Objective objective;
+    @Getter
+    @Setter
+    private int chainProgress = 0;
     @Getter
     private JoinRequest lastJoinRequest = null;
 
@@ -222,7 +226,6 @@ public class Team {
         }
 
         Objective newObjective = ForceBattle.getObjectiveManager().getNewObjective(this);
-        if (newObjective == null) return;
 
         ObjectiveUpdateEvent updateEvent = new ObjectiveUpdateEvent(this, newObjective);
         Bukkit.getPluginManager().callEvent(updateEvent);
@@ -238,6 +241,13 @@ public class Team {
                 ));
             }
         }
+        if (SettingsManager.isEnabled(SettingsManager.Setting.CHAIN_MODE)) {
+            increaseChainProgress();
+        }
+    }
+
+    public void increaseChainProgress() {
+        chainProgress++;
     }
 
     @Getter

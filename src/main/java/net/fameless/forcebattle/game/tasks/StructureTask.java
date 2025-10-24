@@ -53,6 +53,7 @@ public class StructureTask implements ForceTask {
     }
 
     private void checkPlayerObjective(BattlePlayer battlePlayer, Player player, Registry<Structure> registry) {
+        if (battlePlayer.getObjective() == null) return;
         if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_STRUCTURE) return;
 
         String objectiveString = battlePlayer.getObjective().getObjectiveString();
