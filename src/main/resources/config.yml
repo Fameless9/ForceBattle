@@ -42,6 +42,7 @@ exclude:
         - DEBUG_STICK
         - FARMLAND
         - STRUCTURE_BLOCK
+        - TEST_BLOCK
         - BUBBLE_COLUMN
         - CAVE_AIR
         - KNOWLEDGE_BOOK

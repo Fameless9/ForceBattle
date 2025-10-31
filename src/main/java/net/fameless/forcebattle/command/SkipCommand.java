@@ -24,7 +24,7 @@ public class SkipCommand extends Command {
                 "skip",
                 List.of(),
                 CallerType.NONE,
-                "/skip <player>",
+                "/skip <player/team> <player/team>",
                 "forcebattle.skip",
                 "Command to skip a player's objective - meant for admins if an item is unobtainable"
         );

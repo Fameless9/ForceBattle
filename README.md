@@ -39,23 +39,23 @@ Objective types can be enabled or disabled individually via the plugin's setting
 
 ### 📋 Commands
 
-| Command                     | Description                                           |
-|:----------------------------|:------------------------------------------------------|
-| `/backpack`                 | Opens the personal or team backpack (can be disabled) |
-| `/displayresults`           | Show the final leaderboard (player, team)             |
-| `/exclude <player>`         | Exclude a player from the battle                      |
-| `/help`                     | Display a list of available commands                  |
-| `/joker <player> <amount>`  | Adjust jokers for a player                            |
-| `/language`                 | Open the language selection menu                      |
-| `/points <player> <amount>` | Modify a player's points                              |
-| `/randomteams <teamsize>`   | Creates random teams with a specific size             |
-| `/recipe <item>`            | Displays the recipe of an item                        |
-| `/reset [player]`           | Reset the battle or a specific player                 |
-| `/result <player>`          | Show detailed results for a player                    |
-| `/settings`                 | Open the plugin's settings menu                       |
-| `/skip <player>`            | Skip a player's current objective (for admins)        |
-| `/team`                     | Manage teams                                          |
-| `/timer`                    | Control the timer (start, stop, set duration)         |
+| Command                          | Description                                           |
+|:---------------------------------|:------------------------------------------------------|
+| `/backpack`                      | Opens the personal or team backpack (can be disabled) |
+| `/displayresults`                | Show the final leaderboard (player, team)             |
+| `/exclude <player>`              | Exclude a player from the battle                      |
+| `/help`                          | Display a list of available commands                  |
+| `/joker <player> <amount>`       | Adjust jokers for a player                            |
+| `/language`                      | Open the language selection menu                      |
+| `/points <player> <amount>`      | Modify a player's points                              |
+| `/randomteams <teamsize> <mode>` | Creates random teams with a specific size             |
+| `/recipe <item>`                 | Displays the recipe of an item                        |
+| `/reset [player]`                | Reset the battle or a specific player                 |
+| `/result <player>`               | Show detailed results for a player                    |
+| `/settings`                      | Open the plugin's settings menu                       |
+| `/skip <player>`                 | Skip a player's current objective (for admins)        |
+| `/team`                          | Manage teams                                          |
+| `/timer`                         | Control the timer (start, stop, set duration)         |
 
 ---
 

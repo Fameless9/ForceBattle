@@ -8,9 +8,8 @@ import net.fameless.forcebattle.util.BattleType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 public class Objective {
 
@@ -31,24 +30,19 @@ public class Objective {
         objectives.add(this);
     }
 
-    public static @NotNull Set<Objective> finishedBy(BattlePlayer battlePlayer) {
-        Set<Objective> byPlayer = new HashSet<>();
-        for (Objective o : objectives) {
-            if (o.isFinished() && o.whoFinished.equals(battlePlayer)) {
-                byPlayer.add(o);
-            }
-        }
-        return byPlayer;
+    public static @NotNull List<Objective> finishedBy(BattlePlayer battlePlayer) {
+        return objectives.stream()
+                .filter(Objective::isFinished)
+                .filter(o -> o.whoFinished.equals(battlePlayer))
+                .sorted(Comparator.comparingInt(Objective::getTime).reversed())
+                .toList();
     }
 
-    public static @NotNull Set<Objective> finished() {
-        Set<Objective> finished = new HashSet<>();
-        for (Objective o : objectives) {
-            if (o.isFinished()) {
-                finished.add(o);
-            }
-        }
-        return finished;
+    public static @NotNull List<Objective> finished() {
+        return objectives.stream()
+                .filter(Objective::isFinished)
+                .sorted(Comparator.comparingInt(Objective::getTime).reversed())
+                .toList();
     }
 
     public void delete() {

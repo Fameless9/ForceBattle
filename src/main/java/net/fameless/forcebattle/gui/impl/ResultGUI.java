@@ -37,34 +37,50 @@ public class ResultGUI extends ForceBattleGUI {
     private final Team targetTeam;
 
     private final boolean animated;
+    private final boolean skipLoad;
 
     private final Map<BattlePlayer, Integer> playerPageCache = new HashMap<>();
     private final Map<BattlePlayer, List<Objective>> objectiveList = new HashMap<>();
     private final Map<BattlePlayer, BukkitRunnable> activeAnimations = new HashMap<>();
 
-    public ResultGUI(ResultType resultType, int page, BattlePlayer targetPlayer, Team targetTeam, boolean animated) {
+    public ResultGUI(ResultType resultType, int page, BattlePlayer targetPlayer, Team targetTeam, boolean animated, boolean skipLoad) {
         super(generateTitle(resultType, targetPlayer, targetTeam, animated), 54);
         this.page = page;
         this.resultType = resultType;
         this.targetPlayer = targetPlayer;
         this.targetTeam = targetTeam;
         this.animated = animated;
+        this.skipLoad = skipLoad;
+    }
+
+    public ResultGUI(ResultType resultType, int page, BattlePlayer targetPlayer, Team targetTeam, boolean animated) {
+        this(resultType, page, targetPlayer, targetTeam, animated, false);
     }
 
     public ResultGUI(BattlePlayer targetPlayer, boolean animated) {
-        this(ResultType.PLAYER, 1, targetPlayer, null, animated);
+        this(ResultType.PLAYER, 1, targetPlayer, null, animated, false);
     }
 
     public ResultGUI(Team targetTeam, boolean animated) {
-        this(ResultType.TEAM, 1, null, targetTeam, animated);
+        this(ResultType.TEAM, 1, null, targetTeam, animated, false);
     }
 
     public ResultGUI() {
-        this(ResultType.ALL, 1, null, null, false);
+        this(ResultType.ALL, 1, null, null, false, false);
     }
 
     @Override
     public void open(BattlePlayer viewer) {
+        if (skipLoad) {
+            super.open(viewer);
+
+            List<Objective> objectives = objectiveList.get(viewer);
+            if (objectives == null) return;
+
+            if (!animated) setItems(viewer);
+            return;
+        }
+
         Collection<Objective> collection = switch (resultType) {
             case PLAYER -> Objective.finishedBy(targetPlayer);
             case TEAM -> ResultCommandUtils.combineTeamObjectives(targetTeam);
@@ -77,18 +93,15 @@ public class ResultGUI extends ForceBattleGUI {
 
         super.open(viewer);
 
-        if (animated) {
-            startAnimation(viewer, objectives);
-        } else {
-            setItems(viewer);
-        }
+        if (animated) startAnimation(viewer, objectives, 0);
+        else setItems(viewer);
     }
 
-    private void startAnimation(BattlePlayer viewer, List<Objective> objectives) {
+    private void startAnimation(BattlePlayer viewer, List<Objective> objectives, int startIndex) {
         fill(ItemStackCreator.fillerItem());
 
         BukkitRunnable task = new BukkitRunnable() {
-            int index = 0;
+            int index = startIndex;
 
             @Override
             public void run() {
@@ -113,8 +126,22 @@ public class ResultGUI extends ForceBattleGUI {
                     return;
                 }
 
+                int currentPage = (index / SPACES_ON_PAGE) + 1;
                 int slot = 9 + (index % SPACES_ON_PAGE);
+
                 Objective objective = objectives.get(index);
+
+                if (currentPage != page) {
+                    ResultGUI nextPageGUI = new ResultGUI(resultType, currentPage, targetPlayer, targetTeam, true, true);
+                    nextPageGUI.objectiveList.put(viewer, objectives);
+                    nextPageGUI.playerPageCache.put(viewer, currentPage);
+
+                    nextPageGUI.open(viewer);
+                    nextPageGUI.startAnimation(viewer, objectives, index);
+
+                    cancel();
+                    return;
+                }
 
                 set(new GUIItem(slot) {
                     @Override
@@ -125,11 +152,6 @@ public class ResultGUI extends ForceBattleGUI {
 
                 updateInventory(viewer);
                 index++;
-
-                if (index % SPACES_ON_PAGE == 0 && index < objectives.size()) {
-                    new ResultGUI(resultType, page + 1, targetPlayer, targetTeam, true).open(viewer);
-                    cancel();
-                }
             }
         };
 
@@ -256,6 +278,7 @@ public class ResultGUI extends ForceBattleGUI {
         public static @NotNull List<Objective> combineTeamObjectives(@NotNull Team team) {
             List<Objective> objectives = new ArrayList<>();
             team.getPlayers().forEach(teamPlayer -> objectives.addAll(Objective.finishedBy(teamPlayer)));
+            objectives.sort(Comparator.comparingInt(Objective::getTime).reversed());
             return objectives;
         }
 
