@@ -13,6 +13,7 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -219,7 +220,12 @@ public class CraftingRecipeGUI extends ForceBattleGUI {
 
             int guiSlot = GRID_SLOTS[row * 3 + col];
             final ItemStack finalIngredient = ingredient;
-            set(new GUIItem(guiSlot) {
+            set(new GUIClickableItem(guiSlot) {
+                @Override
+                public void run(final InventoryClickEvent event, final BattlePlayer player) {
+                    new CraftingRecipeGUI(finalIngredient).open(player);
+                }
+
                 @Override
                 public ItemStack getItem(BattlePlayer player) {
                     return finalIngredient;

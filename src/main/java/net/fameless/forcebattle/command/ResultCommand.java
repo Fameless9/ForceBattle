@@ -96,6 +96,7 @@ public class ResultCommand extends Command {
                     return;
                 }
                 Team team = Team.getPlaces().get(place);
+                if (team == null) return;
                 for (BattlePlayer player : BattlePlayer.getOnlinePlayers()) {
                     new ResultGUI(team, true).open(player);
                 }

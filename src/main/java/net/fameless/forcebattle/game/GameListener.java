@@ -4,6 +4,8 @@ import net.fameless.forcebattle.ForceBattle;
 import net.fameless.forcebattle.caption.Caption;
 import net.fameless.forcebattle.configuration.PluginUpdater;
 import net.fameless.forcebattle.configuration.SettingsManager;
+import net.fameless.forcebattle.event.PlayerTeamJoinEvent;
+import net.fameless.forcebattle.event.PlayerTeamLeaveEvent;
 import net.fameless.forcebattle.event.TimerEndEvent;
 import net.fameless.forcebattle.event.TimerStartEvent;
 import net.fameless.forcebattle.game.tasks.AdvancementTask;
@@ -44,6 +46,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -75,6 +78,10 @@ public class GameListener implements Listener {
 
         TaskManager.startAll();
     }
+
+    //TODO "waiting" flickert im nametag
+    //TODO backpack buggt wohl bisl => man kann nicht pages switchen wenn jemand anders drin ist
+    //TODO randomteams command should fill already existing teams
 
     @EventHandler
     public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
@@ -119,6 +126,8 @@ public class GameListener implements Listener {
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         BattlePlayer battlePlayer = BattlePlayer.adapt(event.getPlayer());
 
+        updateAllTablists();
+
         if (!ForceBattle.getTimer().isRunning() && startPhase) {
             if (!spawnCreated) {
                 StructureUtil.createSpawn();
@@ -138,6 +147,11 @@ public class GameListener implements Listener {
                 event.getPlayer().hasPermission("forcebattle.settings"))) {
             battlePlayer.sendMessage(Caption.of("notification.first_startup"));
         }
+    }
+
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent event) {
+        updateAllTablists();
     }
 
     @EventHandler
@@ -163,6 +177,8 @@ public class GameListener implements Listener {
                 }
             }
         }
+
+        updateAllTablists();
 
         for (BattlePlayer player : BattlePlayer.getOnlinePlayers()) {
             if (player.getPlayer() == null) return;
@@ -224,6 +240,16 @@ public class GameListener implements Listener {
     }
 
     @EventHandler
+    public void onTeamJoin(PlayerTeamJoinEvent event) {
+        updateAllTablists();
+    }
+
+    @EventHandler
+    public void onTeamLeave(PlayerTeamLeaveEvent event) {
+        updateAllTablists();
+    }
+
+    @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!SettingsManager.isEnabled(SettingsManager.Setting.FORCE_MOB)) return;
 
@@ -247,7 +273,18 @@ public class GameListener implements Listener {
         }
     }
 
+    private void updateAllTablists() {
+        BattlePlayer.getOnlinePlayers().forEach(player -> {
+            if (player.isInTeam()) {
+                player.getPlayer().setPlayerListOrder(player.getTeam().getId());
+            } else {
+                player.getPlayer().setPlayerListOrder(999);
+            }
+        });
+    }
+
     private void checkPlayerObjective(BattlePlayer battlePlayer, LivingEntity target) {
+        if (battlePlayer.getObjective() == null) return;
         if (battlePlayer.getObjective().getBattleType() != BattleType.FORCE_MOB) return;
 
         String objective = battlePlayer.getObjective().getObjectiveString();
