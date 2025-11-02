@@ -1,5 +1,7 @@
 package net.fameless.forcebattle.gui;
 
+import net.fameless.forcebattle.player.BattlePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -20,7 +22,11 @@ public class GUIListener implements Listener {
 
         if (clicked instanceof GUIClickableItem clickable) {
             event.setCancelled(true);
-            clickable.onClick(event, gui.getPlayer());
+
+            Player player = (Player) event.getWhoClicked();
+            BattlePlayer battlePlayer = BattlePlayer.adapt(player);
+
+            clickable.onClick(event, battlePlayer);
         }
     }
 

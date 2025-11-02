@@ -104,9 +104,13 @@ public class ObjectiveManager {
         if (SettingsManager.isEnabled(SettingsManager.Setting.NO_DUPLICATE_OBJECTIVES)) {
             Set<String> finished = new HashSet<>();
             if (team == null || !battlePlayer.isInTeam()) {
+                battlePlayer.getSkippedObjectives().forEach(obj -> finished.add(obj.getObjectiveString()));
                 Objective.finishedBy(battlePlayer).forEach(obj -> finished.add(obj.getObjectiveString()));
             } else {
-                team.getPlayers().forEach(p -> Objective.finishedBy(p).forEach(obj -> finished.add(obj.getObjectiveString())));
+                for (BattlePlayer teammate : team.getPlayers()) {
+                    teammate.getSkippedObjectives().forEach(obj -> finished.add(obj.getObjectiveString()));
+                    Objective.finishedBy(teammate).forEach(obj -> finished.add(obj.getObjectiveString()));
+                }
             }
             allPossible.removeIf(finished::contains);
         }

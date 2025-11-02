@@ -210,10 +210,12 @@ public class Team {
         int requiredSlots = getPlayers().size() * SLOTS_PER_MEMBER;
         int requiredPages = (int) Math.ceil(requiredSlots / (double) MAX_PAGE_SIZE);
 
+        BACKPACK_INVENTORIES.clear();
+
         for (int i = 0; i < requiredPages; i++) {
             int pageSize = Math.min(MAX_PAGE_SIZE, requiredSlots - (i * MAX_PAGE_SIZE));
 
-            BACKPACK_INVENTORIES.add(new TeamBackpackGUI(i, pageSize));
+            BACKPACK_INVENTORIES.add(new TeamBackpackGUI(i, pageSize, this));
         }
     }
 

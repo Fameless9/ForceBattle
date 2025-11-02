@@ -367,6 +367,8 @@ public class GameListener implements Listener {
         ));
         battlePlayer.updateObjective(true, true);
 
+        battlePlayer.addSkippedObjectiveToList(oldObjective);
+
         decreaseItemAmount(event);
 
         if (oldObjective.getBattleType() == BattleType.FORCE_ITEM) {
@@ -417,6 +419,8 @@ public class GameListener implements Listener {
         ));
 
         team.updateObjective(battlePlayer, true, true);
+
+        battlePlayer.addSkippedObjectiveToList(oldObjective);
 
         decreaseItemAmount(event);
 
