@@ -21,9 +21,10 @@ public abstract class ForceBattleGUI implements Listener, InventoryHolder {
     protected String title;
     protected int size;
     protected final List<GUIItem> items;
-
     private Inventory inventory;
-    private BattlePlayer player;
+
+    private final Set<UUID> currentViewers = ConcurrentHashMap.newKeySet();
+
     private boolean hasFinishedLoading = false;
 
     public ForceBattleGUI(String title, int size) {
@@ -122,11 +123,11 @@ public abstract class ForceBattleGUI implements Listener, InventoryHolder {
     }
 
     public void open(BattlePlayer player) {
-        this.player = player;
         Player p = player.getPlayer();
         ForceBattleGUI previous = GUI_MAP.get(p.getUniqueId());
 
         if (previous != null) {
+            previous.removeViewer(p.getUniqueId());
             previous.onClose(new InventoryCloseEvent(p.getOpenInventory()), CloseReason.SERVER_EXITED);
             GUI_MAP.remove(p.getUniqueId());
         }
@@ -134,6 +135,9 @@ public abstract class ForceBattleGUI implements Listener, InventoryHolder {
         if (this.inventory == null) {
             this.inventory = Bukkit.createInventory(this, size, title);
         }
+
+        // Add to viewers
+        this.currentViewers.add(p.getUniqueId());
         GUI_MAP.put(p.getUniqueId(), this);
 
         try {
@@ -151,11 +155,16 @@ public abstract class ForceBattleGUI implements Listener, InventoryHolder {
     }
 
     public void close(BattlePlayer player, CloseReason reason) {
+        UUID playerId = player.getPlayer().getUniqueId();
         player.getPlayer().closeInventory();
         onClose(new InventoryCloseEvent(player.getPlayer().getOpenInventory()), reason);
-        GUI_MAP.remove(player.getPlayer().getUniqueId());
+        removeViewer(playerId);
+        GUI_MAP.remove(playerId);
     }
 
+    private void removeViewer(UUID playerId) {
+        currentViewers.remove(playerId);
+    }
 
     public void updateInventory(BattlePlayer player) {
         synchronized (items) {
@@ -166,10 +175,9 @@ public abstract class ForceBattleGUI implements Listener, InventoryHolder {
         }
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-        if (inventory != null) {
-            inventory = Bukkit.createInventory(this, size, title);
+    public void updateInventoryForPlayer(BattlePlayer player) {
+        Player bukkitPlayer = player.getPlayer();
+        if (bukkitPlayer.getOpenInventory().getTopInventory().getHolder() == this) {
             updateInventory(player);
         }
     }

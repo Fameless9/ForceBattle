@@ -54,6 +54,9 @@ public class BattlePlayer implements CommandCaller {
     @Getter
     private Objective objective;
     @Getter
+    @Setter
+    private List<Objective> skippedObjectives = new ArrayList<>();
+    @Getter
     private boolean excluded;
     @Getter
     @Setter
@@ -277,6 +280,7 @@ public class BattlePlayer implements CommandCaller {
 
         this.points = 0;
         this.chainProgress = 0;
+        this.skippedObjectives = new ArrayList<>();
         if (this.isInTeam()) {
             this.getTeam().setChainProgress(0);
         }
@@ -327,6 +331,10 @@ public class BattlePlayer implements CommandCaller {
             return false;
         }
         return getPlayer().hasPermission(permission);
+    }
+
+    public void addSkippedObjectiveToList(Objective objective) {
+        skippedObjectives.add(objective);
     }
 
     public void addPlayerSkip(final int amount) {

@@ -36,78 +36,80 @@ public class RandomTeamsCommand extends Command {
             return;
         }
 
-        if (args.length > 0 && !args[0].isEmpty()) {
-            int size;
-            try {
-                size = Integer.parseInt(args[0]);
-            } catch (NumberFormatException e) {
-                caller.sendMessage(Caption.of("command.not_a_number"));
-                return;
-            }
-
-            List<BattlePlayer> players = new ArrayList<>(BattlePlayer.getOnlinePlayers());
-            int playerAmount = players.size();
-
-            if (playerAmount % size != 0) {
-                caller.sendMessage(Caption.of("error.no_equal_teams"));
-                return;
-            }
-
-            int amountOfTeams = playerAmount / size;
-
-            if (args[1].equalsIgnoreCase("fillExistingTeams")) {
-                List<Team> existingTeams = new ArrayList<>(Team.teams);
-                Random random = new Random();
-
-                for (Team team : existingTeams) {
-                    for (BattlePlayer p : team.getPlayers()) {
-                        players.remove(p);
-                    }
-                }
-
-                for (Team team : existingTeams) {
-                    while (team.getPlayers().size() > size) {
-                        BattlePlayer removed = team.getPlayers().get(random.nextInt(team.getPlayers().size()));
-                        team.removePlayer(removed);
-                        players.add(removed);
-                    }
-                }
-
-                for (Team team : existingTeams) {
-                    while (team.getPlayers().size() < size && !players.isEmpty()) {
-                        BattlePlayer randomPlayer = players.remove(random.nextInt(players.size()));
-                        team.addPlayer(randomPlayer);
-                    }
-                }
-
-                while (!players.isEmpty()) {
-                    BattlePlayer first = players.remove(random.nextInt(players.size()));
-                    Team team = new Team(List.of(first));
-
-                    while (team.getPlayers().size() < size && !players.isEmpty()) {
-                        BattlePlayer next = players.remove(random.nextInt(players.size()));
-                        team.addPlayer(next);
-                    }
-                }
-            } else {
-                Team.deleteAll();
-
-                Random random = new Random();
-
-                for (int i = 0; i < amountOfTeams; i++) {
-                    BattlePlayer first = players.remove(random.nextInt(players.size()));
-                    Team team = new Team(List.of(first));
-
-                    while (team.getPlayers().size() < size && !players.isEmpty()) {
-                        BattlePlayer next = players.remove(random.nextInt(players.size()));
-                        team.addPlayer(next);
-                    }
-                }
-            }
-
-            caller.sendMessage(Caption.of("notification.randomteams_successfully_created",
-                    TagResolver.resolver("amount", Tag.inserting(Component.text(String.valueOf(amountOfTeams))))));
+        if (args.length == 0 || args[0].isEmpty()) {
+            sendUsage(caller);
+            return;
         }
+
+        int size;
+        try {
+            size = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+            caller.sendMessage(Caption.of("command.not_a_number"));
+            return;
+        }
+
+        List<BattlePlayer> players = new ArrayList<>(BattlePlayer.getOnlinePlayers());
+        int playerAmount = players.size();
+
+        if (playerAmount % size != 0) {
+            caller.sendMessage(Caption.of("error.no_equal_teams"));
+            return;
+        }
+
+        int amountOfTeams = playerAmount / size;
+        Random random = new Random();
+
+        if (args.length > 1 && args[1].equalsIgnoreCase("fillExistingTeams")) {
+            List<Team> existingTeams = new ArrayList<>(Team.teams);
+
+            for (Team team : existingTeams) {
+                for (BattlePlayer p : team.getPlayers()) {
+                    players.remove(p);
+                }
+            }
+
+            for (Team team : existingTeams) {
+                while (team.getPlayers().size() > size) {
+                    BattlePlayer removed = team.getPlayers().get(random.nextInt(team.getPlayers().size()));
+                    team.removePlayer(removed);
+                    players.add(removed);
+                }
+            }
+
+            for (Team team : existingTeams) {
+                while (team.getPlayers().size() < size && !players.isEmpty()) {
+                    BattlePlayer randomPlayer = players.remove(random.nextInt(players.size()));
+                    team.addPlayer(randomPlayer);
+                }
+            }
+
+            while (!players.isEmpty()) {
+                BattlePlayer first = players.remove(random.nextInt(players.size()));
+                Team team = new Team(List.of(first));
+
+                while (team.getPlayers().size() < size && !players.isEmpty()) {
+                    BattlePlayer next = players.remove(random.nextInt(players.size()));
+                    team.addPlayer(next);
+                }
+            }
+
+        } else {
+            Team.deleteAll();
+
+            for (int i = 0; i < amountOfTeams; i++) {
+                BattlePlayer first = players.remove(random.nextInt(players.size()));
+                Team team = new Team(List.of(first));
+
+                while (team.getPlayers().size() < size && !players.isEmpty()) {
+                    BattlePlayer next = players.remove(random.nextInt(players.size()));
+                    team.addPlayer(next);
+                }
+            }
+        }
+
+        caller.sendMessage(Caption.of("notification.randomteams_successfully_created",
+                TagResolver.resolver("amount", Tag.inserting(Component.text(String.valueOf(amountOfTeams))))));
     }
 
     @Override
