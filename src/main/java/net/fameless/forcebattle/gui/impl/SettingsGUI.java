@@ -46,6 +46,8 @@ public class SettingsGUI extends ForceBattleGUI {
                 "gui.no_hunger_name", "gui.no_hunger_lore", "notification.no_hunger_changed"),
         NO_DAMAGE(19, Material.IRON_SWORD, SettingsManager.Setting.NO_DAMAGE, false,
                 "gui.no_damage_name", "gui.no_damage_lore", "notification.no_damage_changed"),
+        MOBILE_CRAFTING(20, Material.CRAFTING_TABLE, SettingsManager.Setting.MOBILE_CRAFTING, false,
+                "gui.mobile_crafting_name", "gui.mobile_crafting_lore", "notification.mobile_crafting_changed"),
         CHAIN_MODE(27, Material.CHAIN, SettingsManager.Setting.CHAIN_MODE, false,
                 "gui.chain_mode_name", "gui.chain_mode_lore", "notification.chain_mode_changed"),
         BACKPACK(28, Material.CHEST, SettingsManager.Setting.BACKPACK, false,
