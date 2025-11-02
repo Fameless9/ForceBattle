@@ -25,7 +25,8 @@ public class PermissionManager {
             Map.entry("forcebattle.joker", PermissionDefault.OP),
             Map.entry("forcebattle.points", PermissionDefault.OP),
             Map.entry("forcebattle.help", PermissionDefault.TRUE),
-            Map.entry("forcebattle.randomteams", PermissionDefault.OP)
+            Map.entry("forcebattle.randomteams", PermissionDefault.OP),
+            Map.entry("forcebattle.craft", PermissionDefault.TRUE)
     );
 
     public static void registerPermissions() {

@@ -9,6 +9,7 @@ import net.fameless.forcebattle.command.ExcludeCommand;
 import net.fameless.forcebattle.command.HelpCommand;
 import net.fameless.forcebattle.command.JokerCommand;
 import net.fameless.forcebattle.command.LanguageCommand;
+import net.fameless.forcebattle.command.MobileCraftingCommand;
 import net.fameless.forcebattle.command.PointsCommand;
 import net.fameless.forcebattle.command.RandomTeamsCommand;
 import net.fameless.forcebattle.command.RecipeCommand;
@@ -90,6 +91,7 @@ public abstract class Command {
         new HelpCommand();
         new JokerCommand();
         new LanguageCommand();
+        new MobileCraftingCommand();
         new PointsCommand();
         new RandomTeamsCommand();
         new RecipeCommand();

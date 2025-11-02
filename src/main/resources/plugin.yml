@@ -16,6 +16,8 @@ commands:
     joker:
     language:
         aliases: [ lang ]
+    craft:
+        aliases: [ crafting ]
     points:
     randomteams:
     recipe:

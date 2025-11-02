@@ -84,6 +84,7 @@ public class SettingsManager {
 
         NO_HUNGER,
         NO_DAMAGE,
+        MOBILE_CRAFTING,
         BACKPACK,
         CHAIN_MODE,
         HIDE_POINTS,
